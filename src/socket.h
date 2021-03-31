@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 16:28:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 16:41:37 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 class Socket {
  public:
-    void bindAndListenToPort(int port);
+    void bindAndListenToPort(const int& port);
     int openConnection();
     std::string* receiveData(int clientFd);
     void send_data(int fd, std::string msg);
