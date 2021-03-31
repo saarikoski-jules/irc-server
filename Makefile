@@ -15,6 +15,7 @@ SRCDIR = src
 OBJDIR = obj
 DEPDIR = dep
 SRCLST = main \
+		start_irc_server \
 		server \
 		logger \
 		string_conversions \

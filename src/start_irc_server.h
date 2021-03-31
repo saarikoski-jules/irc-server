@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.h                                             :+:    :+:            */
+/*   start_irc_server.h                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/03/31 13:13:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 13:15:02 by jvisser       ########   odam.nl         */
+/*   Created: 2021/03/31 15:38:06 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/03/31 15:41:20 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef START_IRC_SERVER_H_
+#define START_IRC_SERVER_H_
 
 #include <string>
 #include <exception>
+
+void startIrcServerFromArguments(const int argc, char* const* argv);
 
 class ArgumentException : public std::exception {
  public:
@@ -27,4 +29,4 @@ class ArgumentException : public std::exception {
     const std::string message;
 };
 
-#endif  // MAIN_H_
+#endif  // START_IRC_SERVER_H_
