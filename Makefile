@@ -17,6 +17,10 @@ DEPDIR = dep
 SRCLST = main \
 		socket \
 		utils \
+		start_irc_server \
+		server \
+		logger \
+		string_conversions \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################

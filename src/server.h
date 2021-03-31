@@ -1,35 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   socket.h                                           :+:    :+:            */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 15:48:54 by jsaariko      ########   odam.nl         */
+/*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/03/31 12:54:52 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKET_H_
-#define SOCKET_H_
+#ifndef SERVER_H_
+#define SERVER_H_
 
-#include <netinet/in.h>
 #include <string>
+#include <cinttypes>
+#include <exception>
 
-class Socket {
+class Server {
  public:
-    int bind_things(int port);
-    int open_connection(int fd);
-    std::string* receive_data(int fd);
-    void send_data(int fd, std::string msg);
+    Server(const uint16_t port, std::string const& password);
+    ~Server();
  private:
-    struct sockaddr_in addr;
+    Server();
+    void validatePassword(std::string const& password) const;
 };
 
-class SocketException : public std::exception {
+class ServerException : public std::exception {
  public:
-    SocketException(std::string const& what, const bool& fatal);
-    ~SocketException() throw();
+    ServerException(std::string const& what, const bool& fatal);
+    ~ServerException() throw();
     const bool& isFatal() const;
     const char* what() const throw();
  private:
@@ -37,4 +37,4 @@ class SocketException : public std::exception {
     const std::string message;
 };
 
-#endif  //  SOCKET_H_
+#endif  // SERVER_H_
