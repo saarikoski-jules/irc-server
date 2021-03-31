@@ -19,7 +19,7 @@
 #include <string>
 #include "utils.h"
 
-void Socket::bindAndListenToPort(int port) {
+void Socket::bindAndListenToPort(const int& port) {
     struct sockaddr_in addr;
     int fd;
 
