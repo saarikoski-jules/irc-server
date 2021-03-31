@@ -6,11 +6,14 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:04:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 14:53:19 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/03/31 15:05:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
+
+#include <string>
+#include <exception>
 
 #include "server.h"
 #include "logger.h"

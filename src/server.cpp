@@ -6,11 +6,15 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 13:03:54 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/03/31 15:06:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
+
+#include <string>
+#include <cinttypes>
+#include <exception>
 
 #include "logger.h"
 

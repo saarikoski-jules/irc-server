@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/28 17:23:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 10:48:56 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/03/31 15:07:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include <string>
 #include <fstream>
-#include <iostream>
 
 enum LogLevel {
     LogLevelFatal,
