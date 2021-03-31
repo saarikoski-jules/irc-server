@@ -23,14 +23,21 @@ int Socket::open() {
     struct sockaddr_in addr;
     char data_buffer[1024];
 
-    ft_memset(&data_buffer, 9, 1024);
+    ft_memset(&data_buffer, 0, 1024);
     ft_memset(&addr, 0, sizeof(sockaddr));
     int fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    std::cout << "data buffer '" << data_buffer << "'" << std::endl;
 
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8080);
     std::cout << "defined addr" << std::endl;
+
+    int opt = 1;
+
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+
 
     int ret = bind(fd, (const sockaddr*)&addr, sizeof(addr));
     if (ret != 0) {
@@ -55,7 +62,8 @@ int Socket::open() {
 
     int chars_read = read(sockfd2, &data_buffer, 1024);
     if (chars_read > 0) {
-        std::cout << *data_buffer << std::endl;
+        std::cout << "read " << chars_read << std::endl;
+        std::cout << data_buffer << std::endl;
     }
     std::cout << "reading" << std::endl;
 
