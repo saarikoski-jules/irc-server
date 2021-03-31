@@ -6,12 +6,17 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 15:14:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 15:25:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket.hpp"
-#include <iostream>//
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string>
 #include "utils.hpp"
 
 int Socket::bind_things(int port) {
@@ -28,7 +33,7 @@ int Socket::bind_things(int port) {
     if (bind(fd, (const sockaddr*)&addr, sizeof(addr)) != 0) {
         throw SocketException("Failed to bind socket", true);
     }
-    //TODO: (Jules)change backlog to appropriate value
+    // TODO(Jules): change backlog to appropriate value
     if (listen(fd, 1) != 0) {
         throw SocketException("Failed to listen to socket", true);
     }
@@ -41,7 +46,8 @@ int Socket::open_connection(int fd) {
 
     addrlen = sizeof(addr);
     fcntl(fd, F_SETFL, O_NONBLOCK);
-    sockfd2 = accept(fd, (sockaddr *)&addr, (socklen_t *)&addrlen);
+    sockfd2 = accept(fd, reinterpret_cast<sockaddr*>(&addr),
+        reinterpret_cast<socklen_t*>(&addrlen));
     if (sockfd2 <= 0) {
         throw SocketException("No connection request detected", false);
     }
@@ -55,7 +61,7 @@ std::string* Socket::receive_data(int sockfd) {
     data_buffer = new char[1024];
     Utils::Mem::set(data_buffer, 0, 1024);
     chars_read = read(sockfd, data_buffer, 1024);
-    
+
     if (chars_read > 0) {
         std::string* data = new std::string(data_buffer);
         delete[] data_buffer;

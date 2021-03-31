@@ -2,11 +2,6 @@
 #define SOCKET_HPP_
 
 #include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <fcntl.h>
-
 
 class Socket {
  public:
@@ -16,7 +11,6 @@ class Socket {
     void send_data(int fd, std::string msg);
  private:
     struct sockaddr_in addr;
-
 };
 
 class SocketException : public std::exception {
