@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 14:33:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 15:14:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,61 +16,80 @@
 
 int Socket::bind_things(int port) {
     struct sockaddr_in addr;
+    int fd;
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
 
     Utils::Mem::set(&addr, 0, sizeof(sockaddr));
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
 
-    int ret = bind(fd, (const sockaddr*)&addr, sizeof(addr));
-    if (ret != 0) {
-        std::cout << "fuck bind" << std::endl;
-        return (-1);
-    } else {
-        std::cout << "bind" << std::endl;
+    if (bind(fd, (const sockaddr*)&addr, sizeof(addr)) != 0) {
+        throw SocketException("Failed to bind socket", true);
     }
-    ret = listen(fd, 1);//TODO: (Jules)change backlog to appropriate value
-    if (ret != 0) {
-        std::cout << "fuck listen" << std::endl;
-        return (-1);
-    } else {
-        std::cout << "listening succesfully" << std::endl;
+    //TODO: (Jules)change backlog to appropriate value
+    if (listen(fd, 1) != 0) {
+        throw SocketException("Failed to listen to socket", true);
     }
     return (fd);
-
 }
 
 int Socket::open_connection(int fd) {
+    int addrlen;
+    int sockfd2;
 
-    int addrlen = sizeof(addr);
+    addrlen = sizeof(addr);
     fcntl(fd, F_SETFL, O_NONBLOCK);
-    int sockfd2 = accept(fd, (sockaddr *)&addr, (socklen_t *)&addrlen);
+    sockfd2 = accept(fd, (sockaddr *)&addr, (socklen_t *)&addrlen);
     if (sockfd2 <= 0) {
-        return (-1);
+        throw SocketException("No connection request detected", false);
     }
     return (sockfd2);
 }
 
-char* Socket::receive_data(int sockfd) {
-    char* data_buffer = new char[1024];
-    Utils::Mem::set(data_buffer, 0, 1024);
+std::string* Socket::receive_data(int sockfd) {
+    char* data_buffer;
+    int chars_read;
 
-    int chars_read = read(sockfd, data_buffer, 1024);
+    data_buffer = new char[1024];
+    Utils::Mem::set(data_buffer, 0, 1024);
+    chars_read = read(sockfd, data_buffer, 1024);
+    
     if (chars_read > 0) {
-        return (data_buffer);
+        std::string* data = new std::string(data_buffer);
+        delete[] data_buffer;
+        return (data);
     } else {
         delete[] data_buffer;
-        return (NULL);
+        throw SocketException("No data received", false);
     }
 }
 
 void Socket::send_data(int sockfd, std::string msg) {
-    std::cout << "here yall" << std::endl;
     const char* cmsg = msg.c_str();
-    size_t msg_len = msg.length();
+    const size_t msg_len = msg.length();
 
-    send(sockfd, cmsg, msg_len, 0);
-    std::cout << "sending" << std::endl;
+    if (send(sockfd, cmsg, msg_len, 0) <= 0) {
+        throw SocketException("No data sent", false);
+    }
 }
 
+SocketException::SocketException(const std::string& message, const bool& fatal) :
+fatal(fatal),
+message(message) {
+}
+
+SocketException::~SocketException() throw() {
+}
+
+const bool& SocketException::isFatal() const {
+    return (fatal);
+}
+
+const char* SocketException::what() const throw() {
+    if (isFatal()) {
+        return (std::string("Fatal argument exception: " + message).c_str());
+    }
+    return (std::string("Argument exception: " + message).c_str());
+}
