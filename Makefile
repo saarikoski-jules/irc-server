@@ -15,8 +15,10 @@ SRCDIR = src
 OBJDIR = obj
 DEPDIR = dep
 SRCLST = main \
+		start_irc_server \
+		server \
 		logger \
-		str_to_short \
+		string_conversions \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################

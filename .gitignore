@@ -1,4 +1,15 @@
+# Executable
 ircserv
 
+# Compilation files
 *.o
 *.d
+
+# Logging directory
+logs
+
+# IDE files
+settings.json
+
+# External resources
+bircd

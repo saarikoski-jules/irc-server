@@ -6,11 +6,15 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/28 17:32:03 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 10:49:35 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/03/31 15:04:43 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "logger.h"
+
+#include <string>
+#include <fstream>
+#include <iostream>
 
 enum LogLevel Logger::maxLogLevel = LogLevelInfo;
 std::ofstream Logger::outputFile;
