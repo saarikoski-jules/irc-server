@@ -16,6 +16,7 @@ OBJDIR = obj
 DEPDIR = dep
 SRCLST = main \
 		logger \
+		str_to_short \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################
