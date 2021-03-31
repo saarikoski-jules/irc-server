@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 16:01:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 16:30:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <string>
 #include "utils.h"
 
-int Socket::bindAndListenToPort(int port) {
+void Socket::bindAndListenToPort(int port) {
     struct sockaddr_in addr;
     int fd;
 
@@ -37,7 +37,7 @@ int Socket::bindAndListenToPort(int port) {
     if (listen(fd, 1) != 0) {
         throw SocketException("Failed to listen to socket", true);
     }
-    return (fd);
+    socketFd = fd;
 }
 
 int Socket::openConnection() {
