@@ -15,6 +15,8 @@ SRCDIR = src
 OBJDIR = obj
 DEPDIR = dep
 SRCLST = main \
+		socket \
+		utils \
 		start_irc_server \
 		server \
 		logger \
