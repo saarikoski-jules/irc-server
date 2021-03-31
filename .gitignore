@@ -2,3 +2,6 @@ ircserv
 
 *.o
 *.d
+logs
+settings.json
+.vscode
