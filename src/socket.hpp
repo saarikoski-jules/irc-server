@@ -10,10 +10,10 @@
 
 class Socket {
  public:
-    int bind_things(int);
-    int open_connection(int);
-    char* receive_data(int);
-    void send_data(int, char*);
+    int bind_things(int port);
+    int open_connection(int fd);
+    char* receive_data(int fd);
+    void send_data(int fd, std::string msg);
  private:
     struct sockaddr_in addr;
 

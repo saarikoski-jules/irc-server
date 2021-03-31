@@ -16,6 +16,7 @@ OBJDIR = obj
 DEPDIR = dep
 SRCLST = main \
 		socket \
+		utils \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################

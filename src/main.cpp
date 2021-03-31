@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:04:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 13:31:17 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 14:17:38 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
                 char* msg = socket.receive_data(sockfd);
                 if (msg != NULL) {
                     std::cout << msg;
+                    socket.send_data(sockfd, "msg received\n");
                     break ;
-                    socket.send_data(sockfd, "msg received");
                 }
 
             }
