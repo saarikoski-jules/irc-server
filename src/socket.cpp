@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 15:39:29 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 16:01:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <string>
 #include "utils.h"
 
-int Socket::bind_things(int port) {
+int Socket::bindAndListenToPort(int port) {
     struct sockaddr_in addr;
     int fd;
 
@@ -40,21 +40,21 @@ int Socket::bind_things(int port) {
     return (fd);
 }
 
-int Socket::open_connection(int fd) {
+int Socket::openConnection() {
     int addrlen;
-    int sockfd2;
+    int clientFd;
 
     addrlen = sizeof(addr);
-    fcntl(fd, F_SETFL, O_NONBLOCK);
-    sockfd2 = accept(fd, reinterpret_cast<sockaddr*>(&addr),
+    fcntl(socketFd, F_SETFL, O_NONBLOCK);
+    clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
-    if (sockfd2 <= 0) {
+    if (clientFd <= 0) {
         throw SocketException("No connection request detected", false);
     }
-    return (sockfd2);
+    return (clientFd);
 }
 
-std::string* Socket::receive_data(int sockfd) {
+std::string* Socket::receiveData(int sockfd) {
     char* data_buffer;
     int chars_read;
 

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 15:48:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 16:06:11 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,12 @@
 
 class Socket {
  public:
-    int bind_things(int port);
-    int open_connection(int fd);
-    std::string* receive_data(int fd);
+    int bindAndListenToPort(int port);
+    int openConnection();
+    std::string* receiveData(int clientFd);
     void send_data(int fd, std::string msg);
  private:
+    int socketFd;
     struct sockaddr_in addr;
 };
 
