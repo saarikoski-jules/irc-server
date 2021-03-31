@@ -12,15 +12,17 @@
 
 #include <sstream>
 #include <string>
+#include <climits>
 
-uint16_t str_to_short(std::string value) {
-    uint16_t num;
+uint16_t strToShort(std::string value) {
+    int num;
     std::stringstream ss;
 
     ss << value;
     ss >> num;
-    if (num == 0 && value != "0") {
+    if ((num == 0 && value != "0")
+    || (num > USHRT_MAX || num < 0)) {
         throw std::exception();
     }
-    return (num);
+    return (static_cast<uint16_t>(num));
 }
