@@ -1,6 +1,7 @@
-#ifndef SOCKET_HPP_
-#define SOCKET_HPP_
+#ifndef SOCKET_H_
+#define SOCKET_H_
 
+#include <netinet/in.h>
 #include <string>
 
 class Socket {
@@ -24,4 +25,4 @@ class SocketException : public std::exception {
     const std::string message;
 };
 
-#endif  //  SOCKET_HPP_
+#endif  //  SOCKET_H_

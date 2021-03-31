@@ -1,5 +1,5 @@
-#ifndef UTILS_HPP_
-#define UTILS_HPP_
+#ifndef UTILS_H_
+#define UTILS_H_
 
 #include <stddef.h>
 
@@ -8,4 +8,4 @@ namespace Mem {
     void    *set(void *ptr, int c, size_t n);
 }}
 
-#endif  // UTILS_HPP_
+#endif  // UTILS_H_

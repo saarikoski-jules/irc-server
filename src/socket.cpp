@@ -6,18 +6,18 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 15:25:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/03/31 15:39:29 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket.hpp"
+#include "socket.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
-#include "utils.hpp"
+#include "utils.h"
 
 int Socket::bind_things(int port) {
     struct sockaddr_in addr;
