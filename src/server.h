@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/01 09:59:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/01 10:44:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ class Server {
     Server();
     void validatePassword(std::string const& password) const;
     void openSocket(const int& port);
+    void listenOnSocket();
+    Socket socket;
 };
 
 class ServerException : public std::exception {

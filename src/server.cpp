@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/01 10:31:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/01 11:16:12 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Server::Server(const uint16_t port, std::string const& password) {
     try {
         validatePassword(password);
         openSocket(port);
+        listenOnSocket();
     } catch (const ServerException& e) {
         if (e.isFatal()) {
             Logger::log(LogLevelFatal, e.what());
@@ -40,7 +41,6 @@ Server::~Server() {
 
 void Server::openSocket(const int& port) {
     Logger::log(LogLevelInfo, "Attempting to open socket");
-    Socket socket;
     try {
         socket.bindAndListenToPort(port);
     } catch (const SocketException& e) {
@@ -49,25 +49,24 @@ void Server::openSocket(const int& port) {
             throw ServerException("Can't bind port", true);
         }
     }
-    Logger::log(LogLevelInfo, "Waiting for incoming connection");
+}
 
+void Server::listenOnSocket() {
+    Logger::log(LogLevelInfo, "Waiting for incoming connection");
     int clientFd;
     std::string* msg;
+ 
     while (true) {
         try {
             clientFd = socket.openConnection();
             Logger::log(LogLevelInfo, "Accepted a connection request");
         } catch (const SocketException& e) {
-            continue;
         }
-        while (true) {
-            try {
-                msg = socket.receiveData(clientFd);
-                Logger::log(LogLevelInfo, "Received msg");
-                Logger::log(LogLevelInfo, (std::string const)*msg);
-            } catch (const SocketException& e) {
-                continue;
-            }
+        try {
+            msg = socket.receiveData(clientFd);
+            Logger::log(LogLevelInfo, "Received msg");
+            Logger::log(LogLevelInfo, (std::string const)*msg);
+        } catch (const SocketException& e) {
         }
     }
 }
