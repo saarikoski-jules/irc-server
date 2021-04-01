@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 12:54:52 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/01 09:59:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <cinttypes>
 #include <exception>
 
+#include "socket.h"
+
 class Server {
  public:
     Server(const uint16_t port, std::string const& password);
@@ -24,6 +26,7 @@ class Server {
  private:
     Server();
     void validatePassword(std::string const& password) const;
+    void openSocket(const int& port);
 };
 
 class ServerException : public std::exception {
