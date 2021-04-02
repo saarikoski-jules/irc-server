@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 15:03:56 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 15:17:23 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ void Socket::receiveData(const int& clientFd) {
     if (chars_read > 0) {
         serverAction->clientFd = clientFd;
         serverAction->message = data_buffer;
+        Logger::log(LogLevelDebug, "Received message from client:");
+        Logger::log(LogLevelDebug, serverAction->message);
     } else {
         throw SocketException("No data received", false);
     }

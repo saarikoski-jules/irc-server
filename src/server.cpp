@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 13:43:55 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 15:08:54 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,10 @@ void Server::listenOnSocket() {
         // Fall through because we got a normal message.
     }
     for (std::vector<Client>::iterator i = clients.begin();
-    i != clients.end() && action.type == ServerAction::NO_ACTION; i++) {
+    action.type == ServerAction::NO_ACTION && i != clients.end(); i++) {
         try {
             const Client& client = *i;
-
             socket.receiveData(client.fd);
-            Logger::log(LogLevelInfo, "Received msg");
-            Logger::log(LogLevelInfo, action.message);
         } catch (const SocketException& e) {
             // No message recieved.
         }
