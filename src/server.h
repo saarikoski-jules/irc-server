@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 16:59:22 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 17:08:51 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 class Server {
  public:
-    Server(const uint16_t port, std::string const& password);
+    Server(const uint16_t& port, const std::string& password);
     ~Server();
     void run();
  private:
