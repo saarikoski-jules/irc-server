@@ -6,20 +6,25 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/01 11:16:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 13:43:55 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
 #include <string>
+#include <chrono>
+#include <thread>
 #include <cinttypes>
 #include <exception>
 
 #include "logger.h"
 #include "socket.h"
 
-Server::Server(const uint16_t port, std::string const& password) {
+Server::Server(const uint16_t port, std::string const& password) :
+action(),
+socket(&action),
+clients() {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     try {
         validatePassword(password);
@@ -38,14 +43,22 @@ Server::~Server() {
     Logger::log(LogLevelInfo, "Server has been destructed");
 }
 
+void Server::validatePassword(std::string const& password) const {
+    if (password == std::string("cats")) {
+        Logger::log(LogLevelDebug, "Server password validated");
+        return;
+    }
+    throw ServerException("Server password invalid", true);
+}
+
 void Server::openSocket(const int& port) {
-    Logger::log(LogLevelInfo, "Attempting to open socket");
+    Logger::log(LogLevelInfo, "Attempting to open server socket");
     try {
         socket.bindAndListenToPort(port);
     } catch (const SocketException& e) {
         if (e.isFatal()) {
             Logger::log(LogLevelFatal, e.what());
-            throw ServerException("Can't bind port", true);
+            throw ServerException("Can't open socket", true);
         }
     }
 }
@@ -54,35 +67,46 @@ void Server::run() {
     Logger::log(LogLevelInfo, "Starting up the server");
     while (true) {
         listenOnSocket();
+        handleAction();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
 void Server::listenOnSocket() {
-    Logger::log(LogLevelInfo, "Waiting for incoming connection");
-    int clientFd;
-    std::string* msg;
- 
-    while (true) {
+    try {
+        socket.openConnection();
+    } catch (const SocketException& e) {
+        // Fall through because we got a normal message.
+    }
+    for (std::vector<Client>::iterator i = clients.begin();
+    i != clients.end() && action.type == ServerAction::NO_ACTION; i++) {
         try {
-            clientFd = socket.openConnection();
-            Logger::log(LogLevelInfo, "Accepted a connection request");
-        } catch (const SocketException& e) {
-        }
-        try {
-            msg = socket.receiveData(clientFd);
+            const Client& client = *i;
+
+            socket.receiveData(client.fd);
             Logger::log(LogLevelInfo, "Received msg");
-            Logger::log(LogLevelInfo, (std::string const)*msg);
+            Logger::log(LogLevelInfo, action.message);
         } catch (const SocketException& e) {
+            // No message recieved.
         }
     }
 }
 
-void Server::validatePassword(std::string const& password) const {
-    if (password == std::string("cats")) {
-        Logger::log(LogLevelDebug, "Server password validated");
-        return;
+void Server::handleAction() {
+    if (action.type != ServerAction::NO_ACTION) {
+        switch (action.type) {
+        case ServerAction::NEW_CLIENT:
+            acceptNewClient();
+            break;
+        default:
+            break;
+        }
+        action.type = ServerAction::NO_ACTION;
     }
-    throw ServerException("Server password invalid", true);
+}
+
+void Server::acceptNewClient() {
+    clients.push_back(Client(action.clientFd));
 }
 
 ServerException::ServerException(const std::string& message, const bool& fatal) :

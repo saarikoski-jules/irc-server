@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/01 10:44:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 12:54:06 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 #define SERVER_H_
 
 #include <string>
+#include <vector>
 #include <cinttypes>
 #include <exception>
 
+#include "server_action.h"
 #include "socket.h"
+#include "client.h"
 
 class Server {
  public:
@@ -26,10 +29,14 @@ class Server {
     void run();
  private:
     Server();
+    ServerAction action;
+    Socket socket;
+    std::vector<Client> clients;
     void validatePassword(std::string const& password) const;
     void openSocket(const int& port);
     void listenOnSocket();
-    Socket socket;
+    void handleAction();
+    void acceptNewClient();
 };
 
 class ServerException : public std::exception {
