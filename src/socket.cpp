@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 13:41:49 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 15:03:56 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,11 +82,11 @@ void Socket::receiveData(const int& clientFd) {
     }
 }
 
-void Socket::send_data(int sockfd, std::string msg) {
+void Socket::sendData(const int& clientFd, const std::string& msg) const {
     const char* cmsg = msg.c_str();
     const size_t msg_len = msg.length();
 
-    if (send(sockfd, cmsg, msg_len, 0) <= 0) {
+    if (send(clientFd, cmsg, msg_len, 0) <= 0) {
         throw SocketException("No data sent", false);
     }
 }
