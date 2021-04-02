@@ -24,7 +24,6 @@ Server::Server(const uint16_t port, std::string const& password) {
     try {
         validatePassword(password);
         openSocket(port);
-        listenOnSocket();
     } catch (const ServerException& e) {
         if (e.isFatal()) {
             Logger::log(LogLevelFatal, e.what());
@@ -48,6 +47,13 @@ void Server::openSocket(const int& port) {
             Logger::log(LogLevelFatal, e.what());
             throw ServerException("Can't bind port", true);
         }
+    }
+}
+
+void Server::run() {
+    Logger::log(LogLevelInfo, "Starting up the server");
+    while (true) {
+        listenOnSocket();
     }
 }
 

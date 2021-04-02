@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:37:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 15:41:13 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 10:52:42 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 static void startNewIrcServerFromArguments(char* const* argv) {
     try {
         Server server(StringConversion::toUint16(argv[1]), argv[2]);
+        server.run();
     } catch (const std::out_of_range& e) {
         throw ArgumentException("Port number is not in range of valid ports", true);
     }
@@ -35,7 +36,7 @@ void startIrcServerFromArguments(const int argc, char* const* argv) {
         Logger::log(LogLevelDebug, "Attempting to connect to existing irc server");
         // TODO(Jelle) Connect server to other server.
     } else {
-    throw ArgumentException("Invalid amount of arguments provided", true);
+        throw ArgumentException("Invalid amount of arguments provided", true);
     }
 }
 

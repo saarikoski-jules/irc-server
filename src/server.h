@@ -23,6 +23,7 @@ class Server {
  public:
     Server(const uint16_t port, std::string const& password);
     ~Server();
+    void run();
  private:
     Server();
     void validatePassword(std::string const& password) const;
