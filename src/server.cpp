@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 16:46:47 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 16:58:42 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Server::validatePassword(std::string const& password) const {
     throw ServerException("Server password invalid", true);
 }
 
-void Server::openSocket(const int& port) {
+void Server::openSocket(const uint16_t& port) {
     Logger::log(LogLevelInfo, "Attempting to open server socket");
     try {
         socket.bindAndListenToPort(port);
