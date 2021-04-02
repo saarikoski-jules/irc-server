@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 17:09:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 20:10:40 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,9 @@ void Server::handleAction() {
         case ServerAction::NEW_MESSAGE:
             // TODO(Jelle) Parse message and set correct type.
             break;
+        case ServerAction::DISCONNECT_CLIENT:
+            deleteClient(action.clientFd);
+            break;
         default:
             Logger::log(LogLevelError, "Cannot handle unknown action");
             break;
@@ -108,6 +111,18 @@ void Server::handleAction() {
 
 void Server::acceptNewClient() {
     clients.push_back(Client(action.clientFd));
+}
+
+void Server::deleteClient(const int& clientFd) {
+    std::vector<Client>::iterator it = clients.begin();
+    while (it != clients.end()) {
+        if ((*it).fd == clientFd) {
+            Logger::log(LogLevelInfo, "Client disconnected");
+            clients.erase(it);
+            break;
+        }
+        it++;
+    }
 }
 
 ServerException::ServerException(const std::string& message, const bool& fatal) :
