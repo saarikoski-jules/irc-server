@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 15:08:54 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 16:46:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,11 @@ void Server::handleAction() {
         case ServerAction::NEW_CLIENT:
             acceptNewClient();
             break;
+        case ServerAction::NEW_MESSAGE:
+            // TODO(Jelle) Parse message and set correct type.
+            break;
         default:
+            Logger::log(LogLevelError, "Cannot handle unknown action");
             break;
         }
         action.type = ServerAction::NO_ACTION;

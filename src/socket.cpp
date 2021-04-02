@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 15:17:23 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 16:36:28 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,9 @@ void Socket::receiveData(const int& clientFd) {
     Utils::Mem::set(data_buffer, 0, 512);
     // -2 in case of ending with a carriage return
     chars_read = read(clientFd, data_buffer, 512 - 2);
-
+    // TODO(Jelle) See what happens when a message is longer than 512 bytes.
     if (chars_read > 0) {
+        serverAction->type = ServerAction::NEW_MESSAGE;
         serverAction->clientFd = clientFd;
         serverAction->message = data_buffer;
         Logger::log(LogLevelDebug, "Received message from client:");
