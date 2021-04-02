@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 16:46:47 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 16:54:20 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include "logger.h"
 #include "socket.h"
 
-Server::Server(const uint16_t port, std::string const& password) :
+Server::Server(const uint16_t& port, const std::string& password) :
 action(),
 socket(&action),
 clients() {

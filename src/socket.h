@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 15:04:00 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 16:56:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <string>
 
 #include "server_action.h"
+
+#define MAX_MESSAGE_SIZE 512
 
 class Socket {
  public:
