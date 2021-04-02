@@ -34,8 +34,9 @@ void startIrcServerFromArguments(const int argc, char* const* argv) {
     } else if (argc == 4) {
         Logger::log(LogLevelDebug, "Attempting to connect to existing irc server");
         // TODO(Jelle) Connect server to other server.
-    }
+    } else {
     throw ArgumentException("Invalid amount of arguments provided", true);
+    }
 }
 
 ArgumentException::ArgumentException(const std::string& message, const bool& fatal) :
