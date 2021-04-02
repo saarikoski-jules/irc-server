@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/03/31 16:30:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 17:00:07 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,15 @@
 #include <fcntl.h>
 #include <string>
 #include "utils.h"
+
+#include "logger.h"
+#include "server_action.h"
+
+Socket::Socket(ServerAction* serverAction) :
+socketFd(-1),
+addr(),
+serverAction(serverAction) {
+}
 
 void Socket::bindAndListenToPort(const int& port) {
     struct sockaddr_in addr;
@@ -40,7 +49,7 @@ void Socket::bindAndListenToPort(const int& port) {
     socketFd = fd;
 }
 
-int Socket::openConnection() {
+void Socket::openConnection() {
     int addrlen;
     int clientFd;
 
@@ -48,35 +57,38 @@ int Socket::openConnection() {
     fcntl(socketFd, F_SETFL, O_NONBLOCK);
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
-    if (clientFd <= 0) {
+    if (clientFd >= 0) {
+        Logger::log(LogLevelInfo, "Recieved a connection request");
+        serverAction->type = ServerAction::NEW_CLIENT;
+        serverAction->clientFd = clientFd;
+    } else {
         throw SocketException("No connection request detected", false);
     }
-    return (clientFd);
 }
 
-std::string* Socket::receiveData(int sockfd) {
-    char* data_buffer;
+void Socket::receiveData(const int& clientFd) {
     int chars_read;
+    char data_buffer[MAX_MESSAGE_SIZE + 1];
 
-    data_buffer = new char[1024];
-    Utils::Mem::set(data_buffer, 0, 1024);
-    chars_read = read(sockfd, data_buffer, 1024);
-
+    Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
+    chars_read = read(clientFd, data_buffer, MAX_MESSAGE_SIZE);
+    // TODO(Jelle) See what happens when a message is longer than 512 bytes.
     if (chars_read > 0) {
-        std::string* data = new std::string(data_buffer);
-        delete[] data_buffer;
-        return (data);
+        serverAction->type = ServerAction::NEW_MESSAGE;
+        serverAction->clientFd = clientFd;
+        serverAction->message = data_buffer;
+        Logger::log(LogLevelDebug, "Received message from client:");
+        Logger::log(LogLevelDebug, serverAction->message);
     } else {
-        delete[] data_buffer;
         throw SocketException("No data received", false);
     }
 }
 
-void Socket::send_data(int sockfd, std::string msg) {
+void Socket::sendData(const int& clientFd, const std::string& msg) const {
     const char* cmsg = msg.c_str();
     const size_t msg_len = msg.length();
 
-    if (send(sockfd, cmsg, msg_len, 0) <= 0) {
+    if (send(clientFd, cmsg, msg_len, 0) <= 0) {
         throw SocketException("No data sent", false);
     }
 }
@@ -95,7 +107,7 @@ const bool& SocketException::isFatal() const {
 
 const char* SocketException::what() const throw() {
     if (isFatal()) {
-        return (std::string("Fatal argument exception: " + message).c_str());
+        return (std::string("Fatal socket exception: " + message).c_str());
     }
-    return (std::string("Argument exception: " + message).c_str());
+    return (std::string("Socket exception: " + message).c_str());
 }

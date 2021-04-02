@@ -19,6 +19,8 @@ SRCLST = main \
 		utils \
 		start_irc_server \
 		server \
+		server_action \
+		client \
 		logger \
 		string_conversions \
 
