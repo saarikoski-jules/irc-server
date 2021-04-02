@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 20:10:40 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 23:19:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,7 @@
 #include "socket.h"
 
 Server::Server(const uint16_t& port, const std::string& password) :
-action(),
-socket(&action),
+socket(&actions),
 clients() {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     try {
@@ -79,7 +78,7 @@ void Server::listenOnSocket() {
         // Fall through because we got a normal message.
     }
     for (std::vector<Client>::iterator i = clients.begin();
-    action.type == ServerAction::NO_ACTION && i != clients.end(); i++) {
+    actions.size() == 0 && i != clients.end(); i++) {
         try {
             const Client& client = *i;
             socket.receiveData(client.fd);
@@ -90,27 +89,34 @@ void Server::listenOnSocket() {
 }
 
 void Server::handleAction() {
-    if (action.type != ServerAction::NO_ACTION) {
-        switch (action.type) {
-        case ServerAction::NEW_CLIENT:
-            acceptNewClient();
-            break;
-        case ServerAction::NEW_MESSAGE:
-            // TODO(Jelle) Parse message and set correct type.
-            break;
-        case ServerAction::DISCONNECT_CLIENT:
-            deleteClient(action.clientFd);
-            break;
-        default:
-            Logger::log(LogLevelError, "Cannot handle unknown action");
-            break;
+    while (actions.size() > 0) {
+        ServerAction action = actions.front();
+
+        if (action.type != ServerAction::NO_ACTION) {
+            switch (action.type) {
+            case ServerAction::NEW_CLIENT:
+                acceptNewClient(action.clientFd);
+                actions.pop();
+                break;
+            case ServerAction::NEW_MESSAGE:
+                // TODO(Jelle) Parse message and set correct type.
+                actions.pop();
+                break;
+            case ServerAction::DISCONNECT_CLIENT:
+                deleteClient(action.clientFd);
+                actions.pop();
+                break;
+            default:
+                Logger::log(LogLevelError, "Cannot handle unknown action");
+                break;
+            }
+            action.type = ServerAction::NO_ACTION;
         }
-        action.type = ServerAction::NO_ACTION;
     }
 }
 
-void Server::acceptNewClient() {
-    clients.push_back(Client(action.clientFd));
+void Server::acceptNewClient(const int& clientFd) {
+    clients.push_back(Client(clientFd));
 }
 
 void Server::deleteClient(const int& clientFd) {
