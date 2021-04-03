@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include <string>
+#include <vector>
+
 void    *Utils::Mem::set(void *ptr, int c, size_t n) {
     unsigned char *ptr_copy;
 
@@ -10,4 +13,19 @@ void    *Utils::Mem::set(void *ptr, int c, size_t n) {
         n--;
     }
     return (static_cast<void *>(ptr));
+}
+
+std::vector<std::string> Utils::String::tokenize(const std::string& orig, const char* delim) {
+    std::vector<std::string> vec;
+
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    while (pos != std::string::npos)
+    {
+        pos = orig.find(delim, prev);
+        std::string sub = orig.substr(prev, pos - prev);
+        vec.push_back(sub);
+        prev = pos + 1;
+    }
+    return (vec);
 }
