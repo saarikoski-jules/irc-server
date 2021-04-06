@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 17:00:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 23:20:18 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 #include "logger.h"
 #include "server_action.h"
 
-Socket::Socket(ServerAction* serverAction) :
+Socket::Socket(std::queue<ServerAction>* actions) :
 socketFd(-1),
 addr(),
-serverAction(serverAction) {
+actions(actions) {
 }
 
 void Socket::bindAndListenToPort(const int& port) {
@@ -52,15 +52,19 @@ void Socket::bindAndListenToPort(const int& port) {
 void Socket::openConnection() {
     int addrlen;
     int clientFd;
+    ServerAction action;
 
     addrlen = sizeof(addr);
     fcntl(socketFd, F_SETFL, O_NONBLOCK);
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
+        fcntl(clientFd, F_SETFL, O_NONBLOCK);
+        action.clientFd = clientFd;
+        action.type = ServerAction::NEW_CLIENT;
+        actions->push(action);
+
         Logger::log(LogLevelInfo, "Recieved a connection request");
-        serverAction->type = ServerAction::NEW_CLIENT;
-        serverAction->clientFd = clientFd;
     } else {
         throw SocketException("No connection request detected", false);
     }
@@ -69,16 +73,25 @@ void Socket::openConnection() {
 void Socket::receiveData(const int& clientFd) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
+    ServerAction action;
 
     Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
     chars_read = read(clientFd, data_buffer, MAX_MESSAGE_SIZE);
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
     if (chars_read > 0) {
-        serverAction->type = ServerAction::NEW_MESSAGE;
-        serverAction->clientFd = clientFd;
-        serverAction->message = data_buffer;
+        action.clientFd = clientFd;
+        action.type = ServerAction::NEW_MESSAGE;
+        action.message = data_buffer;
+        actions->push(action);
+
         Logger::log(LogLevelDebug, "Received message from client:");
-        Logger::log(LogLevelDebug, serverAction->message);
+        Logger::log(LogLevelDebug, action.message);
+    } else if (chars_read == 0) {
+        action.clientFd = clientFd;
+        action.type = ServerAction::DISCONNECT_CLIENT;
+        actions->push(action);
+
+        Logger::log(LogLevelDebug, "read 0 chars, disconnecting client");
     } else {
         throw SocketException("No data received", false);
     }
