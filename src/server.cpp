@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 15:11:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:53:16 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,47 +89,12 @@ void Server::listenOnSocket() {
 }
 
 void Server::handleAction() {
-    MessageParser parse;
-    while (actions.size() > 0) {
-        ServerAction action = actions.front();
-
-        if (action.type != ServerAction::NO_ACTION) {
-            switch (action.type) {
-            case ServerAction::NEW_CLIENT:
-                acceptNewClient(action.clientFd);
-                actions.pop();
-                break;
-            case ServerAction::NEW_MESSAGE:
-                // TODO(Jelle) Parse message and set correct type.
-                parse.parse(action.message, clients);
-                actions.pop();
-                break;
-            case ServerAction::DISCONNECT_CLIENT:
-                deleteClient(action.clientFd);
-                actions.pop();
-                break;
-            default:
-                Logger::log(LogLevelError, "Cannot handle unknown action");
-                break;
-            }
-            action.type = ServerAction::NO_ACTION;
-        }
-    }
-}
-
-void Server::acceptNewClient(const int& clientFd) {
-    clients.push_back(Client(clientFd));
-}
-
-void Server::deleteClient(const int& clientFd) {
-    std::vector<Client>::iterator it = clients.begin();
-    while (it != clients.end()) {
-        if ((*it).fd == clientFd) {
-            Logger::log(LogLevelInfo, "Client disconnected");
-            clients.erase(it);
-            break;
-        }
-        it++;
+    while (!actions.empty()) {
+        IServerAction* action = actions.front();
+        Logger::log(LogLevelDebug, "here");
+        action->execute(clients);
+        delete action;
+        actions.pop();
     }
 }
 

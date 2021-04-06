@@ -24,7 +24,7 @@ SRCLST = main \
 		logger \
 		string_conversions \
 		message_parser \
-		IServerAction \
+		iserver_action \
 		action_factory \
 
 ################################################################################

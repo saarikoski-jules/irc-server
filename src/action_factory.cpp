@@ -6,27 +6,35 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 15:17:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:46:04 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "action_factory.h"
 
-IServerAction* actionFactory::nick(std::vector<std::string> params, const std::vector<Client>& clients) {
-    IServerAction* act = new ServerActionNick(clients, params);
-    //TODO(Jules): send numeric reply when needed
-    return (act);
+//TODO(Jules): send numeric reply when needed
+IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd) {
+    return (new ServerActionAccept(params, clientFd));
 }
 
+IServerAction* actionFactory::receive(std::vector<std::string> params, const int& clientFd) {
+    return (new ServerActionReceive(params, clientFd));
+}
 
-#include <iostream>
-IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const std::vector<Client>& clients) {
+IServerAction* actionFactory::disconnect(std::vector<std::string> params, const int& clientFd) {
+    return (new ServerActionDisconnect(params, clientFd));
+}
+
+IServerAction* actionFactory::nick(std::vector<std::string> params, const int& clientFd) {
+    return (new ServerActionNick(params, clientFd));
+}
+
+IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const int& clientFd) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
-        std::cout << actionFormats[i].type << " == " << cmd << std::endl;
         if (actionFormats[i].type == cmd) {
             if (params.size() >= (const size_t)actionFormats[i].requiredAmtParams && params.size() <= (const size_t)actionFormats[i].maxAmtParams) {
-                IServerAction* (actionFactory::*ac)(std::vector<std::string>, const std::vector<Client>&) = actionFormats[i].action;
-                return (this->*ac)(params, clients);
+                IServerAction* (actionFactory::*ac)(std::vector<std::string>, const int&) = actionFormats[i].action;
+                return (this->*ac)(params, clientFd);
             } else {
                 throw ActionFactoryException("command has a bad amount of params", false);
             }

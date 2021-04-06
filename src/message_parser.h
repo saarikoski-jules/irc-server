@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:18 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 14:08:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:00:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 class MessageParser {
  public:
-    void parse(const std::string& data, const std::vector<Client>& clients);
+    void parse(const std::string& data, const int& clientFd);
 };
 
 #endif  //  MESSAGEPARSER_H_

@@ -6,46 +6,49 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 14:14:00 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:49:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_ACTION_H_
 #define SERVER_ACTION_H_
 
+#include "iserver_action.h"
+
 #include <string>
-
-struct ServerAction {
-    enum Type {
-        NO_ACTION,
-        NEW_CLIENT,
-        NEW_MESSAGE,
-        DISCONNECT_CLIENT
-    };
-
-    ServerAction();
-    Type type;
-    int clientFd;
-    std::string message;
-};
-
-#include "IServerAction.h"
-#include "action_factory.h"
-
-class SserverAction: public IServerAction {
- public:
-    SserverAction(const std::vector<Client>& clients);
-    // actionType type;
-    void execute();
-    ~SserverAction() {};
-};
 
 class ServerActionNick: public IServerAction {
  public:
-    ServerActionNick(const std::vector<Client>& clients, std::vector<std::string> params);
-    // actionType type;
-    void execute();
+    ServerActionNick(std::vector<std::string> params, const int& clientFd);
+    void execute(std::vector<Client>& clients);
     ~ServerActionNick() {};
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionAccept: public IServerAction {
+ public:
+    ServerActionAccept(std::vector<std::string> params, const int& clientFd);
+    void execute(std::vector<Client>& clients);
+    ~ServerActionAccept() {};
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionReceive: public IServerAction {
+ public:
+    ServerActionReceive(std::vector<std::string> params, const int& clientFd);
+    void execute(std::vector<Client>& clients);
+    ~ServerActionReceive() {};
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionDisconnect: public IServerAction {
+ public:
+    ServerActionDisconnect(std::vector<std::string> params, const int& clientFd);
+    void execute(std::vector<Client>& clients);
+    ~ServerActionDisconnect() {};
  private:
     std::vector<std::string> params;
 };

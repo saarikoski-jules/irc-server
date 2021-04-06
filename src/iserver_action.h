@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   IServerAction.cpp                                  :+:    :+:            */
+/*   iserver_action.h                                   :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/06 11:44:15 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 12:39:37 by jsaariko      ########   odam.nl         */
+/*   Created: 2021/04/06 11:44:14 by jsaariko      #+#    #+#                 */
+/*   Updated: 2021/04/06 17:52:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "IServerAction.h"
+#ifndef ISERVERACTION_H_
+#define ISERVERACTION_H_
 
 #include <vector>
 
 #include "client.h"
 
-IServerAction::IServerAction(const std::vector<Client>& clients) :
-clients(clients) {}
-//TODO: change file name
+class IServerAction {
+ public:
+    IServerAction(const int& clientFd);
+    virtual void execute(std::vector<Client>&) = 0;
+    virtual ~IServerAction() {};
+ protected:
+    const int clientFd;
+};
+
+#endif  //  ISERVERACTION_H_

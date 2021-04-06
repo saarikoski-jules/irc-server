@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 23:20:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 15:58:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 class Socket {
  public:
-    explicit Socket(std::queue<ServerAction>* actions);
+    explicit Socket(std::queue<IServerAction*>* actions);
     void bindAndListenToPort(const int& port);
     void openConnection();
     void receiveData(const int& clientFd);
@@ -32,7 +32,7 @@ class Socket {
     Socket();
     int socketFd;
     struct sockaddr_in addr;
-    std::queue<ServerAction>* actions;
+    std::queue<IServerAction*>* actions;
 };
 
 class SocketException : public std::exception {
