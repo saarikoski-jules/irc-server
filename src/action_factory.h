@@ -6,14 +6,15 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 17:52:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 18:03:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ACTIONFACTORY_H_
-#define ACTIONFACTORY_H_
+#ifndef ACTION_FACTORY_H_
+#define ACTION_FACTORY_H_
 
 #include <string>
+#include <vector>
 
 #include "iserver_action.h"
 #include "server_action.h"
@@ -55,4 +56,4 @@ class ActionFactoryException: public std::exception {
     const std::string message;
 };
 
-#endif  // ACTIONFACTORY_H_
+#endif  // ACTION_FACTORY_H_

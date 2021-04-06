@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 17:46:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:58:43 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
+#include <vector>
 #include "utils.h"
 
 #include "logger.h"

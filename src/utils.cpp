@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 11:43:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 17:58:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ std::vector<std::string> Utils::String::tokenize(const std::string& orig, const 
 
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
-    while (pos != std::string::npos)
-    {
+    while (pos != std::string::npos) {
         pos = orig.find(delim, prev);
         std::string sub = orig.substr(prev, pos - prev);
         vec.push_back(sub);

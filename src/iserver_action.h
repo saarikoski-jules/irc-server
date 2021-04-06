@@ -6,12 +6,12 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:44:14 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 17:52:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 18:02:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ISERVERACTION_H_
-#define ISERVERACTION_H_
+#ifndef ISERVER_ACTION_H_
+#define ISERVER_ACTION_H_
 
 #include <vector>
 
@@ -19,11 +19,11 @@
 
 class IServerAction {
  public:
-    IServerAction(const int& clientFd);
+    explicit IServerAction(const int& clientFd);
     virtual void execute(std::vector<Client>&) = 0;
-    virtual ~IServerAction() {};
+    virtual ~IServerAction() {}
  protected:
     const int clientFd;
 };
 
-#endif  //  ISERVERACTION_H_
+#endif  //  ISERVER_ACTION_H_

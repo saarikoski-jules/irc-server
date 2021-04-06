@@ -6,22 +6,23 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 17:49:21 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 18:00:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_ACTION_H_
 #define SERVER_ACTION_H_
 
-#include "iserver_action.h"
-
 #include <string>
+#include <vector>
+
+#include "iserver_action.h"
 
 class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(std::vector<std::string> params, const int& clientFd);
     void execute(std::vector<Client>& clients);
-    ~ServerActionNick() {};
+    ~ServerActionNick() {}
  private:
     std::vector<std::string> params;
 };
@@ -30,7 +31,7 @@ class ServerActionAccept: public IServerAction {
  public:
     ServerActionAccept(std::vector<std::string> params, const int& clientFd);
     void execute(std::vector<Client>& clients);
-    ~ServerActionAccept() {};
+    ~ServerActionAccept() {}
  private:
     std::vector<std::string> params;
 };
@@ -39,7 +40,7 @@ class ServerActionReceive: public IServerAction {
  public:
     ServerActionReceive(std::vector<std::string> params, const int& clientFd);
     void execute(std::vector<Client>& clients);
-    ~ServerActionReceive() {};
+    ~ServerActionReceive() {}
  private:
     std::vector<std::string> params;
 };
@@ -48,7 +49,7 @@ class ServerActionDisconnect: public IServerAction {
  public:
     ServerActionDisconnect(std::vector<std::string> params, const int& clientFd);
     void execute(std::vector<Client>& clients);
-    ~ServerActionDisconnect() {};
+    ~ServerActionDisconnect() {}
  private:
     std::vector<std::string> params;
 };
