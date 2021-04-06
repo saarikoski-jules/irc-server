@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 12:25:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 15:11:11 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void Server::listenOnSocket() {
 }
 
 void Server::handleAction() {
+    MessageParser parse;
     while (actions.size() > 0) {
         ServerAction action = actions.front();
 
@@ -100,6 +101,7 @@ void Server::handleAction() {
                 break;
             case ServerAction::NEW_MESSAGE:
                 // TODO(Jelle) Parse message and set correct type.
+                parse.parse(action.message, clients);
                 actions.pop();
                 break;
             case ServerAction::DISCONNECT_CLIENT:
