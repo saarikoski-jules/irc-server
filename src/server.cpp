@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 23:19:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 12:25:42 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 #include "socket.h"
 
 Server::Server(const uint16_t& port, const std::string& password) :
-socket(&actions),
-clients() {
+clients(),
+socket(&actions) {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     try {
         validatePassword(password);

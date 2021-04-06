@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 22:58:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/06 12:14:16 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,20 @@
 #include "server_action.h"
 #include "socket.h"
 #include "client.h"
+#include "message_parser.h"
 
 class Server {
  public:
     Server(const uint16_t& port, const std::string& password);
     ~Server();
     void run();
+ protected:
+    std::vector<Client> clients;
  private:
     Server();
     std::queue<ServerAction> actions;
     Socket socket;
-    std::vector<Client> clients;
+    MessageParser parser;
     void validatePassword(std::string const& password) const;
     void openSocket(const uint16_t& port);
     void listenOnSocket();
