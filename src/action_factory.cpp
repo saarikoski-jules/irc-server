@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 17:57:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 15:04:20 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ IServerAction* actionFactory::disconnect(std::vector<std::string> params, const 
 
 IServerAction* actionFactory::nick(std::vector<std::string> params, const int& clientFd) {
     return (new ServerActionNick(params, clientFd));
+}
+
+IServerAction* actionFactory::user(std::vector<std::string> params, const int& clientFd) {
+    return (new ServerActionUser(params, clientFd));
 }
 
 IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const int& clientFd) {

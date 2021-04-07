@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 10:53:14 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 14:25:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void Socket::bindAndListenToPort(const int& port) {
     socketFd = fd;
 }
 
-void Socket::openConnection() {
+void Socket::checkNewConnections() {
     int addrlen;
     int clientFd;
     IServerAction* action;
@@ -64,14 +64,13 @@ void Socket::openConnection() {
         std::vector<std::string> vec;
         action = new ServerActionAccept(vec, clientFd);
         actions->push(action);
-
         Logger::log(LogLevelInfo, "Recieved a connection request");
     } else {
         throw SocketException("No connection request detected", false);
     }
 }
 
-void Socket::receiveData(const int& clientFd) {
+void Socket::checkConnectionAndNewDataFrom(const int& clientFd) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
     IServerAction *action;

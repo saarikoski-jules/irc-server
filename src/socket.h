@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 10:53:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 14:25:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ class Socket {
  public:
     explicit Socket(std::queue<IServerAction*>* actions);
     void bindAndListenToPort(const int& port);
-    void openConnection();
-    void receiveData(const int& clientFd);
+    void checkNewConnections();
+    void checkConnectionAndNewDataFrom(const int& clientFd);
     void sendData(const int& clientFd, const std::string& msg) const;
  private:
     Socket();
