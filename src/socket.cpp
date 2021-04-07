@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 09:58:23 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/07 10:53:14 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
+#include <vector>
 #include "utils.h"
 
 #include "logger.h"
 #include "server_action.h"
 
-Socket::Socket(std::queue<ServerAction>* actions) :
+Socket::Socket(std::queue<IServerAction*>* actions) :
 socketFd(-1),
 addr(),
 actions(actions) {
@@ -52,7 +53,7 @@ void Socket::bindAndListenToPort(const int& port) {
 void Socket::openConnection() {
     int addrlen;
     int clientFd;
-    ServerAction action;
+    IServerAction* action;
 
     addrlen = sizeof(addr);
     fcntl(socketFd, F_SETFL, O_NONBLOCK);
@@ -60,8 +61,8 @@ void Socket::openConnection() {
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
         fcntl(clientFd, F_SETFL, O_NONBLOCK);
-        action.clientFd = clientFd;
-        action.type = ServerAction::NEW_CLIENT;
+        std::vector<std::string> vec;
+        action = new ServerActionAccept(vec, clientFd);
         actions->push(action);
 
         Logger::log(LogLevelInfo, "Recieved a connection request");
@@ -73,22 +74,21 @@ void Socket::openConnection() {
 void Socket::receiveData(const int& clientFd) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
-    ServerAction action;
+    IServerAction *action;
 
     Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
     chars_read = read(clientFd, data_buffer, MAX_MESSAGE_SIZE);
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
+    std::vector<std::string> vec;
     if (chars_read > 0) {
-        action.clientFd = clientFd;
-        action.type = ServerAction::NEW_MESSAGE;
-        action.message = data_buffer;
+        vec.push_back(data_buffer);
+        action = new ServerActionReceive(vec, clientFd);
         actions->push(action);
 
         Logger::log(LogLevelDebug, "Received message from client:");
-        Logger::log(LogLevelDebug, action.message);
+        Logger::log(LogLevelDebug, data_buffer);
     } else if (chars_read == 0) {
-        action.clientFd = clientFd;
-        action.type = ServerAction::DISCONNECT_CLIENT;
+        action = new ServerActionDisconnect(vec, clientFd);
         actions->push(action);
 
         Logger::log(LogLevelDebug, "read 0 chars, disconnecting client");

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 18:55:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 10:51:54 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,46 @@
 #define SERVER_ACTION_H_
 
 #include <string>
+#include <vector>
 
-struct ServerAction {
-    enum Type {
-        NO_ACTION,
-        NEW_CLIENT,
-        NEW_MESSAGE,
-        DISCONNECT_CLIENT
-    };
+#include "iserver_action.h"
+// #include "server.h"
+class Server;
 
-    ServerAction();
-    Type type;
-    int clientFd;
-    std::string message;
+class ServerActionNick: public IServerAction {
+ public:
+    ServerActionNick(std::vector<std::string> params, const int& clientFd);
+    void execute(Server*);
+    ~ServerActionNick() {}
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionAccept: public IServerAction {
+ public:
+    ServerActionAccept(std::vector<std::string> params, const int& clientFd);
+    void execute(Server*);
+    ~ServerActionAccept() {}
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionReceive: public IServerAction {
+ public:
+    ServerActionReceive(std::vector<std::string> params, const int& clientFd);
+    void execute(Server*);
+    ~ServerActionReceive() {}
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionDisconnect: public IServerAction {
+ public:
+    ServerActionDisconnect(std::vector<std::string> params, const int& clientFd);
+    void execute(Server*);
+    ~ServerActionDisconnect() {}
+ private:
+    std::vector<std::string> params;
 };
 
 #endif  // SERVER_ACTION_H_

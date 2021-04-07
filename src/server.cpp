@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 10:00:10 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/07 10:51:00 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 #include "socket.h"
 
 Server::Server(const uint16_t& port, const std::string& password) :
-socket(&actions),
-clients() {
+clients(),
+socket(&actions) {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     try {
         validatePassword(password);
@@ -89,29 +89,11 @@ void Server::listenOnSocket() {
 }
 
 void Server::handleAction() {
-    while (actions.size() > 0) {
-        ServerAction action = actions.front();
-
-        if (action.type != ServerAction::NO_ACTION) {
-            switch (action.type) {
-            case ServerAction::NEW_CLIENT:
-                acceptNewClient(action.clientFd);
-                actions.pop();
-                break;
-            case ServerAction::NEW_MESSAGE:
-                // TODO(Jelle) Parse message and set correct type.
-                actions.pop();
-                break;
-            case ServerAction::DISCONNECT_CLIENT:
-                deleteClient(action.clientFd);
-                actions.pop();
-                break;
-            default:
-                Logger::log(LogLevelError, "Cannot handle unknown action");
-                break;
-            }
-            action.type = ServerAction::NO_ACTION;
-        }
+    while (!actions.empty()) {
+        IServerAction* action = actions.front();
+        action->execute(this);
+        delete action;
+        actions.pop();
     }
 }
 
@@ -129,6 +111,10 @@ void Server::deleteClient(const int& clientFd) {
         }
         it++;
     }
+}
+
+void Server::addNewAction(IServerAction* action) {
+    actions.push(action);
 }
 
 ServerException::ServerException(const std::string& message, const bool& fatal) :
