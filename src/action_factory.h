@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 18:03:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 11:12:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ typedef struct actionFormat_s {
     int maxAmtParams;
 }               actionFormat_t;
 
-const size_t actionFormatLen = 4;
-
+static const size_t actionFormatLen = 4;
 static actionFormat_t const actionFormats[] = {
     {&actionFactory::accept, "ACCEPT", 0, 0},
     {&actionFactory::receive, "RECEIVE", 1, 1},

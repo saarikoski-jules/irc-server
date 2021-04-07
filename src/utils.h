@@ -11,6 +11,7 @@ namespace Mem {
 }
 namespace String {
     std::vector<std::string> tokenize(const std::string& orig, const char* delim);
-}}
+}
+}
 
 #endif  // UTILS_H_
