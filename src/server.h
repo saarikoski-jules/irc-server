@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 18:59:22 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 09:56:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 #include <cinttypes>
 #include <exception>
 
@@ -29,14 +30,14 @@ class Server {
     void run();
  private:
     Server();
-    ServerAction action;
+    std::queue<ServerAction> actions;
     Socket socket;
     std::vector<Client> clients;
     void validatePassword(std::string const& password) const;
     void openSocket(const uint16_t& port);
     void listenOnSocket();
     void handleAction();
-    void acceptNewClient();
+    void acceptNewClient(const int& clientFd);
     void deleteClient(const int& clientFd);
 };
 
