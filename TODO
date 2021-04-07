@@ -2,3 +2,4 @@
 - Change client vector to a map
 - Create some structure to store channels and info about them
 - Use select whenever reading/writing
+- Change all actions to be built through the factory
