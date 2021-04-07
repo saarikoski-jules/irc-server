@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/02 17:00:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 20:05:54 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void Socket::openConnection() {
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
+        fcntl(clientFd, F_SETFL, O_NONBLOCK);
         Logger::log(LogLevelInfo, "Recieved a connection request");
         serverAction->type = ServerAction::NEW_CLIENT;
         serverAction->clientFd = clientFd;
@@ -79,6 +80,10 @@ void Socket::receiveData(const int& clientFd) {
         serverAction->message = data_buffer;
         Logger::log(LogLevelDebug, "Received message from client:");
         Logger::log(LogLevelDebug, serverAction->message);
+    } else if (chars_read == 0) {
+        Logger::log(LogLevelDebug, "read 0 chars, disconnecting client");
+        serverAction->type = ServerAction::DISCONNECT_CLIENT;
+        serverAction->clientFd = clientFd;
     } else {
         throw SocketException("No data received", false);
     }

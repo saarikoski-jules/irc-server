@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 16:38:31 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 18:55:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ struct ServerAction {
     enum Type {
         NO_ACTION,
         NEW_CLIENT,
-        NEW_MESSAGE
+        NEW_MESSAGE,
+        DISCONNECT_CLIENT
     };
 
     ServerAction();

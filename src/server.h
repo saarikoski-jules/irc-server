@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 16:53:53 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/02 18:59:22 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,11 @@ class Server {
     Socket socket;
     std::vector<Client> clients;
     void validatePassword(std::string const& password) const;
-    void openSocket(const int& port);
+    void openSocket(const uint16_t& port);
     void listenOnSocket();
     void handleAction();
     void acceptNewClient();
+    void deleteClient(const int& clientFd);
 };
 
 class ServerException : public std::exception {
