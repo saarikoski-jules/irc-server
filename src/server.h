@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 17:46:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 10:43:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ class Server {
     Server(const uint16_t& port, const std::string& password);
     ~Server();
     void run();
+    void acceptNewClient(const int& clientFd);
+    void deleteClient(const int& clientFd);
+    void addNewAction(IServerAction* action);
  protected:
     std::vector<Client> clients;
  private:

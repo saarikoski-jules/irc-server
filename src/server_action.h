@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 18:00:45 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 10:22:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,13 @@
 #include <vector>
 
 #include "iserver_action.h"
+// #include "server.h"
+class Server;
 
 class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(std::vector<std::string> params, const int& clientFd);
-    void execute(std::vector<Client>& clients);
+    void execute(Server*);
     ~ServerActionNick() {}
  private:
     std::vector<std::string> params;
@@ -30,7 +32,7 @@ class ServerActionNick: public IServerAction {
 class ServerActionAccept: public IServerAction {
  public:
     ServerActionAccept(std::vector<std::string> params, const int& clientFd);
-    void execute(std::vector<Client>& clients);
+    void execute(Server*);
     ~ServerActionAccept() {}
  private:
     std::vector<std::string> params;
@@ -39,7 +41,7 @@ class ServerActionAccept: public IServerAction {
 class ServerActionReceive: public IServerAction {
  public:
     ServerActionReceive(std::vector<std::string> params, const int& clientFd);
-    void execute(std::vector<Client>& clients);
+    void execute(Server*);
     ~ServerActionReceive() {}
  private:
     std::vector<std::string> params;
@@ -48,7 +50,7 @@ class ServerActionReceive: public IServerAction {
 class ServerActionDisconnect: public IServerAction {
  public:
     ServerActionDisconnect(std::vector<std::string> params, const int& clientFd);
-    void execute(std::vector<Client>& clients);
+    void execute(Server*);
     ~ServerActionDisconnect() {}
  private:
     std::vector<std::string> params;

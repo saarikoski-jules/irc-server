@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 17:58:43 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 09:43:35 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void Socket::receiveData(const int& clientFd) {
     chars_read = read(clientFd, data_buffer, MAX_MESSAGE_SIZE);
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
     std::vector<std::string> vec;
-    Logger::log(LogLevelDebug, "receive data");
     if (chars_read > 0) {
         vec.push_back(data_buffer);
         action = new ServerActionReceive(vec, clientFd);

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:44:14 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/06 18:02:56 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 10:23:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 
 #include <vector>
 
-#include "client.h"
+// #include "server.h"
+class Server;
 
 class IServerAction {
  public:
     explicit IServerAction(const int& clientFd);
-    virtual void execute(std::vector<Client>&) = 0;
+    virtual void execute(Server*) = 0;
     virtual ~IServerAction() {}
  protected:
     const int clientFd;

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/06 17:53:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 10:36:49 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,30 @@ void Server::listenOnSocket() {
 void Server::handleAction() {
     while (!actions.empty()) {
         IServerAction* action = actions.front();
-        Logger::log(LogLevelDebug, "here");
-        action->execute(clients);
+        action->execute(this);
         delete action;
         actions.pop();
     }
+}
+
+void Server::acceptNewClient(const int& clientFd) {
+    clients.push_back(Client(clientFd));
+}
+
+void Server::deleteClient(const int& clientFd) {
+    std::vector<Client>::iterator it = clients.begin();
+    while (it != clients.end()) {
+        if ((*it).fd == clientFd) {
+            Logger::log(LogLevelInfo, "Client disconnected");
+            clients.erase(it);
+            break;
+        }
+        it++;
+    }
+}
+
+void Server::addNewAction(IServerAction* action) {
+    actions.push(action);
 }
 
 ServerException::ServerException(const std::string& message, const bool& fatal) :

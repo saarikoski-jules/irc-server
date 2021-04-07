@@ -7,10 +7,12 @@
 
 #include "utils.h"
 #include "action_factory.h"
+#include "iserver_action.h"
 
 #include "logger.h"
 
-void MessageParser::parse(const std::string& data, const int& clientFd) {
+std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd) {
+    std::vector<IServerAction*> actions;
     std::vector<std::string> commands = Utils::String::tokenize(data, "\n");
     if (*commands.end() == "") {
         commands.pop_back();
@@ -24,6 +26,8 @@ void MessageParser::parse(const std::string& data, const int& clientFd) {
         cmd.erase(cmd.begin());
         try {
             action = factory.newAction(cmdType, cmd, clientFd);
+            actions.push_back(action);
+            Logger::log(LogLevelDebug, "created new action");
         } catch (const ActionFactoryException& e) {
             if (e.isFatal() == false) {
                 Logger::log(LogLevelDebug, "Invalid new action");
@@ -31,4 +35,5 @@ void MessageParser::parse(const std::string& data, const int& clientFd) {
         }
         commands.erase(commands.begin());
     }
+    return (actions);
 }
