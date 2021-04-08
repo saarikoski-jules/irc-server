@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 13:40:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 15:50:38 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,26 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include <iostream>
+#include <algorithm>
 
 #include "utils.h"
 #include "action_factory.h"
 #include "iserver_action.h"
-
 #include "logger.h"
 
-
-#include <iostream>
-#include <algorithm>
-
-struct isNotAlpha {
+struct MessageParser::isNotAlpha {
     bool operator()(char c) {
         return !std::isalpha(c);
     }
 };
 
-struct isNotDigit {
+struct MessageParser::isNotDigit {
     bool operator()(char c) {
         return !std::isdigit(c);
     }
 };
 
-void MessageParser::validCommand(const std::string& cmd) const {
+void MessageParser::validCommand(std::string cmd) const {
     if (std::find_if(cmd.begin(), cmd.end(), isNotAlpha()) != cmd.end()) {
         if (std::find_if(cmd.begin(), cmd.end(), isNotDigit()) != cmd.end() && cmd.length() != 3) {
             throw MessageParserException("Invalid command", false);
@@ -51,21 +46,20 @@ std::vector<std::string> MessageParser::validParams(std::vector<std::string>::it
     std::vector<std::string> params;
 
     for (; i != end; i++) {
-        Logger::log(LogLevelDebug, std::string("current param checking: " + *i));
         if ((*i)[0] == ':') {
             if (i + 1 != end) {
-                Logger::log(LogLevelDebug, "failing with last param: " + *(i + 1));
                 throw MessageParserException("Invalid parameters", false);
             }
             (*i).erase(0, 1);
         }
         if ((*i) != "") {
-            //TODO(Jules): doesnt contain SPACE or NUL or CR or LF,
+            // TODO(Jules): doesnt contain SPACE or NUL or CR or LF,
             params.push_back(*i);
         }
     }
     return (params);
 }
+
 
 IServerAction* MessageParser::createActionFromMessage(const std::string& message, const int& clientFd) {
     IServerAction* action;
@@ -73,6 +67,7 @@ IServerAction* MessageParser::createActionFromMessage(const std::string& message
     std::vector<std::string> params;
 
     actionFactory factory;
+
     std::vector<std::string> splitMsg = Utils::String::tokenize(message, " ");
     std::vector<std::string>::iterator i = splitMsg.begin();
 
@@ -100,14 +95,13 @@ std::vector<IServerAction*> MessageParser::parse(const std::string& data, const 
     std::vector<IServerAction*> actions;
     std::vector<std::string> commands = Utils::String::tokenize(data, "\r\n");
 
-    while (commands.size() != 0) {
+    for(std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
-            IServerAction* action = createActionFromMessage(commands[0], clientFd);
+            IServerAction* action = createActionFromMessage(*i, clientFd);
             actions.push_back(action);
         } catch (const MessageParserException& e) {
             Logger::log(LogLevelDebug, "Couldn't generate action from message");
         }
-        commands.erase(commands.begin());
     }
     return (actions);
 }

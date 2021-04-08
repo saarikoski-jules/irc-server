@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:18 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 13:24:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 14:22:20 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ class MessageParser {
  private:
     std::vector<std::string> validParams(std::vector<std::string>::iterator i, std::vector<std::string>::iterator end) const;
     IServerAction* createActionFromMessage(const std::string& command, const int& clientFd);
-    void validCommand(const std::string& cmd) const;
+    void validCommand(std::string cmd) const;
+    struct isNotAlpha;
+    struct isNotDigit;
 };
 
 class MessageParserException: public std::exception {
