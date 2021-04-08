@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 15:04:20 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/08 11:20:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ IServerAction* actionFactory::user(std::vector<std::string> params, const int& c
     return (new ServerActionUser(params, clientFd));
 }
 
+#include <iostream>
 IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const int& clientFd) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
+        std::cout << "real " << params.size() << " required " << actionFormats[i].requiredAmtParams << " format type \'" << actionFormats[i].type << "\' real type \'" << cmd << "\'" << std::endl;
         if (actionFormats[i].type == cmd) {
             if (params.size() >= (const size_t)actionFormats[i].requiredAmtParams
             && params.size() <= (const size_t)actionFormats[i].maxAmtParams) {

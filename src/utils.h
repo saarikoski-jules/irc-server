@@ -10,7 +10,7 @@ namespace Mem {
     void    *set(void *ptr, int c, size_t n);
 }
 namespace String {
-    std::vector<std::string> tokenize(const std::string& orig, const char* delim);
+    std::vector<std::string> tokenize(const std::string& orig, const std::string& delim);
 }
 }
 

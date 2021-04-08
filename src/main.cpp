@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:04:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 10:44:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 10:50:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 int main(int argc, char** argv) {
     try {
         Logger::changeLoggingDestinationTo("./logs/latest.log");
+        Logger::changeMaxLogLevelTo(LogLevelDebug);
         Logger::log(LogLevelInfo, "Program started");
         startIrcServerFromArguments(argc, argv);
     } catch (const ArgumentException& e) {
