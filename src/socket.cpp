@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 13:31:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 16:33:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void Socket::checkConnectionAndNewDataFrom(const int& clientFd) {
         Logger::log(LogLevelDebug, "Received message from client:");
         Logger::log(LogLevelDebug, data_buffer);
     } else if (chars_read == 0) {
+        // if client ever sends eof (^D), we'll detect a disconnect.
         action = new ServerActionDisconnect(vec, clientFd);
         actions->push(action);
 

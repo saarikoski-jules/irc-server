@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 15:50:38 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 15:53:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ std::vector<std::string> MessageParser::validParams(std::vector<std::string>::it
     }
     return (params);
 }
-
 
 IServerAction* MessageParser::createActionFromMessage(const std::string& message, const int& clientFd) {
     IServerAction* action;
