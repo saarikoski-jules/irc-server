@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 10:51:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/07 14:59:45 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,15 @@ class ServerActionNick: public IServerAction {
     ServerActionNick(std::vector<std::string> params, const int& clientFd);
     void execute(Server*);
     ~ServerActionNick() {}
+ private:
+    std::vector<std::string> params;
+};
+
+class ServerActionUser: public IServerAction {
+ public:
+    ServerActionUser(std::vector<std::string> params, const int& clientFd);
+    void execute(Server*);
+    ~ServerActionUser() {}
  private:
     std::vector<std::string> params;
 };

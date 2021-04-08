@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 17:56:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 09:56:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,13 @@ void Server::run() {
 
 void Server::listenOnSocket() {
     try {
-        socket.openConnection();
+        socket.checkNewConnections();
     } catch (const SocketException& e) {
         // Fall through because we got a normal message.
     }
     if (!clients.empty()) {
         try {
-            socket.receiveData(clients);
+            socket.checkConnectionAndNewDataFrom(clients);
         } catch (const SocketException& e) {
             // Fall through because we got a normal message.
         }
@@ -109,6 +109,39 @@ void Server::deleteClient(const int& clientFd) {
         }
         it++;
     }
+}
+
+Client* Server::getClientByFd(const int& clientFd) {
+    std::vector<Client>::iterator it = clients.begin();
+    for (; it != clients.end(); it++) {
+        const Client& client = *it;
+        if (client.fd == clientFd) {
+            return &(*it);
+        }
+    }
+    throw std::invalid_argument("Could not find the clientFd in list of clients");
+}
+
+bool Server::nicknameExists(const std::string& nickName) {
+    std::vector<Client>::iterator it = clients.begin();
+    for (; it != clients.end(); it++) {
+        const Client& client = *it;
+        if (client.nickName == nickName) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
+bool Server::usernameExists(const std::string& userName) {
+    std::vector<Client>::iterator it = clients.begin();
+    for (; it != clients.end(); it++) {
+        const Client& client = *it;
+        if (client.userName == userName) {
+            return (true);
+        }
+    }
+    return (false);
 }
 
 void Server::addNewAction(IServerAction* action) {

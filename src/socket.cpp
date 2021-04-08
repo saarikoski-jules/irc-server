@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 17:57:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 10:00:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void Socket::bindAndListenToPort(const int& port) {
     fcntl(socketFd, F_SETFL, O_NONBLOCK);
 }
 
-void Socket::openConnection() {
+void Socket::checkNewConnections() {
     int addrlen;
     int clientFd;
     IServerAction* action;
@@ -65,7 +65,6 @@ void Socket::openConnection() {
         std::vector<std::string> vec;
         action = new ServerActionAccept(vec, clientFd);
         actions->push(action);
-
         Logger::log(LogLevelInfo, "Recieved a connection request");
     } else {
         throw SocketException("No connection request detected", false);
@@ -78,10 +77,9 @@ int Socket::createFdSet(const std::vector<Client>& clients, fd_set* set) {
     int maxFd = 0;
 
     for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
-        Client cli = *i;
-        FD_SET(cli.fd, &fdSet);
-        if (cli.fd > maxFd) {
-            maxFd = cli.fd;
+        FD_SET((*i).fd, &fdSet);
+        if ((*i).fd > maxFd) {
+            maxFd = (*i).fd;
         }
     }
     *set = fdSet;
@@ -96,19 +94,18 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
 
     for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
         Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
-        Client cli = *i;
-        if (FD_ISSET(cli.fd, &readSet)) {
-            chars_read = read(cli.fd, data_buffer, MAX_MESSAGE_SIZE);
+        if (FD_ISSET((*i).fd, &readSet)) {
+            chars_read = read((*i).fd, data_buffer, MAX_MESSAGE_SIZE);
             std::vector<std::string> vec;
             if (chars_read > 0) {
                 vec.push_back(data_buffer);
-                action = factory.newAction("RECEIVE", vec, cli.fd);
+                action = factory.newAction("RECEIVE", vec, (*i).fd);
                 actions->push(action);
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
             } else {
-                action = factory.newAction("DISCONNECT", vec, cli.fd);
+                action = factory.newAction("DISCONNECT", vec, (*i).fd);
                 actions->push(action);
             }
         }
@@ -116,7 +113,7 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
 }
 
-void Socket::receiveData(const std::vector<Client>& clients) {
+void Socket::checkConnectionAndNewDataFrom(const std::vector<Client>& clients) {
     struct timeval waitFor;
     fd_set readSet;
 
