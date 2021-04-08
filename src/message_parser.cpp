@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 13:30:35 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/08 13:40:57 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,9 @@ std::vector<std::string> MessageParser::validParams(std::vector<std::string>::it
                 Logger::log(LogLevelDebug, "failing with last param: " + *(i + 1));
                 throw MessageParserException("Invalid parameters", false);
             }
-        } else if ((*i) != "") {
+            (*i).erase(0, 1);
+        }
+        if ((*i) != "") {
             //TODO(Jules): doesnt contain SPACE or NUL or CR or LF,
             params.push_back(*i);
         }
@@ -83,9 +85,13 @@ IServerAction* MessageParser::createActionFromMessage(const std::string& message
     validCommand(*i);
     cmd = *i;
     i++;
-
     params = validParams(i, splitMsg.end());
-    action = factory.newAction(cmd, params, clientFd);
+
+    try {
+        action = factory.newAction(cmd, params, clientFd);
+    } catch (const ActionFactoryException& e) {
+        throw MessageParserException(e.what(), e.isFatal());
+    }
     Logger::log(LogLevelDebug, "created new action");
     return (action);
 }
