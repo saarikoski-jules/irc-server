@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:26:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:40:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <vector>
 
 // TODO(Jules): send numeric reply when needed
-//TODO(Jules): store minNumParams into each action
 IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd, const std::string&) {
     return (new ServerActionAccept(params, clientFd));
 }
