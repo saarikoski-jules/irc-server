@@ -3,3 +3,8 @@
 - Create some structure to store channels and info about them
 - Use select whenever reading/writing
 - Change all actions to be built through the factory
+
+
+- Max 15 paramaters
+
+- Nickname collision with s2s communication

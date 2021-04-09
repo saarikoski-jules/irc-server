@@ -22,6 +22,7 @@ SRCLST = main \
 		server_action \
 		client \
 		logger \
+		reply \
 		string_conversions \
 		message_parser \
 		iserver_action \
