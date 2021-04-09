@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 15:56:27 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/09 18:18:39 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,17 @@
 #include <cinttypes>
 #include <exception>
 
-#include "server_action.h"
 #include "socket.h"
 #include "client.h"
 #include "message_parser.h"
+#include "server_action.h"
 
 class Server {
  public:
     Server(const uint16_t& port, const std::string& password);
     ~Server();
     void run();
+    void sendReplyToClient(const int& clientFd, const std::string& message);
     void acceptNewClient(const int& clientFd);
     void deleteClient(const int& clientFd);
     Client* getClientByFd(const int& clientFd);

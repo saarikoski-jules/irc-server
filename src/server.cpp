@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/08 09:56:31 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:24:55 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,11 @@ void Server::run() {
         handleAction();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+}
+
+void Server::sendReplyToClient(const int& clientFd, const std::string& message) {
+    // TODO(Jelle) Append the correct servername when it's available.
+    socket.sendData(clientFd, ":SERVERNAME " + message + "\r\n");
 }
 
 void Server::listenOnSocket() {

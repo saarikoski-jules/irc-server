@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 16:41:33 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/09 18:25:58 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 
+#include "reply.h"
 #include "logger.h"
 #include "server.h"
 
@@ -23,27 +24,43 @@ IServerAction(clientFd),
 params(params) {}
 
 void ServerActionNick::execute(Server* server) {
-    Logger::log(LogLevelInfo, "server action nick");
+    Logger::log(LogLevelInfo, "Executing server action NICK");
     try {
-        const std::string& newNickName = params[0];
-
-        if (newNickName.empty() == false
-        && server->nicknameExists(newNickName) == false) {
-            Client* client = server->getClientByFd(clientFd);
-            client->nickName = newNickName;
-            if (client->userName.empty() == false) {
-                client->registered = true;
-            }
-            std::cout << *client << std::endl;
+        client = server->getClientByFd(clientFd);
+        if (params.size() >= 1) {
+            newNickName = &params[0];
+            handleNickNameChange(server);
         } else {
-            Logger::log(LogLevelError, "Something went wrong while setting nickname");
-            // server->sendErrorToClient(ERR_NONICKNAMEGIVEN, clientFd);
+            handleNoNicknameGiven(server);
         }
-        // TODO(Jelle) Handle server error's
-        // TODO(Jelle) Handle server2server communication
     } catch (const std::out_of_range& e) {
+        Logger::log(LogLevelError, "No valid fd found in NICK action");
         // TODO(Jelle) Handle non valid client fd
     }
+}
+
+void ServerActionNick::handleNickNameChange(Server* server) const {
+    if (server->nicknameExists(*newNickName) == false) {
+        client->nickName = *newNickName;
+        if (client->userName.empty() == false) {
+            client->registered = true;
+        }
+    } else {
+        handleNickNameInUse(server);
+    }
+}
+
+void ServerActionNick::handleNickNameInUse(Server* server) const {
+    std::vector<std::string> params;
+    params.push_back(client->nickName);
+    params.push_back(*newNickName);
+    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
+}
+
+void ServerActionNick::handleNoNicknameGiven(Server* server) const {
+    std::vector<std::string> params;
+    params.push_back(client->nickName);
+    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
 ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd) :
@@ -64,7 +81,7 @@ void ServerActionUser::execute(Server* server) {
             client->hostName = newHostName;
             client->serverName = newServerName;
             client->realName = newRealName;
-            if (client->nickName.empty() == false) {
+            if (client->nickName != "*") {
                 client->registered = true;
             }
             std::cout << *client << std::endl;
