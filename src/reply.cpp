@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 17:43:45 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/09 18:34:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <sstream>
 
 std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::string> params) {
-    (void)params;
     std::stringstream ss;
 
     ss << code << " " << params[0] << " ";
