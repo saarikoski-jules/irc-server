@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 12:50:28 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 16:39:52 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/09 17:55:50 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 Client::Client(const int fd) :
 fd(fd),
+nickName("*"),
 registered(false) {
 }
 
