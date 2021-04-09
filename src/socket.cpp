@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/07 14:25:37 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/08 10:00:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 #include "logger.h"
 #include "server_action.h"
+#include "action_factory.h"
 
 Socket::Socket(std::queue<IServerAction*>* actions) :
 socketFd(-1),
@@ -48,6 +49,7 @@ void Socket::bindAndListenToPort(const int& port) {
         throw SocketException("Failed to listen to socket", true);
     }
     socketFd = fd;
+    fcntl(socketFd, F_SETFL, O_NONBLOCK);
 }
 
 void Socket::checkNewConnections() {
@@ -56,7 +58,6 @@ void Socket::checkNewConnections() {
     IServerAction* action;
 
     addrlen = sizeof(addr);
-    fcntl(socketFd, F_SETFL, O_NONBLOCK);
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
@@ -70,38 +71,80 @@ void Socket::checkNewConnections() {
     }
 }
 
-void Socket::checkConnectionAndNewDataFrom(const int& clientFd) {
+int Socket::createFdSet(const std::vector<Client>& clients, fd_set* set) {
+    fd_set fdSet;
+    FD_ZERO(&fdSet);
+    int maxFd = 0;
+
+    for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
+        FD_SET((*i).fd, &fdSet);
+        if ((*i).fd > maxFd) {
+            maxFd = (*i).fd;
+        }
+    }
+    *set = fdSet;
+    return (maxFd);
+}
+
+void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
     IServerAction *action;
+    actionFactory factory;
 
-    Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
-    chars_read = read(clientFd, data_buffer, MAX_MESSAGE_SIZE);
+    for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
+        Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
+        if (FD_ISSET((*i).fd, &readSet)) {
+            chars_read = read((*i).fd, data_buffer, MAX_MESSAGE_SIZE);
+            std::vector<std::string> vec;
+            if (chars_read > 0) {
+                vec.push_back(data_buffer);
+                action = factory.newAction("RECEIVE", vec, (*i).fd);
+                actions->push(action);
+
+                Logger::log(LogLevelDebug, "Received message from client:");
+                Logger::log(LogLevelDebug, data_buffer);
+            } else {
+                action = factory.newAction("DISCONNECT", vec, (*i).fd);
+                actions->push(action);
+            }
+        }
+    }
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
-    std::vector<std::string> vec;
-    if (chars_read > 0) {
-        vec.push_back(data_buffer);
-        action = new ServerActionReceive(vec, clientFd);
-        actions->push(action);
+}
 
-        Logger::log(LogLevelDebug, "Received message from client:");
-        Logger::log(LogLevelDebug, data_buffer);
-    } else if (chars_read == 0) {
-        action = new ServerActionDisconnect(vec, clientFd);
-        actions->push(action);
+void Socket::checkConnectionAndNewDataFrom(const std::vector<Client>& clients) {
+    struct timeval waitFor;
+    fd_set readSet;
 
-        Logger::log(LogLevelDebug, "read 0 chars, disconnecting client");
+    waitFor.tv_sec = 0;
+    waitFor.tv_usec = 100000;
+
+    int maxFd = createFdSet(clients, &readSet);
+    int status = select(maxFd + 1, &readSet, NULL, NULL, &waitFor);
+
+    if (status != 0) {
+        readFromFds(clients, readSet);
     } else {
-        throw SocketException("No data received", false);
+        throw SocketException("Select timeout", false);
     }
 }
 
 void Socket::sendData(const int& clientFd, const std::string& msg) const {
     const char* cmsg = msg.c_str();
     const size_t msg_len = msg.length();
+    struct timeval waitFor;
+    fd_set writeSet;
 
-    if (send(clientFd, cmsg, msg_len, 0) <= 0) {
-        throw SocketException("No data sent", false);
+    FD_ZERO(&writeSet);
+    FD_SET(clientFd, &writeSet);
+    waitFor.tv_sec = 0;
+    waitFor.tv_usec = 0;
+
+    if (select(clientFd + 1, NULL, &writeSet, NULL, &waitFor) > 0) {
+        if (send(clientFd, cmsg, msg_len, 0) <= 0) {
+            throw SocketException("No data sent", false);
+        }
     }
 }
 
