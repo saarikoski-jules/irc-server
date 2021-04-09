@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:01:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:27:38 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,26 @@ void MessageParser::validCommand(std::string cmd) const {
     }
 }
 
-//TODO(Jules): store prefix for checking
+#include <iostream>
+std::string MessageParser::genPrefix(std::string& message, std::string::iterator* it) const {
+    std::string::iterator end = message.begin();
+
+    if (*end == ':') {
+        end = std::find(message.begin(), message.end(), ' ');
+        std::string prefix(message.begin() + 1, end);
+        *it = end;
+        (*it)++;
+        std::cout << "\'" << prefix << "\'" << std::endl;
+        return (prefix);
+    }
+    return ("");
+}
+
 std::string MessageParser::genCommand(std::string& message, std::string::iterator* it) const {
-    std::string::iterator start = message.begin();
     std::string::iterator end;
 
-    if (*start == ':') {
-        start = std::find(message.begin(), message.end(), ' ');
-        start++;
-    }
-    end = std::find(start, message.end(), ' ');
-    std::string cmd(start, end);
+    end = std::find(*it, message.end(), ' ');
+    std::string cmd(*it, end);
     validCommand(cmd);
 
     *it = end;
@@ -74,6 +83,7 @@ std::vector<std::string> MessageParser::genParams(std::string& message, std::str
 }
 
 IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd) {
+    std::string prefix;
     std::string cmd;
     std::vector<std::string> params;
 
@@ -82,11 +92,12 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
 
     IServerAction* action;
 
+    prefix = genPrefix(message, &it);
     cmd = genCommand(message, &it);
     params = genParams(message, &it);
 
     try {
-        action = factory.newAction(cmd, params, clientFd);
+        action = factory.newAction(cmd, params, clientFd, prefix);
     } catch (const ActionFactoryException& e) {
         throw MessageParserException(e.what(), e.isFatal());
     }

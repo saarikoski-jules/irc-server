@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:18 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 17:56:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:19:08 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ class MessageParser {
     std::vector<IServerAction*> parse(const std::string& data, const int& clientFd);
  private:
     IServerAction* createActionFromMessage(std::string command, const int& clientFd);
+    std::string genPrefix(std::string& message, std::string::iterator* it) const;
     std::string genCommand(std::string& msg, std::string::iterator* it) const;
     std::vector<std::string> genParams(std::string& msg, std::string::iterator* it) const;
     void validCommand(std::string cmd) const;

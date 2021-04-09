@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/08 10:58:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:21:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 #include "logger.h"
 #include "server.h"
 
-ServerActionNick::ServerActionNick(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionNick::ServerActionNick(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, prefix),
 params(params) {}
 
 void ServerActionNick::execute(Server* server) {
@@ -46,8 +46,8 @@ void ServerActionNick::execute(Server* server) {
     }
 }
 
-ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, prefix),
 params(params) {}
 
 void ServerActionUser::execute(Server* server) {

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/07 14:59:45 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/09 18:21:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Server;
 
 class ServerActionNick: public IServerAction {
  public:
-    ServerActionNick(std::vector<std::string> params, const int& clientFd);
+    ServerActionNick(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
     void execute(Server*);
     ~ServerActionNick() {}
  private:
@@ -31,7 +31,7 @@ class ServerActionNick: public IServerAction {
 
 class ServerActionUser: public IServerAction {
  public:
-    ServerActionUser(std::vector<std::string> params, const int& clientFd);
+    ServerActionUser(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
     void execute(Server*);
     ~ServerActionUser() {}
  private:
