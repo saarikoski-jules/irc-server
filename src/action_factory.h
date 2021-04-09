@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:11:21 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:39:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,15 @@ class actionFactory {
 typedef struct actionFormat_s {
     IServerAction* (actionFactory::*action)(std::vector<std::string>, const int& clientFd, const std::string& prefix);
     std::string type;
-    int requiredAmtParams;
-    int maxAmtParams;
 }               actionFormat_t;
 
 static const size_t actionFormatLen = 5;
 static actionFormat_t const actionFormats[] = {
-    {&actionFactory::accept, "ACCEPT", 0, 0},
-    {&actionFactory::receive, "RECEIVE", 1, 1},
-    {&actionFactory::disconnect, "DISCONNECT", 0, 0},
-    {&actionFactory::nick, "NICK", 1, 2},
-    {&actionFactory::user, "USER", 4, 4},
+    {&actionFactory::accept, "ACCEPT"},
+    {&actionFactory::receive, "RECEIVE"},
+    {&actionFactory::disconnect, "DISCONNECT"},
+    {&actionFactory::nick, "NICK"},
+    {&actionFactory::user, "USER"},
 };
 
 class ActionFactoryException: public std::exception {

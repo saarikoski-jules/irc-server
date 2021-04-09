@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:44:15 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:24:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:37:38 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,12 @@
 
 #include "client.h"
 
-IServerAction::IServerAction(const int& clientFd) :
+IServerAction::IServerAction(const int& clientFd, const size_t& requiredParams) :
 clientFd(clientFd),
-prefix("") {}
+prefix(""),
+requiredParams(requiredParams) {}
 
-IServerAction::IServerAction(const int& clientFd, const std::string& prefix) :
+IServerAction::IServerAction(const int& clientFd, const std::string& prefix, const size_t& requiredParams) :
 clientFd(clientFd),
-prefix(prefix) {}
+prefix(prefix),
+requiredParams(requiredParams) {}

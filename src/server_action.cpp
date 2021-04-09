@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 18:21:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:38:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "server.h"
 
 ServerActionNick::ServerActionNick(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
-IServerAction(clientFd, prefix),
+IServerAction(clientFd, prefix, 1),
 params(params) {}
 
 void ServerActionNick::execute(Server* server) {
@@ -47,7 +47,7 @@ void ServerActionNick::execute(Server* server) {
 }
 
 ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
-IServerAction(clientFd, prefix),
+IServerAction(clientFd, prefix, 4),
 params(params) {}
 
 void ServerActionUser::execute(Server* server) {
@@ -80,7 +80,7 @@ void ServerActionUser::execute(Server* server) {
 }
 
 ServerActionAccept::ServerActionAccept(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+IServerAction(clientFd, 0),
 params(params) {}
 
 void ServerActionAccept::execute(Server* server) {
@@ -89,7 +89,7 @@ void ServerActionAccept::execute(Server* server) {
 }
 
 ServerActionReceive::ServerActionReceive(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+IServerAction(clientFd, 1),
 params(params) {}
 
 void ServerActionReceive::execute(Server* server) {
@@ -103,7 +103,7 @@ void ServerActionReceive::execute(Server* server) {
 }
 
 ServerActionDisconnect::ServerActionDisconnect(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+IServerAction(clientFd, 0),
 params(params) {}
 
 void ServerActionDisconnect::execute(Server* server) {
