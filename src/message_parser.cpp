@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 15:53:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 18:01:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,44 +42,48 @@ void MessageParser::validCommand(std::string cmd) const {
     }
 }
 
-std::vector<std::string> MessageParser::validParams(std::vector<std::string>::iterator i, std::vector<std::string>::iterator end) const {
-    std::vector<std::string> params;
+//TODO(Jules): store prefix for checking
+std::string MessageParser::genCommand(std::string& message, std::string::iterator* it) const {
+    std::string::iterator start = message.begin();
+    std::string::iterator end;
 
-    for (; i != end; i++) {
-        if ((*i)[0] == ':') {
-            if (i + 1 != end) {
-                throw MessageParserException("Invalid parameters", false);
-            }
-            (*i).erase(0, 1);
-        }
-        if ((*i) != "") {
-            // TODO(Jules): doesnt contain SPACE or NUL or CR or LF,
-            params.push_back(*i);
-        }
+    if (*start == ':') {
+        start = std::find(message.begin(), message.end(), ' ');
+        start++;
     }
+    end = std::find(start, message.end(), ' ');
+    std::string cmd(start, end);
+    validCommand(cmd);
+
+    *it = end;
+    (*it)++;
+    return (cmd);
+}
+
+std::vector<std::string> MessageParser::genParams(std::string& message, std::string::iterator* it) const {
+    std::vector<std::string> params;
+    std::string str(*it, message.end());
+    std::string::size_type len = str.find(" :");
+
+    params = Utils::String::tokenize(str, len, " ");
+
+    std::string final(str, len + 2);
+    params.push_back(final);
+    *it = message.end();
     return (params);
 }
 
-IServerAction* MessageParser::createActionFromMessage(const std::string& message, const int& clientFd) {
-    IServerAction* action;
+IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd) {
     std::string cmd;
     std::vector<std::string> params;
 
     actionFactory factory;
+    std::string::iterator it = message.begin();
 
-    std::vector<std::string> splitMsg = Utils::String::tokenize(message, " ");
-    std::vector<std::string>::iterator i = splitMsg.begin();
+    IServerAction* action;
 
-    if (splitMsg[0][0] == ':') {
-        i++;
-    }
-    while ((*i) == "") {
-        i++;
-    }
-    validCommand(*i);
-    cmd = *i;
-    i++;
-    params = validParams(i, splitMsg.end());
+    cmd = genCommand(message, &it);
+    params = genParams(message, &it);
 
     try {
         action = factory.newAction(cmd, params, clientFd);
@@ -92,9 +96,14 @@ IServerAction* MessageParser::createActionFromMessage(const std::string& message
 
 std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd) {
     std::vector<IServerAction*> actions;
-    std::vector<std::string> commands = Utils::String::tokenize(data, "\r\n");
+    #ifndef DEBUG
+        std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), "\r\n");
+    #elif
+        std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), "\n");
+    #endif
+    // TODO(Jules): remove from final version
 
-    for(std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
+    for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
             IServerAction* action = createActionFromMessage(*i, clientFd);
             actions.push_back(action);

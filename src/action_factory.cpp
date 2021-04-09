@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 13:54:23 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 17:59:55 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <vector>
 
 // TODO(Jules): send numeric reply when needed
+//TODO(Jules): store minNumParams into each action
 IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd) {
     return (new ServerActionAccept(params, clientFd));
 }
@@ -35,15 +36,17 @@ IServerAction* actionFactory::user(std::vector<std::string> params, const int& c
     return (new ServerActionUser(params, clientFd));
 }
 
+//TODO: do not check number of actions here
+#include <iostream>//
 IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const int& clientFd) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
         if (actionFormats[i].type == cmd) {
-            if (params.size() >= (const size_t)actionFormats[i].requiredAmtParams
-            && params.size() <= (const size_t)actionFormats[i].maxAmtParams) {
+            // if (params.size() >= (const size_t)actionFormats[i].requiredAmtParams
+            // && params.size() <= (const size_t)actionFormats[i].maxAmtParams) {
                 return (this->*actionFormats[i].action)(params, clientFd);
-            } else {
-                throw ActionFactoryException("command has a bad amount of params", false);
-            }
+            // } else {
+                // throw ActionFactoryException("command has a bad amount of params", false);
+            // }
         }
     }
     throw ActionFactoryException("invalid action", false);
