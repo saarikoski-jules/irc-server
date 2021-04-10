@@ -6,14 +6,12 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 19:06:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 12:46:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 //TODO:
-// Crashes when passing any string
 // Doublecheck if all clients are disconnected when receiving message from one
-// Solidify parser/actionFactory constructurs (should prefix parameter always exist? I need it for prototype, but not all function types)
 
 #include "socket.h"
 
@@ -66,9 +64,10 @@ void Socket::checkNewConnections() {
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
+        actionFactory factory;
         fcntl(clientFd, F_SETFL, O_NONBLOCK);
         std::vector<std::string> vec;
-        action = new ServerActionAccept(vec, clientFd);
+        action = factory.newAction("ACCEPT", vec, clientFd);
         actions->push(action);
         Logger::log(LogLevelInfo, "Recieved a connection request");
     } else {
@@ -104,14 +103,14 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
             std::vector<std::string> vec;
             if (chars_read > 0) {
                 vec.push_back(data_buffer);
-                action = factory.newAction("RECEIVE", vec, (*i).fd, "");
+                action = factory.newAction("RECEIVE", vec, (*i).fd);
                 actions->push(action);
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
             // } else (chars_read == 0) {
             } else {
-                action = factory.newAction("DISCONNECT", vec, (*i).fd, "");
+                action = factory.newAction("DISCONNECT", vec, (*i).fd);
                 actions->push(action);
             }
         }

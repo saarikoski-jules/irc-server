@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:40:45 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 12:07:20 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 #include <vector>
 
 // TODO(Jules): send numeric reply when needed
-IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd, const std::string&) {
-    return (new ServerActionAccept(params, clientFd));
+IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+    return (new ServerActionAccept(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::receive(std::vector<std::string> params, const int& clientFd, const std::string&) {
-    return (new ServerActionReceive(params, clientFd));
+IServerAction* actionFactory::receive(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+    return (new ServerActionReceive(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::disconnect(std::vector<std::string> params, const int& clientFd, const std::string&) {
-    return (new ServerActionDisconnect(params, clientFd));
+IServerAction* actionFactory::disconnect(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+    return (new ServerActionDisconnect(params, clientFd, prefix));
 }
 
 IServerAction* actionFactory::nick(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {

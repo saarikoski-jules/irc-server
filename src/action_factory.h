@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 18:39:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 12:06:36 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@
 class actionFactory {
  private:
  public:
-    IServerAction* accept(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
-    IServerAction* receive(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
-    IServerAction* disconnect(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
-    IServerAction* nick(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
-    IServerAction* user(std::vector<std::string> params, const int& clientFd, const std::string& prefix);
-    IServerAction* newAction(std::string cmd, std::vector<std::string> params, const int& clientFd, const std::string& prefix);
+    IServerAction* accept(std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
+    IServerAction* receive(std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
+    IServerAction* disconnect(std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
+    IServerAction* nick(std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
+    IServerAction* user(std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
+    IServerAction* newAction(std::string cmd, std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
 };
 
 typedef struct actionFormat_s {
