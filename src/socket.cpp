@@ -6,9 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 19:02:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/09 19:06:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
+//TODO:
+// Crashes when passing any string
+// Doublecheck if all clients are disconnected when receiving message from one
+// Solidify parser/actionFactory constructurs (should prefix parameter always exist? I need it for prototype, but not all function types)
 
 #include "socket.h"
 
