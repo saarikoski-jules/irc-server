@@ -6,12 +6,9 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 12:46:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 12:52:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
-
-//TODO:
-// Doublecheck if all clients are disconnected when receiving message from one
 
 #include "socket.h"
 
@@ -108,7 +105,6 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
-            // } else (chars_read == 0) {
             } else {
                 action = factory.newAction("DISCONNECT", vec, (*i).fd);
                 actions->push(action);
