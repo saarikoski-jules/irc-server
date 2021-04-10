@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 12:07:20 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 13:53:17 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,45 @@
 
 #include <vector>
 
+const size_t actionFactory::actionFormatLen = 5;
+
+const actionFormat_t actionFactory::actionFormats[] = {
+    {&actionFactory::accept, "ACCEPT"},
+    {&actionFactory::receive, "RECEIVE"},
+    {&actionFactory::disconnect, "DISCONNECT"},
+    {&actionFactory::nick, "NICK"},
+    {&actionFactory::user, "USER"},
+};
+
 // TODO(Jules): send numeric reply when needed
-IServerAction* actionFactory::accept(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::accept(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
     return (new ServerActionAccept(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::receive(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::receive(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
     return (new ServerActionReceive(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::disconnect(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::disconnect(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
     return (new ServerActionDisconnect(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::nick(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::nick(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
     return (new ServerActionNick(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::user(std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::user(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
     return (new ServerActionUser(params, clientFd, prefix));
 }
 
-IServerAction* actionFactory::newAction(std::string cmd, std::vector<std::string> params, const int& clientFd, const std::string& prefix) {
+IServerAction* actionFactory::newAction(
+    std::string cmd, std::vector<std::string> params,
+    const int& clientFd, const std::string& prefix) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
         if (actionFormats[i].type == cmd) {
             return (this->*actionFormats[i].action)(params, clientFd, prefix);

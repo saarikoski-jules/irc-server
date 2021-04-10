@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/10 12:43:58 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 13:07:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 #include "logger.h"
 #include "server.h"
 
-ServerActionNick::ServerActionNick(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+ServerActionNick::ServerActionNick(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
 IServerAction(clientFd, 1, prefix),
 params(params) {}
 
@@ -63,7 +64,8 @@ void ServerActionNick::handleNoNicknameGiven(Server* server) const {
     server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
-ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+ServerActionUser::ServerActionUser(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
 IServerAction(clientFd, 4, prefix),
 params(params) {}
 
@@ -96,7 +98,8 @@ void ServerActionUser::execute(Server* server) {
     }
 }
 
-ServerActionAccept::ServerActionAccept(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+ServerActionAccept::ServerActionAccept(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
 IServerAction(clientFd, 0, prefix),
 params(params) {}
 
@@ -105,7 +108,8 @@ void ServerActionAccept::execute(Server* server) {
     server->acceptNewClient(clientFd);
 }
 
-ServerActionReceive::ServerActionReceive(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+ServerActionReceive::ServerActionReceive(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
 IServerAction(clientFd, 1, prefix),
 params(params) {}
 
@@ -119,7 +123,8 @@ void ServerActionReceive::execute(Server* server) {
     }
 }
 
-ServerActionDisconnect::ServerActionDisconnect(std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+ServerActionDisconnect::ServerActionDisconnect(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
 IServerAction(clientFd, 0, prefix),
 params(params) {}
 

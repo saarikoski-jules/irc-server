@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 11:56:00 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 13:10:39 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@ std::string MessageParser::genCommand(std::string* message, std::string::iterato
     return (cmd);
 }
 
-std::vector<std::string> MessageParser::genParams(std::string* message, std::string::iterator* it) const {
+std::vector<std::string> MessageParser::genParams(
+    std::string* message, std::string::iterator* it) const {
     std::vector<std::string> params;
     std::string str(*it, message->end());
     std::string::size_type len = str.find(" :");

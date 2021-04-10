@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/09 16:04:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 13:08:35 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void    *Utils::Mem::set(void *ptr, int c, size_t n) {
     return (static_cast<void *>(ptr));
 }
 
-std::vector<std::string> Utils::String::tokenize(const std::string& orig, const std::string::size_type end, const std::string& delim) {
+std::vector<std::string> Utils::String::tokenize(
+    const std::string& orig, const std::string::size_type end, const std::string& delim) {
     std::vector<std::string> vec;
 
     std::string::size_type pos = 0;
