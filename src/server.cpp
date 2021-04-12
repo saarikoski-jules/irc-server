@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 18:24:55 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/12 15:50:36 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 Server::Server(const uint16_t& port, const std::string& password) :
 clients(),
+channels(),
 socket(&actions) {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     try {
@@ -147,6 +148,22 @@ bool Server::usernameExists(const std::string& userName) {
         }
     }
     return (false);
+}
+
+Channel* Server::createNewChannel(const std::string& name) {
+    Channel newChannel(name);
+    channels.insert(std::pair<std::string, Channel>(name, newChannel));
+    std::map<std::string, Channel>::iterator it = channels.find(name);
+    return (&((*it).second));
+}
+
+Channel* Server::findChannel(const std::string& name) {
+    std::map<std::string, Channel>::iterator it = channels.find(name);
+
+    if (it != channels.end()) {
+        return (&(*it).second);
+    } 
+    throw std::out_of_range("Channel not found");
 }
 
 void Server::addNewAction(IServerAction* action) {

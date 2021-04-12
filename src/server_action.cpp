@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/10 13:07:56 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/12 19:31:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "reply.h"
 #include "logger.h"
 #include "server.h"
+#include "utils.h"
 
 ServerActionNick::ServerActionNick(
     std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
@@ -95,6 +96,60 @@ void ServerActionUser::execute(Server* server) {
         // TODO(Jelle) Handle server2server communication
     } catch (const std::out_of_range& e) {
         // TODO(Jelle) Handle non valid client fd
+    }
+}
+
+ServerActionJoin::ServerActionJoin(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 1, prefix),
+params(params) {}
+
+Channel* ServerActionJoin::getChannel(const std::string& name, Server* server) {
+    Channel* chan;
+    if (name[0] != '&' && name[0] != '#') {
+        //invalid chan
+        std::vector<std::string> replyParams;
+        replyParams.push_back(name);
+        server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams));
+        throw std::exception(); //TODO(Jules): handle better
+    }
+    try {
+        chan = server->findChannel(name);
+    } catch (std::exception &e) {
+        chan = server->createNewChannel(name);
+    }
+    return (chan);
+}
+
+void ServerActionJoin::addUserToChannel(Channel* chan, const std::string& key, Server* server) {
+    try {
+        chan->addClient(server->getClientByFd(clientFd), key);
+    } catch (ChannelException& e) {
+        if (!e.isFatal()) {
+            std::vector<std::string> replyParams;
+            server->sendReplyToClient(clientFd, e.what());//TODO(Jules): distinguish between errors
+        }
+    }
+}
+
+void ServerActionJoin::execute(Server* server) {
+    Logger::log(LogLevelInfo, "server action join");
+    Channel* chan;
+    std::vector<std::string> chans = Utils::String::tokenize(params[0], params[0].length(), ",");
+    std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");//TODO(Jules): error check this
+    for (size_t i = 0; i < chans.size(); i++) {
+        std::string key;
+        if (keys.size() < i) {
+            key = keys[i];
+        } else {
+            key = "";
+        }
+        try {
+            chan = getChannel(chans[i], server);
+        } catch (const std::exception& e) {
+            continue;
+        }
+        addUserToChannel(chan, key, server);
     }
 }
 

@@ -27,6 +27,7 @@ SRCLST = main \
 		message_parser \
 		iserver_action \
 		action_factory \
+		channel \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################
