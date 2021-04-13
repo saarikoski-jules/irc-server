@@ -8,6 +8,7 @@
 
 Channel::Channel(const std::string& name, Client* chanop) :
 name(name),
+topicIsSet(false),
 chanop(chanop),
 clients() {
     if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
@@ -19,7 +20,7 @@ clients() {
 }
 
 void Channel::addClient(Client* client, const std::string& key) {
-    (void)chanop;
+    (void)chanop;//TODO: remove
     if (this->key == "" || this->key == key) {
         clients.push_back(client);
     } else {

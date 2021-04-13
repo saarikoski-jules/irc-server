@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 12:29:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 18:34:54 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class ServerActionJoin: public IServerAction {
     void execute(Server*);
     ~ServerActionJoin() {}
  private:
-    void getChannel(const std::string& name, Server* server, const std::string& key);
+    Channel* getChannel(const std::string& name, Server* server, const std::string& key);
     std::vector<std::string> params;
 };
 

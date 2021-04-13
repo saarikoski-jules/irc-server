@@ -12,6 +12,8 @@ class Channel {
     Channel(const std::string& name, Client* chanop);
     const std::string name;
     void addClient(Client* client, const std::string& key);
+    bool topicIsSet;
+    std::string topic;
  private:
     Client* chanop;
     std::vector<Client *> clients;

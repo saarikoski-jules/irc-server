@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 17:25:53 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 19:02:22 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,19 +104,21 @@ ServerActionJoin::ServerActionJoin(
 IServerAction(clientFd, 1, prefix),
 params(params) {}
 
-void ServerActionJoin::getChannel(const std::string& name, Server* server, const std::string& key) {
+Channel* ServerActionJoin::getChannel(const std::string& name, Server* server, const std::string& key) {
+    Channel* chan;
     try {
-        Channel* chan = server->findChannel(name);
+        chan = server->findChannel(name);
         chan->addClient(server->getClientByFd(clientFd), key);
     } catch (const std::exception &e) {
-        server->createNewChannel(name, clientFd);
+        chan = server->createNewChannel(name, clientFd);
     }
+    return (chan);
 }
 
 void ServerActionJoin::execute(Server* server) {
     Logger::log(LogLevelInfo, "server action join");
+    std::cout << params.size() << std::endl;
     if (params.size() < 1) {
-        std::cout << "do i get here??" << std::endl;
         std::vector<std::string> errParams;
         errParams.push_back("JOIN");
         std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
@@ -132,7 +134,17 @@ void ServerActionJoin::execute(Server* server) {
             key = "";
         }
         try {
-            getChannel(chans[i], server, key);
+            Channel* chan = getChannel(chans[i], server, key);
+            std::string reply;
+            std::vector<std::string> replyParams;
+            replyParams.push_back(chan->name);
+            if (chan->topicIsSet) {
+                replyParams.push_back(chan->topic);
+                reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
+            } else {
+                reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
+            }
+            server->sendReplyToClient(clientFd, reply);
             //TODO(Jules): Send RPL_TOPIC
         } catch (const ChannelException& e) {
             server->sendReplyToClient(clientFd, e.what());

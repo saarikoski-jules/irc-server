@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 17:19:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 18:34:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@ enum ReplyCode {
     ERR_NICKNAMEINUSE = 433,
     ERR_BADCHANNELKEY = 475,
     ERR_NOSUCHCHANNEL = 403,
-    ERR_NEEDMOREPARAMS = 461
+    ERR_NEEDMOREPARAMS = 461,
+    RPL_NOTOPIC = 331,
+    RPL_TOPIC = 332
 };
 
 class ReplyFactory {
