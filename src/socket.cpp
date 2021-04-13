@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/08 10:00:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/10 12:52:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ void Socket::checkNewConnections() {
     clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
     if (clientFd >= 0) {
+        actionFactory factory;
         fcntl(clientFd, F_SETFL, O_NONBLOCK);
         std::vector<std::string> vec;
-        action = new ServerActionAccept(vec, clientFd);
+        action = factory.newAction("ACCEPT", vec, clientFd);
         actions->push(action);
         Logger::log(LogLevelInfo, "Recieved a connection request");
     } else {

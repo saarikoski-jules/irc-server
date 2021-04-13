@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 18:25:58 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/10 13:07:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 #include "logger.h"
 #include "server.h"
 
-ServerActionNick::ServerActionNick(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionNick::ServerActionNick(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 1, prefix),
 params(params) {}
 
 void ServerActionNick::execute(Server* server) {
@@ -63,8 +64,9 @@ void ServerActionNick::handleNoNicknameGiven(Server* server) const {
     server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
-ServerActionUser::ServerActionUser(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionUser::ServerActionUser(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 4, prefix),
 params(params) {}
 
 void ServerActionUser::execute(Server* server) {
@@ -96,8 +98,9 @@ void ServerActionUser::execute(Server* server) {
     }
 }
 
-ServerActionAccept::ServerActionAccept(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionAccept::ServerActionAccept(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 0, prefix),
 params(params) {}
 
 void ServerActionAccept::execute(Server* server) {
@@ -105,8 +108,9 @@ void ServerActionAccept::execute(Server* server) {
     server->acceptNewClient(clientFd);
 }
 
-ServerActionReceive::ServerActionReceive(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionReceive::ServerActionReceive(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 1, prefix),
 params(params) {}
 
 void ServerActionReceive::execute(Server* server) {
@@ -119,8 +123,9 @@ void ServerActionReceive::execute(Server* server) {
     }
 }
 
-ServerActionDisconnect::ServerActionDisconnect(std::vector<std::string> params, const int& clientFd) :
-IServerAction(clientFd),
+ServerActionDisconnect::ServerActionDisconnect(
+    std::vector<std::string> params, const int& clientFd, const std::string& prefix) :
+IServerAction(clientFd, 0, prefix),
 params(params) {}
 
 void ServerActionDisconnect::execute(Server* server) {
