@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 12:29:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 17:25:53 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,27 +105,25 @@ IServerAction(clientFd, 1, prefix),
 params(params) {}
 
 void ServerActionJoin::getChannel(const std::string& name, Server* server, const std::string& key) {
-    Channel* chan;
-    //TODO: name can be max 200 chars. how to error check?
-    if (name[0] != '&' && name[0] != '#') {
-        //invalid chan
-        std::vector<std::string> replyParams;
-        replyParams.push_back(name);
-        std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
-        throw ChannelException(reply, false);
-    }
     try {
-        chan = server->findChannel(name);
+        Channel* chan = server->findChannel(name);
         chan->addClient(server->getClientByFd(clientFd), key);
     } catch (const std::exception &e) {
-        chan = server->createNewChannel(name, clientFd);
+        server->createNewChannel(name, clientFd);
     }
 }
 
 void ServerActionJoin::execute(Server* server) {
     Logger::log(LogLevelInfo, "server action join");
+    if (params.size() < 1) {
+        std::cout << "do i get here??" << std::endl;
+        std::vector<std::string> errParams;
+        errParams.push_back("JOIN");
+        std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
+        server->sendReplyToClient(clientFd, errReply);
+    }
     std::vector<std::string> chans = Utils::String::tokenize(params[0], params[0].length(), ",");
-    std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");//TODO(Jules): error check this
+    std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");
     for (size_t i = 0; i < chans.size(); i++) {
         std::string key;
         if (keys.size() < i) {
@@ -135,6 +133,7 @@ void ServerActionJoin::execute(Server* server) {
         }
         try {
             getChannel(chans[i], server, key);
+            //TODO(Jules): Send RPL_TOPIC
         } catch (const ChannelException& e) {
             server->sendReplyToClient(clientFd, e.what());
         }

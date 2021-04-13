@@ -10,15 +10,22 @@ Channel::Channel(const std::string& name, Client* chanop) :
 name(name),
 chanop(chanop),
 clients() {
+    if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
+        std::vector<std::string> replyParams;
+        replyParams.push_back(name);
+        std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);//TODO(Jules): is this the appropriate error message?
+        throw ChannelException(reply, false);
+    }
 }
 
 void Channel::addClient(Client* client, const std::string& key) {
-    if (this->key == key) {
+    (void)chanop;
+    if (this->key == "" || this->key == key) {
         clients.push_back(client);
     } else {
         std::vector<std::string> errorParams;
         errorParams.push_back(name);
-        throw ChannelException(ReplyFactory::newReply(ERR_NOSUCHCHANNEL, errorParams), false);
+        throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
     }
 }
 

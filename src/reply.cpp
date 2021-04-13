@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/12 18:43:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 17:30:58 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         ss << ":Cannot join channel (+k)";
     case ERR_NOSUCHCHANNEL:
         ss << ":No such channel";
+    case ERR_NEEDMOREPARAMS:
+        ss << ":Not enough parameters";
     default:
         break;
     }
