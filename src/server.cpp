@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/12 15:50:36 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 12:02:17 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,8 +150,9 @@ bool Server::usernameExists(const std::string& userName) {
     return (false);
 }
 
-Channel* Server::createNewChannel(const std::string& name) {
-    Channel newChannel(name);
+Channel* Server::createNewChannel(const std::string& name, const int& clientFd) {
+    Client* chanop = getClientByFd(clientFd);
+    Channel newChannel(name, chanop);
     channels.insert(std::pair<std::string, Channel>(name, newChannel));
     std::map<std::string, Channel>::iterator it = channels.find(name);
     return (&((*it).second));

@@ -9,10 +9,11 @@
 
 class Channel {
  public:
-    Channel(const std::string& name);
+    Channel(const std::string& name, Client* chanop);
     const std::string name;
     void addClient(Client* client, const std::string& key);
  private:
+    Client* chanop;
     std::vector<Client *> clients;
     std::string key;
 };

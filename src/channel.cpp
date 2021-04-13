@@ -6,8 +6,9 @@
 #include "client.h"
 #include "reply.h"
 
-Channel::Channel(const std::string& name) :
+Channel::Channel(const std::string& name, Client* chanop) :
 name(name),
+chanop(chanop),
 clients() {
 }
 

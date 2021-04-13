@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/12 15:47:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 12:01:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Server {
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     void addNewAction(IServerAction* action);
-    Channel* createNewChannel(const std::string& name);
+    Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
  protected:
     std::vector<Client> clients;
