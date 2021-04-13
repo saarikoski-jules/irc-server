@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 13:10:39 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/13 15:10:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,14 +102,11 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
         prefix = genPrefix(&message, &it);
         cmd = genCommand(&message, &it);
         params = genParams(&message, &it);
-    } catch (std::exception& e) {
-        throw MessageParserException(e.what(), false);
-    }
-
-    try {
         action = factory.newAction(cmd, params, clientFd, prefix);
     } catch (const ActionFactoryException& e) {
         throw MessageParserException(e.what(), e.isFatal());
+    } catch (const std::exception& e) {
+        throw MessageParserException(e.what(), false);
     }
     Logger::log(LogLevelDebug, "created new action");
     return (action);
