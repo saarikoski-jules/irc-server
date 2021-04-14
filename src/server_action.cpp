@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 16:29:40 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 18:05:57 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,13 @@
 #include "server.h"
 
 ServerActionNick::ServerActionNick(
-    std::vector<std::string> params, const int& clientFd, const Client* cli, const std::string& prefix) :
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 1, cli, prefix),
 params(params) {}
 
 void ServerActionNick::execute() {
     Logger::log(LogLevelInfo, "Executing server action NICK");
     try {
-        client = server->getClientByFd(clientFd);
         if (params.size() >= 1) {
             newNickName = &params[0];
             handleNickNameChange();
@@ -42,9 +41,9 @@ void ServerActionNick::execute() {
 
 void ServerActionNick::handleNickNameChange() const {
     if (server->nicknameExists(*newNickName) == false) {
-        client->nickName = *newNickName;
-        if (client->userName.empty() == false) {
-            client->registered = true;
+        cli->nickName = *newNickName;
+        if (cli->userName.empty() == false) {
+            cli->registered = true;
         }
     } else {
         handleNickNameInUse();
@@ -53,40 +52,38 @@ void ServerActionNick::handleNickNameChange() const {
 
 void ServerActionNick::handleNickNameInUse() const {
     std::vector<std::string> params;
-    params.push_back(client->nickName);
+    params.push_back(cli->nickName);
     params.push_back(*newNickName);
     server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {
     std::vector<std::string> params;
-    params.push_back(client->nickName);
+    params.push_back(cli->nickName);
     server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
 ServerActionUser::ServerActionUser(
-    std::vector<std::string> params, const int& clientFd, const Client* cli, const std::string& prefix) :
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 4, cli, prefix),
 params(params) {}
 
 void ServerActionUser::execute() {
     Logger::log(LogLevelInfo, "server action accept");
     try {
-       const std::string& newUserName = params[0];
-       const std::string& newHostName = params[1];
-       const std::string& newServerName = params[2];
-       const std::string& newRealName = params[3];
-
+        const std::string& newUserName = params[0];
+        const std::string& newHostName = params[1];
+        const std::string& newServerName = params[2];
+        const std::string& newRealName = params[3];
         if (server->usernameExists(newUserName) == false) {
-            Client* client = server->getClientByFd(clientFd);
-            client->userName = newUserName;
-            client->hostName = newHostName;
-            client->serverName = newServerName;
-            client->realName = newRealName;
-            if (client->nickName != "*") {
-                client->registered = true;
+            cli->userName = newUserName;
+            cli->hostName = newHostName;
+            cli->serverName = newServerName;
+            cli->realName = newRealName;
+            if (cli->nickName != "*") {
+                cli->registered = true;
             }
-            std::cout << *client << std::endl;
+            std::cout << *cli << std::endl;
         } else {
             Logger::log(LogLevelError, "Something went wrong while setting user info");
             // server->sendErrorToClient(ERR_NONICKNAMEGIVEN, clientFd);
@@ -99,7 +96,7 @@ void ServerActionUser::execute() {
 }
 
 ServerActionAccept::ServerActionAccept(
-    std::vector<std::string> params, const int& clientFd, const Client* cli, const std::string& prefix) :
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 0, cli, prefix),
 params(params) {}
 
@@ -109,7 +106,7 @@ void ServerActionAccept::execute() {
 }
 
 ServerActionReceive::ServerActionReceive(
-    std::vector<std::string> params, const int& clientFd, const Client* cli, const std::string& prefix) :
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 1, cli, prefix),
 params(params) {}
 
@@ -124,7 +121,7 @@ void ServerActionReceive::execute() {
 }
 
 ServerActionDisconnect::ServerActionDisconnect(
-    std::vector<std::string> params, const int& clientFd, const Client* cli, const std::string& prefix) :
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 0, cli, prefix),
 params(params) {}
 

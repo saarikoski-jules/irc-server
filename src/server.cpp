@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 13:03:14 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 18:02:29 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void Server::listenOnSocket() {
     }
     if (!clients.empty()) {
         try {
-            socket.checkConnectionAndNewDataFrom(clients);
+            socket.checkConnectionAndNewDataFrom(&clients);
         } catch (const SocketException& e) {
             // Fall through because we got a normal message.
         }

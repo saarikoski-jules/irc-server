@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 16:31:14 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 18:01:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,12 @@ void Socket::checkNewConnections() {
     }
 }
 
-int Socket::createFdSet(const std::vector<Client>& clients, fd_set* set) {
+int Socket::createFdSet(std::vector<Client>* clients, fd_set* set) {
     fd_set fdSet;
     FD_ZERO(&fdSet);
     int maxFd = 0;
 
-    for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
+    for (std::vector<Client>::iterator i = clients->begin(); i != clients->end(); i++) {
         FD_SET((*i).fd, &fdSet);
         if ((*i).fd > maxFd) {
             maxFd = (*i).fd;
@@ -87,13 +87,13 @@ int Socket::createFdSet(const std::vector<Client>& clients, fd_set* set) {
     return (maxFd);
 }
 
-void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
+void Socket::readFromFds(std::vector<Client>* clients, fd_set readSet) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
     IServerAction *action;
     actionFactory factory;
 
-    for (std::vector<const Client>::iterator i = clients.begin(); i != clients.end(); i++) {
+    for (std::vector<Client>::iterator i = clients->begin(); i != clients->end(); i++) {
         Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
         if (FD_ISSET((*i).fd, &readSet)) {
             chars_read = read((*i).fd, data_buffer, MAX_MESSAGE_SIZE);
@@ -114,7 +114,7 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
 }
 
-void Socket::checkConnectionAndNewDataFrom(const std::vector<Client>& clients) {
+void Socket::checkConnectionAndNewDataFrom(std::vector<Client>* clients) {
     struct timeval waitFor;
     fd_set readSet;
 

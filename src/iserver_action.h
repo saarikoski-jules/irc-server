@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:44:14 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 16:21:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 17:22:07 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Server;
 class IServerAction {
  public:
     IServerAction(
-        const int& clientFd, const size_t& requiredParams, const Client* cli, const std::string& prefix);
+        const int& clientFd, const size_t& requiredParams, Client* cli, const std::string& prefix);
     virtual void execute() = 0;
     virtual ~IServerAction() {}
     static Server* server;
@@ -31,7 +31,7 @@ class IServerAction {
     const int clientFd;
     const std::string prefix;
     const size_t requiredParams;
-    const Client* cli;
+    Client* cli;
 };
 
 #endif  //  ISERVER_ACTION_H_

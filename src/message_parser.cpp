@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 16:24:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 17:20:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ std::vector<std::string> MessageParser::genParams(
     return (params);
 }
 
-IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd, const Client* cli) {
+IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd, Client* cli) {
     std::string prefix;
     std::string cmd;
     std::vector<std::string> params;
@@ -117,7 +117,7 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
     return (action);
 }
 
-std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd, const Client* cli) {
+std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd, Client* cli) {
     std::vector<IServerAction*> actions;
     std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
 
