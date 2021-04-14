@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 10:48:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 16:24:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ std::vector<std::string> MessageParser::genParams(
     return (params);
 }
 
-IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd) {
+IServerAction* MessageParser::createActionFromMessage(std::string message, const int& clientFd, const Client* cli) {
     std::string prefix;
     std::string cmd;
     std::vector<std::string> params;
@@ -107,7 +107,7 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
         prefix = genPrefix(&message, &it);
         cmd = genCommand(&message, &it);
         params = genParams(&message, &it);
-        action = factory.newAction(cmd, params, clientFd, prefix);
+        action = factory.newAction(cmd, params, clientFd, cli, prefix);
     } catch (const ActionFactoryException& e) {
         throw MessageParserException(e.what(), e.isFatal());
     } catch (const std::exception& e) {
@@ -117,13 +117,13 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
     return (action);
 }
 
-std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd) {
+std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& clientFd, const Client* cli) {
     std::vector<IServerAction*> actions;
     std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
 
     for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
-            IServerAction* action = createActionFromMessage(*i, clientFd);
+            IServerAction* action = createActionFromMessage(*i, clientFd, cli);
             actions.push_back(action);
         } catch (const MessageParserException& e) {
             Logger::log(LogLevelDebug, "Couldn't generate action from message");

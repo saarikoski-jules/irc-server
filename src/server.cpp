@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 18:24:55 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/14 13:03:14 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Server::Server(const uint16_t& port, const std::string& password) :
 clients(),
 socket(&actions) {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
+    IServerAction::server = this;
     try {
         validatePassword(password);
         openSocket(port);
@@ -94,7 +95,7 @@ void Server::listenOnSocket() {
 void Server::handleAction() {
     while (!actions.empty()) {
         IServerAction* action = actions.front();
-        action->execute(this);
+        action->execute();
         delete action;
         actions.pop();
     }

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 12:52:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 16:23:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Socket::checkNewConnections() {
         actionFactory factory;
         fcntl(clientFd, F_SETFL, O_NONBLOCK);
         std::vector<std::string> vec;
-        action = factory.newAction("ACCEPT", vec, clientFd);
+        action = factory.newAction("ACCEPT", vec, clientFd, NULL);
         actions->push(action);
         Logger::log(LogLevelInfo, "Recieved a connection request");
     } else {
@@ -100,13 +100,18 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
             std::vector<std::string> vec;
             if (chars_read > 0) {
                 vec.push_back(data_buffer);
-                action = factory.newAction("RECEIVE", vec, (*i).fd);
+                //TODO:getclient
+                // Client* cli = &(*i);
+                // const Client* cli = &(*i);
+                // Client* cli = *i;
+                // action = factory.newAction("RECEIVE", vec, (*i).fd, &(*i));
+                action = factory.newAction("RECEIVE", vec, (*i).fd, &(*i));
                 actions->push(action);
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
             } else {
-                action = factory.newAction("DISCONNECT", vec, (*i).fd);
+                action = factory.newAction("DISCONNECT", vec, (*i).fd, &(*i));
                 actions->push(action);
             }
         }
