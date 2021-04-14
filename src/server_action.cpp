@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 19:02:22 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 11:08:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,32 @@ Channel* ServerActionJoin::getChannel(const std::string& name, Server* server, c
     return (chan);
 }
 
+void ServerActionJoin::joinServer(const std::string& name, Server* server, const std::string& key) {
+    Channel* chan = getChannel(name, server, key);
+    std::string reply;
+    std::vector<std::string> replyParams;
+    replyParams.push_back(chan->name);
+    if (chan->topicIsSet) {
+        replyParams.push_back(chan->topic);
+        reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
+    } else {
+        reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
+    }
+    server->sendReplyToClient(clientFd, reply);
+}
+
+void ServerActionJoin::handleNeedMoreParams(Server* server) const {
+    std::vector<std::string> errParams;
+    errParams.push_back("JOIN");
+    std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
+    server->sendReplyToClient(clientFd, errReply);
+}
+
 void ServerActionJoin::execute(Server* server) {
     Logger::log(LogLevelInfo, "server action join");
-    std::cout << params.size() << std::endl;
     if (params.size() < 1) {
-        std::vector<std::string> errParams;
-        errParams.push_back("JOIN");
-        std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
-        server->sendReplyToClient(clientFd, errReply);
+        handleNeedMoreParams(server);
+        return;
     }
     std::vector<std::string> chans = Utils::String::tokenize(params[0], params[0].length(), ",");
     std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");
@@ -134,18 +152,7 @@ void ServerActionJoin::execute(Server* server) {
             key = "";
         }
         try {
-            Channel* chan = getChannel(chans[i], server, key);
-            std::string reply;
-            std::vector<std::string> replyParams;
-            replyParams.push_back(chan->name);
-            if (chan->topicIsSet) {
-                replyParams.push_back(chan->topic);
-                reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
-            } else {
-                reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
-            }
-            server->sendReplyToClient(clientFd, reply);
-            //TODO(Jules): Send RPL_TOPIC
+            joinServer(chans[i], server, key);
         } catch (const ChannelException& e) {
             server->sendReplyToClient(clientFd, e.what());
         }
