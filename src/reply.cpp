@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/13 18:43:39 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 11:11:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     std::stringstream ss;
 
     ss << code << " " << params[0] << " ";
-    std::cout << code << std::endl;
     switch (code)
     {
     case ERR_NONICKNAMEGIVEN:
@@ -45,6 +44,5 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     default:
         break;
     }
-    std::cout << ss.str() << std::endl;
     return (ss.str());
 }
