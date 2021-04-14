@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 10:44:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 10:48:28 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ std::string MessageParser::genPrefix(std::string* message, std::string::iterator
     return ("");
 }
 
-#include <iostream>
 std::string MessageParser::genCommand(std::string* message, std::string::iterator* it) const {
     std::string::iterator end;
 
@@ -76,6 +75,7 @@ std::string MessageParser::genCommand(std::string* message, std::string::iterato
     (*it)++;
     return (cmd);
 }
+
 std::vector<std::string> MessageParser::genParams(
     std::string* message, std::string::iterator* it) const {
     std::vector<std::string> params;
