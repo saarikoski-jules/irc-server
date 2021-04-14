@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 11:07:56 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 18:53:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,23 +25,22 @@ class Server;
 class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+    void execute();
     ~ServerActionNick() {}
  private:
-    void handleNickNameChange(Server* server) const;
-    void handleNickNameInUse(Server* server) const;
-    void handleNoNicknameGiven(Server* server) const;
+    void handleNickNameChange() const;
+    void handleNickNameInUse() const;
+    void handleNoNicknameGiven() const;
     std::vector<std::string> params;
-    Client* client;
     const std::string* newNickName;
 };
 
 class ServerActionUser: public IServerAction {
  public:
     ServerActionUser(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+    void execute();
     ~ServerActionUser() {}
  private:
     std::vector<std::string> params;
@@ -50,21 +49,21 @@ class ServerActionUser: public IServerAction {
 class ServerActionJoin: public IServerAction {
  public:
     ServerActionJoin(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+    void execute();
     ~ServerActionJoin() {}
  private:
-    Channel* getChannel(const std::string& name, Server* server, const std::string& key);
-    void joinServer(const std::string& name, Server* server, const std::string& key);
-    void handleNeedMoreParams(Server* server) const;
+    Channel* getChannel(const std::string& name, const std::string& key);
+    void joinServer(const std::string& name, const std::string& key);
+    void handleNeedMoreParams() const;
     std::vector<std::string> params;
 };
 
 class ServerActionAccept: public IServerAction {
  public:
     ServerActionAccept(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+    void execute();
     ~ServerActionAccept() {}
  private:
     std::vector<std::string> params;
@@ -73,8 +72,8 @@ class ServerActionAccept: public IServerAction {
 class ServerActionReceive: public IServerAction {
  public:
     ServerActionReceive(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+    void execute();
     ~ServerActionReceive() {}
  private:
     std::vector<std::string> params;
@@ -83,8 +82,8 @@ class ServerActionReceive: public IServerAction {
 class ServerActionDisconnect: public IServerAction {
  public:
     ServerActionDisconnect(
-        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
-    void execute(Server*);
+        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+    void execute();
     ~ServerActionDisconnect() {}
  private:
     std::vector<std::string> params;
