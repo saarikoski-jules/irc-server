@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/13 19:58:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 10:50:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,9 @@ struct MessageParser::isNotDigit {
 };
 
 void MessageParser::validCommand(std::string cmd) const {
+    if (cmd.length() == 0) {
+        throw MessageParserException("Invalid command", false);
+    }
     if (std::find_if(cmd.begin(), cmd.end(), isNotAlpha()) != cmd.end()) {
         if (std::find_if(cmd.begin(), cmd.end(), isNotDigit()) != cmd.end() && cmd.length() != 3) {
             throw MessageParserException("Invalid command", false);
@@ -68,7 +71,6 @@ std::string MessageParser::genCommand(std::string* message, std::string::iterato
     end = std::find(*it, message->end(), ' ');
     std::string cmd(*it, end);
     validCommand(cmd);
-
     *it = end;
     (*it)++;
     return (cmd);
@@ -77,6 +79,9 @@ std::string MessageParser::genCommand(std::string* message, std::string::iterato
 std::vector<std::string> MessageParser::genParams(
     std::string* message, std::string::iterator* it) const {
     std::vector<std::string> params;
+    if (std::distance(*it, message->end()) <= 0) {
+        return (params);
+    }
     std::string str(*it, message->end());
     std::string::size_type len = str.find(" :");
 
