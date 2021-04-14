@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 16:23:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 16:31:14 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,11 +100,6 @@ void Socket::readFromFds(const std::vector<Client>& clients, fd_set readSet) {
             std::vector<std::string> vec;
             if (chars_read > 0) {
                 vec.push_back(data_buffer);
-                //TODO:getclient
-                // Client* cli = &(*i);
-                // const Client* cli = &(*i);
-                // Client* cli = *i;
-                // action = factory.newAction("RECEIVE", vec, (*i).fd, &(*i));
                 action = factory.newAction("RECEIVE", vec, (*i).fd, &(*i));
                 actions->push(action);
 
