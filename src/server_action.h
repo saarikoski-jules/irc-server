@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 18:05:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 18:53:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 #include "iserver_action.h"
 #include "client.h"
+#include "channel.h"
 
 class Server;
 
@@ -42,6 +43,19 @@ class ServerActionUser: public IServerAction {
     void execute();
     ~ServerActionUser() {}
  private:
+    std::vector<std::string> params;
+};
+
+class ServerActionJoin: public IServerAction {
+ public:
+    ServerActionJoin(
+        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+    void execute();
+    ~ServerActionJoin() {}
+ private:
+    Channel* getChannel(const std::string& name, const std::string& key);
+    void joinServer(const std::string& name, const std::string& key);
+    void handleNeedMoreParams() const;
     std::vector<std::string> params;
 };
 

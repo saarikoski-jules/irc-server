@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 18:18:39 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/14 11:16:54 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 #include <queue>
 #include <cinttypes>
 #include <exception>
+#include <map>
+#include <utility>
 
 #include "socket.h"
 #include "client.h"
 #include "message_parser.h"
 #include "server_action.h"
+#include "channel.h"
 
 class Server {
  public:
@@ -36,11 +39,14 @@ class Server {
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     void addNewAction(IServerAction* action);
+    Channel* createNewChannel(const std::string& name, const int& clientFd);
+    Channel* findChannel(const std::string& name);
  protected:
     std::vector<Client> clients;
  private:
     Server();
     std::queue<IServerAction*> actions;
+    std::map<std::string, Channel> channels;
     Socket socket;
     MessageParser parser;
     void validatePassword(std::string const& password) const;

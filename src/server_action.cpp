@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 18:05:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 19:04:33 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "reply.h"
 #include "logger.h"
 #include "server.h"
+#include "utils.h"
 
 ServerActionNick::ServerActionNick(
     std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
@@ -92,6 +93,69 @@ void ServerActionUser::execute() {
         // TODO(Jelle) Handle server2server communication
     } catch (const std::out_of_range& e) {
         // TODO(Jelle) Handle non valid client fd
+    }
+}
+
+ServerActionJoin::ServerActionJoin(
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
+IServerAction(clientFd, 1, cli, prefix),
+params(params) {}
+
+Channel* ServerActionJoin::getChannel(
+    const std::string& name, const std::string& key) {
+    Channel* chan;
+    try {
+        chan = server->findChannel(name);
+        chan->addClient(server->getClientByFd(clientFd), key);
+    } catch (const std::exception &e) {
+        chan = server->createNewChannel(name, clientFd);
+    }
+    return (chan);
+}
+
+void ServerActionJoin::joinServer(const std::string& name, const std::string& key) {
+    Channel* chan = getChannel(name, key);
+    std::string reply;
+    std::vector<std::string> replyParams;
+    replyParams.push_back(cli->nickName);
+    replyParams.push_back(chan->name);
+    if (chan->topicIsSet) {
+        replyParams.push_back(chan->topic);
+        reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
+    } else {
+        reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
+    }
+    server->sendReplyToClient(clientFd, reply);
+}
+
+void ServerActionJoin::handleNeedMoreParams() const {
+    std::vector<std::string> errParams;
+    errParams.push_back(cli->nickName);
+    errParams.push_back("JOIN");
+    std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
+    server->sendReplyToClient(clientFd, errReply);
+}
+
+void ServerActionJoin::execute() {
+    Logger::log(LogLevelInfo, "server action join");
+    if (params.size() < 1) {
+        handleNeedMoreParams();
+        return;
+    }
+    std::vector<std::string> chans = Utils::String::tokenize(params[0], params[0].length(), ",");
+    std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");
+    for (size_t i = 0; i < chans.size(); i++) {
+        std::string key;
+        if (keys.size() < i) {
+            key = keys[i];
+        } else {
+            key = "";
+        }
+        try {
+            joinServer(chans[i], key);
+        } catch (const ChannelException& e) {
+            server->sendReplyToClient(clientFd, e.what());
+        }
     }
 }
 
