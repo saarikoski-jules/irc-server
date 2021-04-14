@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 18:55:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 19:04:33 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ void ServerActionJoin::joinServer(const std::string& name, const std::string& ke
     Channel* chan = getChannel(name, key);
     std::string reply;
     std::vector<std::string> replyParams;
+    replyParams.push_back(cli->nickName);
     replyParams.push_back(chan->name);
     if (chan->topicIsSet) {
         replyParams.push_back(chan->topic);
@@ -129,6 +130,7 @@ void ServerActionJoin::joinServer(const std::string& name, const std::string& ke
 
 void ServerActionJoin::handleNeedMoreParams() const {
     std::vector<std::string> errParams;
+    errParams.push_back(cli->nickName);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
     server->sendReplyToClient(clientFd, errReply);

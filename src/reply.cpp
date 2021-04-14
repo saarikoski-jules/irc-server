@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 12:33:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 19:02:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,19 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         ss << params[1] << " :Nickname is already in use";
         break;
     case ERR_BADCHANNELKEY:
-        ss << ":Cannot join channel (+k)";
+        ss << params[1] << " :Cannot join channel (+k)";
         break;
     case ERR_NOSUCHCHANNEL:
-        ss << ":No such channel";
+        ss << params[1] << " :No such channel";
         break;
     case ERR_NEEDMOREPARAMS:
-        ss << ":Not enough parameters";
+        ss << params[1] << " :Not enough parameters";
         break;
     case RPL_TOPIC:
-        ss << ":" << params[1];
+        ss << params[1] << " :" << params[1];
         break;
     case RPL_NOTOPIC:
-        ss << ":No topic is set";
+        ss << params[1] << " :No topic is set";
         break;
     default:
         break;
