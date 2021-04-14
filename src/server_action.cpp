@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 11:11:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 11:13:55 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,8 @@ ServerActionJoin::ServerActionJoin(
 IServerAction(clientFd, 1, prefix),
 params(params) {}
 
-Channel* ServerActionJoin::getChannel(const std::string& name, Server* server, const std::string& key) {
+Channel* ServerActionJoin::getChannel(
+    const std::string& name, Server* server, const std::string& key) {
     Channel* chan;
     try {
         chan = server->findChannel(name);

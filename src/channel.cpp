@@ -14,13 +14,14 @@ clients() {
     if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
         std::vector<std::string> replyParams;
         replyParams.push_back(name);
-        std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);//TODO(Jules): is this the appropriate error message?
+        // TODO(Jules): is this the appropriate error message?
+        std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
         throw ChannelException(reply, false);
     }
 }
 
 void Channel::addClient(Client* client, const std::string& key) {
-    (void)chanop;//TODO: remove
+    (void)chanop;   // TODO(Jules): remove
     if (this->key == "" || this->key == key) {
         clients.push_back(client);
     } else {
