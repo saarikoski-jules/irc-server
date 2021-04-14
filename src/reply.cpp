@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 12:31:35 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 12:33:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case RPL_TOPIC:
         ss << ":" << params[1];
+        break;
     case RPL_NOTOPIC:
         ss << ":No topic is set";
+        break;
     default:
         break;
     }
