@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 19:02:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/14 19:27:04 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         ss << params[1] << " :Not enough parameters";
         break;
     case RPL_TOPIC:
-        ss << params[1] << " :" << params[1];
+        ss << params[1] << " :" << params[2];
         break;
     case RPL_NOTOPIC:
         ss << params[1] << " :No topic is set";
