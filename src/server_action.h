@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 11:38:18 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 14:11:51 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,11 @@ class ServerActionMode: public IServerAction {
     void joinServer(const std::string& name, const std::string& key);
     std::vector<std::string> params;
     void modeO(char sign, const std::string& user);
+    void editMode(char sign, char mode);
+    void setLimit(char sign, const std::string& limit);
+    void setKey(char sign, const std::string& key);
+    void sendChannelModeIsReply() const;
+    void sendUnknownModeReply(char c) const;
     Channel* chan;
 };
 

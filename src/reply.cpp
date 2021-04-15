@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 12:14:56 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 13:18:03 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,17 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_CHANOPRIVSNEEDED:
         ss << params[1] << " :You're not channel operator";
         break;
+    case ERR_UNKNOWNMODE:
+        ss << params[1] << " :is unknown mode char to me";
+        break;
     case RPL_TOPIC:
         ss << params[1] << " :" << params[2];
         break;
     case RPL_NOTOPIC:
         ss << params[1] << " :No topic is set";
+        break;
+    case RPL_CHANNELMODEIS:
+        ss << params[1] << " " << params[2] << " " << params[3];
         break;
     default:
         break;

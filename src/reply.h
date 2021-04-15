@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 12:14:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 13:17:26 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@ enum ReplyCode {
     ERR_NEEDMOREPARAMS = 461,
     ERR_NOSUCHNICK = 401,
     ERR_CHANOPRIVSNEEDED = 482,
+    ERR_UNKNOWNMODE = 472,
     RPL_NOTOPIC = 331,
-    RPL_TOPIC = 332
+    RPL_TOPIC = 332,
+    RPL_CHANNELMODEIS = 324
 };
 
 class ReplyFactory {

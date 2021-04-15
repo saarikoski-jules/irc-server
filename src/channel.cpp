@@ -43,6 +43,38 @@ void Channel::removeOperator(Client* target) {
     }
 }
 
+void Channel::setLimit(unsigned int lim) {
+    this->limit = lim;
+    addMode('l');
+}
+
+void Channel::changeKey(const std::string& key) {
+    this->key = key;
+}
+
+void Channel::removeMode(char c) {
+    size_t pos = modes.find(c);
+    if (pos != std::string::npos) {
+        modes.erase(pos, 1);
+    }
+}
+
+void Channel::addMode(char c) {
+    if (modes.find(c) == std::string::npos) {
+        modes.push_back(c);
+    }
+}
+
+std::string Channel::getModes() const {
+    return (modes);
+}
+
+std::string Channel::getModeParams() const {
+    std::string params = "mode params?";
+
+    return (params);
+}
+
 void Channel::addClient(Client* client, const std::string& key) {
     if (this->key == "" || this->key == key) {
         clients.push_back(client);

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 12:13:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 14:37:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "server.h"
 #include "utils.h"
+#include "string_conversions.h"
 
 ServerActionNick::ServerActionNick(
     std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
@@ -206,10 +207,65 @@ void ServerActionMode::modeO(char sign, const std::string& user) {
     }
 }
 
+void ServerActionMode::editMode(char sign, char mode) {
+    if (sign == '-') {
+        chan->removeMode(mode);
+    } else {
+        chan->addMode(mode);
+    }
+}
+
+void ServerActionMode::setLimit(char sign, const std::string& limit) {
+    if (sign == '-') {
+        chan->removeMode('l');
+    } else {
+        unsigned int uintLimit;
+        try {
+            uintLimit = StringConversion::toUint(limit);
+        } catch (const std::exception& e) {
+            // TODO(Jules): handle bad limit
+            return;
+        }
+        chan->setLimit(uintLimit);
+    }
+}
+
+void ServerActionMode::setKey(char sign, const std::string& key) {
+    if (sign == '-') {
+        chan->removeMode('k');
+        chan->changeKey("");
+    } else {
+        chan->addMode('k');
+        chan->changeKey(key);
+    }
+}
+
 ServerActionMode::ServerActionMode(
     std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 2, cli, prefix),
 params(params) {}
+
+void ServerActionMode::sendChannelModeIsReply() const {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cli->nickName);
+    replyParams.push_back(chan->name);
+    replyParams.push_back(chan->getModes());
+    replyParams.push_back(chan->getModeParams());
+    reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
+    server->sendReplyToClient(clientFd, reply);
+}
+
+void ServerActionMode::sendUnknownModeReply(char c) const {
+    std::string reply;
+    std::vector<std::string> params;
+    std::string character(1, c);
+
+    params.push_back(cli->nickName);
+    params.push_back(character);
+    reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
+}
 
 void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
@@ -230,12 +286,30 @@ void ServerActionMode::execute() {
     for (size_t i = 0; i < params[1].length(); i++) {
         switch (params[1][i]) {
         case 'o':
-            modeO(sign, params[2]);
+            modeO(sign, params[2]);//sometimes 2, smetimes 3
+            break;
+        case 'p':
+        case 's':
+        case 'i':
+        case 't':
+        case 'n':
+        case 'm':
+            editMode(sign, params[1][i]);
+            break;
+        case 'l':
+            setLimit(sign, params[2]);
+            break;
+            // TODO(Jules): b == ban mask
+            // TODO(Jules): v == allow to speak on moderated channel
+        case 'k':
+            setKey(sign, params[2]);//idk which param
             break;
         default:
+            sendUnknownModeReply(params[1][i]);
             break;
         }
     }
+    sendChannelModeIsReply();
 }
 
 ServerActionAccept::ServerActionAccept(

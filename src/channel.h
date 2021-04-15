@@ -17,13 +17,19 @@ class Channel {
     void addOperator(Client* newChanop);
     void removeOperator(Client* newChanop);
     bool isOperator(Client* cli) const;
+    void removeMode(char c);
+    void addMode(char c);
+    std::string getModes() const;
+    std::string getModeParams() const;
+    void setLimit(unsigned int lim);
+    void changeKey(const std::string& key);
  private:
    //  Client* chanop;//turn into a vector
     std::vector<Client*> chanops;
     std::vector<Client*> clients;
     std::string key;
     std::string modes;
-   //  unsigned int limit;
+    unsigned int limit;
     //ban mask
     //v, ability to speak on moderated channel
 };
