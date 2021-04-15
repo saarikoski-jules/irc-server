@@ -9,14 +9,37 @@
 Channel::Channel(const std::string& name, Client* chanop) :
 name(name),
 topicIsSet(false),
-chanop(chanop),
-clients() {
+chanops(),
+clients(),
+key(""),
+modes("") {
     if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
         std::vector<std::string> replyParams;
-        replyParams.push_back(this->chanop->nickName);
+        replyParams.push_back(chanop->nickName);
         replyParams.push_back(name);
         std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
         throw ChannelException(reply, false);//I can't do this
+    }
+    addOperator(chanop);
+}
+
+void Channel::addOperator(Client* newChanop) {
+    chanops.push_back(newChanop);
+}
+
+bool Channel::isOperator(Client* cli) const {
+    if (std::find(chanops.begin(), chanops.end(), cli) == chanops.end()) {
+        return (false);
+    }
+    return (true);
+}
+
+void Channel::removeOperator(Client* target) {
+    std::vector<Client*>::iterator found = std::find(chanops.begin(), chanops.end(), target);
+    if (found == chanops.end()) {
+        throw ChannelException("Channel exception: No such chanop", false);
+    } else {
+        chanops.erase(found);
     }
 }
 

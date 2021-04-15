@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 11:16:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 11:41:08 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ class Server {
     void acceptNewClient(const int& clientFd);
     void deleteClient(const int& clientFd);
     Client* getClientByFd(const int& clientFd);
+    Client* getClientByNick(const std::string& nick);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     void addNewAction(IServerAction* action);

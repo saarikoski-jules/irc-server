@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 19:04:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 12:13:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void ServerActionJoin::handleNeedMoreParams() const {
 
 void ServerActionJoin::execute() {
     Logger::log(LogLevelInfo, "server action join");
-    if (params.size() < 1) {
+    if (params.size() < 1) {    // TODO(Jules): handle need more params somewhere else
         handleNeedMoreParams();
         return;
     }
@@ -155,6 +155,85 @@ void ServerActionJoin::execute() {
             joinServer(chans[i], key);
         } catch (const ChannelException& e) {
             server->sendReplyToClient(clientFd, e.what());
+        }
+    }
+}
+
+std::string constructNoSuchChannelReply(const std::string& cliNick, const std::string& chanName) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cliNick);
+    replyParams.push_back(chanName);
+    reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
+    return (reply);
+}
+
+std::string constructNoSuchNickReply(const std::string& cliNick, const std::string& targetNick) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cliNick);
+    replyParams.push_back(targetNick);
+    reply = ReplyFactory::newReply(ERR_NOSUCHNICK, replyParams);
+    return (reply);
+}
+
+
+std::string constructChanoPrivsNeededReply(const std::string& cliNick, const std::string& chanName) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cliNick);
+    replyParams.push_back(chanName);
+    reply = ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams);
+    return (reply);
+}
+
+void ServerActionMode::modeO(char sign, const std::string& user) {
+    Client* target;
+    try {
+        target = server->getClientByNick(user);
+    } catch (const std::exception& e) {
+        std::string reply = constructNoSuchNickReply(cli->nickName, user);
+        server->sendReplyToClient(clientFd, reply);
+        return;
+    }
+    if (sign == '-') {
+        chan->removeOperator(target);
+    } else {
+        chan->addOperator(target);
+    }
+}
+
+ServerActionMode::ServerActionMode(
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
+IServerAction(clientFd, 2, cli, prefix),
+params(params) {}
+
+void ServerActionMode::execute() {
+    Logger::log(LogLevelInfo, "Executing server action MODE");
+    try {
+        chan = server->findChannel(params[0]);
+    } catch (const std::exception& e) {
+        server->sendReplyToClient(clientFd, constructNoSuchChannelReply(cli->nickName, params[0]));
+        return;
+    }
+    if (!chan->isOperator(cli)) {
+        std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
+        server->sendReplyToClient(clientFd, reply);
+    }
+    char sign = '+';
+    if (params[1][0] == '-') {
+        sign = '-';
+    }
+    for (size_t i = 0; i < params[1].length(); i++) {
+        switch (params[1][i]) {
+        case 'o':
+            modeO(sign, params[2]);
+            break;
+        default:
+            break;
         }
     }
 }
@@ -193,3 +272,6 @@ void ServerActionDisconnect::execute() {
     Logger::log(LogLevelInfo, "server action disconnect");
     server->deleteClient(clientFd);
 }
+
+// TODO(Jules): construct general channel replies from functions, maybe under reply?
+// TODO(Jules): send ERR_NOLOGIN from action creator, as well as need more params?

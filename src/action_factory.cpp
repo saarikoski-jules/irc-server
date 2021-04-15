@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 18:48:37 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 11:51:18 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include <vector>
 
-const size_t actionFactory::actionFormatLen = 6;
+const size_t actionFactory::actionFormatLen = 7;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -23,6 +23,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::nick, "NICK"},
     {&actionFactory::user, "USER"},
     {&actionFactory::join, "JOIN"},
+    {&actionFactory::mode, "MODE"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -54,6 +55,11 @@ IServerAction* actionFactory::user(
 IServerAction* actionFactory::join(
     std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
     return (new ServerActionJoin(params, clientFd, cli, prefix));
+}
+
+IServerAction* actionFactory::mode(
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
+    return (new ServerActionMode(params, clientFd, cli, prefix));
 }
 
 IServerAction* actionFactory::newAction(

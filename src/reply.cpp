@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 19:27:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 12:14:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,12 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case ERR_NEEDMOREPARAMS:
         ss << params[1] << " :Not enough parameters";
+        break;
+    case ERR_NOSUCHNICK:
+        ss << params[1] << " :No such nick/channel";
+        break;
+    case ERR_CHANOPRIVSNEEDED:
+        ss << params[1] << " :You're not channel operator";
         break;
     case RPL_TOPIC:
         ss << params[1] << " :" << params[2];

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 18:48:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 11:41:39 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,17 @@ Client* Server::getClientByFd(const int& clientFd) {
         }
     }
     throw std::invalid_argument("Could not find the clientFd in list of clients");
+}
+
+Client* Server::getClientByNick(const std::string& nick) {
+    std::vector<Client>::iterator it = clients.begin();
+    for (; it != clients.end(); it++) {
+        const Client& client = *it;
+        if (client.nickName == nick) {
+            return &(*it);
+        }
+    }
+    throw std::invalid_argument("Could not find the nick in list of clients");
 }
 
 bool Server::nicknameExists(const std::string& nickName) {

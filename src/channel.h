@@ -14,10 +14,18 @@ class Channel {
     void addClient(Client* client, const std::string& key);
     bool topicIsSet;
     std::string topic;
+    void addOperator(Client* newChanop);
+    void removeOperator(Client* newChanop);
+    bool isOperator(Client* cli) const;
  private:
-    Client* chanop;
-    std::vector<Client *> clients;
+   //  Client* chanop;//turn into a vector
+    std::vector<Client*> chanops;
+    std::vector<Client*> clients;
     std::string key;
+    std::string modes;
+   //  unsigned int limit;
+    //ban mask
+    //v, ability to speak on moderated channel
 };
 
 class ChannelException : public std::exception {
