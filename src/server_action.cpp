@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 14:37:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/15 18:01:08 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,18 @@ void ServerActionMode::setKey(char sign, const std::string& key) {
     }
 }
 
+void ServerActionMode::setBanMask(char sign, const std::string& mask) {
+    size_t nickEnd = mask.find('!');
+    size_t userEnd = mask.find('@');
+    if (userEnd != std::string::npos && userEnd > nickEnd && *(mask.end()) != '@') {
+        if (sign == '-') {
+            chan->removeBanMask(mask);
+        } else {
+            chan->addBanMask(mask);
+        }
+    }
+}
+
 ServerActionMode::ServerActionMode(
     std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
 IServerAction(clientFd, 2, cli, prefix),
@@ -299,6 +311,12 @@ void ServerActionMode::execute() {
         case 'l':
             setLimit(sign, params[2]);
             break;
+        case 'b':
+            setBanMask(sign, params[2]);//2, 3 or 4
+            break;
+            // can it only be one? or a list?
+            //
+            // user in form of nick!user@host, wildcard allowed, look up for each type
             // TODO(Jules): b == ban mask
             // TODO(Jules): v == allow to speak on moderated channel
         case 'k':

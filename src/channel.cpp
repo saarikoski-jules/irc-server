@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "client.h"
 #include "reply.h"
@@ -11,6 +12,7 @@ name(name),
 topicIsSet(false),
 chanops(),
 clients(),
+bans(),
 key(""),
 modes("") {
     if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
@@ -83,6 +85,17 @@ void Channel::addClient(Client* client, const std::string& key) {
         errorParams.push_back(client->nickName);
         errorParams.push_back(name);
         throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
+    }
+}
+
+void Channel::addBanMask(const std::string& mask) {
+    bans.push_back(mask);
+}
+
+void Channel::removeBanMask(const std::string& mask) {
+    std::vector<std::string>::iterator pos = std::find(bans.begin(), bans.end(), mask);
+    if (pos != bans.end()) {
+        bans.erase(pos);
     }
 }
 

@@ -23,10 +23,13 @@ class Channel {
     std::string getModeParams() const;
     void setLimit(unsigned int lim);
     void changeKey(const std::string& key);
+    void removeBanMask(const std::string& mask);
+    void addBanMask(const std::string& mask);
  private:
    //  Client* chanop;//turn into a vector
     std::vector<Client*> chanops;
     std::vector<Client*> clients;
+    std::vector<std::string> bans;
     std::string key;
     std::string modes;
     unsigned int limit;
