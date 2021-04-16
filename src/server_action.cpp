@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 17:30:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/16 09:47:10 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,7 @@ void ServerActionJoin::handleNeedMoreParams() const {
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
     server->sendReplyToClient(clientFd, errReply);
 }
+
 void ServerActionJoin::execute() {
     Logger::log(LogLevelInfo, "server action join");
     if (params.size() < 1) {
