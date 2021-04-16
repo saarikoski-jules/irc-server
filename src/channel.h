@@ -25,6 +25,7 @@ class Channel {
     void changeKey(const std::string& key);
     void removeBanMask(const std::string& mask);
     void addBanMask(const std::string& mask);
+    std::string getBanMask(size_t index) const;
  private:
    //  Client* chanop;//turn into a vector
     std::vector<Client*> chanops;

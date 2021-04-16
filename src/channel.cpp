@@ -54,6 +54,9 @@ void Channel::changeKey(const std::string& key) {
     this->key = key;
 }
 
+
+//TODO: check if +k "" sets password to no password
+//TODO: -k doesn't unset password
 void Channel::removeMode(char c) {
     size_t pos = modes.find(c);
     if (pos != std::string::npos) {
@@ -67,16 +70,6 @@ void Channel::addMode(char c) {
     }
 }
 
-std::string Channel::getModes() const {
-    return (modes);
-}
-
-std::string Channel::getModeParams() const {
-    std::string params = "mode params?";
-
-    return (params);
-}
-
 void Channel::addClient(Client* client, const std::string& key) {
     if (this->key == "" || this->key == key) {
         clients.push_back(client);
@@ -87,15 +80,22 @@ void Channel::addClient(Client* client, const std::string& key) {
         throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
     }
 }
-
 void Channel::addBanMask(const std::string& mask) {
     bans.push_back(mask);
 }
 
-void Channel::removeBanMask(const std::string& mask) {
+void Channel::removeBanMask(const std::string& mask) {//correct, should remove banmask
     std::vector<std::string>::iterator pos = std::find(bans.begin(), bans.end(), mask);
     if (pos != bans.end()) {
         bans.erase(pos);
+    }
+}
+
+std::string Channel::getBanMask(size_t index) const {
+    if (this->bans.size() > index) {
+        return (bans[index]);
+    } else {
+        throw std::out_of_range("index not present in masks");
     }
 }
 

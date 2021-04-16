@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 13:17:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/16 16:32:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ enum ReplyCode {
     ERR_UNKNOWNMODE = 472,
     RPL_NOTOPIC = 331,
     RPL_TOPIC = 332,
-    RPL_CHANNELMODEIS = 324
+    RPL_CHANNELMODEIS = 324,
+    RPL_BANLIST = 367,
+    RPL_ENDOFBANLIST = 368
 };
 
 class ReplyFactory {

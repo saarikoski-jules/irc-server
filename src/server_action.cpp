@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/16 09:51:02 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/16 16:53:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,24 +107,30 @@ Channel* ServerActionJoin::getChannel(
     Channel* chan;
     try {
         chan = server->findChannel(name);
-        chan->addClient(server->getClientByFd(clientFd), key);
     } catch (const std::exception &e) {
         chan = server->createNewChannel(name, clientFd);
     }
+    chan->addClient(server->getClientByFd(clientFd), key);
     return (chan);
 }
 
 void ServerActionJoin::joinServer(const std::string& name, const std::string& key) {
-    Channel* chan = getChannel(name, key);
     std::string reply;
+    Channel* chan;
     std::vector<std::string> replyParams;
+
     replyParams.push_back(cli->nickName);
-    replyParams.push_back(chan->name);
-    if (chan->topicIsSet) {
-        replyParams.push_back(chan->topic);
-        reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
-    } else {
-        reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
+    replyParams.push_back(name);
+    try {
+        chan = getChannel(name, key);
+        if (chan->topicIsSet) {
+            replyParams.push_back(chan->topic);
+            reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
+        } else {
+            reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
+        }
+    } catch (const ChannelException& e) {
+        reply = e.what();
     }
     server->sendReplyToClient(clientFd, reply);
 }
@@ -243,14 +249,44 @@ void ServerActionMode::setKey(char sign, const std::string& key) {
     }
 }
 
+void ServerActionMode::listBanMasks() const {
+    size_t i = 0;
+    std::vector<std::string> replyParams;
+    replyParams.push_back(cli->nickName);
+    replyParams.push_back(chan->name);
+    while (true) {
+        try {
+            std::string m = chan->getBanMask(i);
+            i++;
+            if (replyParams.size() == 3) {
+                replyParams.pop_back();
+            }
+            replyParams.push_back(m);
+            std::string reply = ReplyFactory::newReply(RPL_BANLIST, replyParams);
+            server->sendReplyToClient(clientFd, reply);
+        } catch (const std::exception& e) {
+            if (replyParams.size() == 3) {
+                replyParams.pop_back();
+            }
+            std::string reply = ReplyFactory::newReply(RPL_ENDOFBANLIST, replyParams);
+            server->sendReplyToClient(clientFd, reply);
+            return;
+        }
+    }
+}
+
 void ServerActionMode::setBanMask(char sign, const std::string& mask) {
-    size_t nickEnd = mask.find('!');
-    size_t userEnd = mask.find('@');
-    if (userEnd != std::string::npos && userEnd > nickEnd && *(mask.end()) != '@') {
-        if (sign == '-') {
-            chan->removeBanMask(mask);
-        } else {
-            chan->addBanMask(mask);
+    if (mask == "" && sign == '+') {
+        listBanMasks();
+    } else {
+        size_t nickEnd = mask.find('!');
+        size_t userEnd = mask.find('@');
+        if (userEnd != std::string::npos && userEnd > nickEnd && *(mask.end()) != '@') {
+            if (sign == '-') {
+                chan->removeBanMask(mask);
+            } else {
+                chan->addBanMask(mask);
+            }
         }
     }
 }
@@ -265,9 +301,7 @@ void ServerActionMode::sendChannelModeIsReply() const {
     std::vector<std::string> replyParams;
 
     replyParams.push_back(cli->nickName);
-    replyParams.push_back(chan->name);
-    replyParams.push_back(chan->getModes());
-    replyParams.push_back(chan->getModeParams());
+    replyParams.insert(replyParams.end(), params.begin(), params.end());
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
     server->sendReplyToClient(clientFd, reply);
 }
@@ -330,7 +364,7 @@ void ServerActionMode::execute() {
             break;
         }
     }
-    sendChannelModeIsReply();
+    // sendChannelModeIsReply(); //if mode has been edited
 }
 
 ServerActionAccept::ServerActionAccept(
@@ -339,7 +373,7 @@ IServerAction(clientFd, 0, cli, prefix),
 params(params) {}
 
 void ServerActionAccept::execute() {
-    Logger::log(LogLevelInfo, "server action accept");
+    // Logger::log(LogLevelInfo, "server action accept");
     server->acceptNewClient(clientFd);
 }
 
@@ -349,7 +383,7 @@ IServerAction(clientFd, 1, cli, prefix),
 params(params) {}
 
 void ServerActionReceive::execute() {
-    Logger::log(LogLevelInfo, "server action receive");
+    // Logger::log(LogLevelInfo, "server action receive");
     MessageParser parser;
     std::vector<IServerAction*> newActions = parser.parse(params[0], clientFd, cli);
     while (!newActions.empty()) {

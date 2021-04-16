@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 17:56:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/16 16:40:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ class ServerActionMode: public IServerAction {
     void sendChannelModeIsReply() const;
     void sendUnknownModeReply(char c) const;
     void setBanMask(char sign, const std::string& mask);
+    void listBanMasks() const;
     Channel* chan;
 };
 
