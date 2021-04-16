@@ -56,6 +56,8 @@ void Channel::changeKey(const std::string& key) {
 
 
 //TODO: check if +k "" sets password to no password
+//secret can't display anything, and you can't tell someone is in the channel
+//private shows up in channel listings, but you can't tell a user is in it
 //TODO: -k doesn't unset password
 void Channel::removeMode(char c) {
     size_t pos = modes.find(c);
@@ -70,8 +72,20 @@ void Channel::addMode(char c) {
     }
 }
 
+bool Channel::canJoin(Client*, const std::string& key) const {
+    if (modes.find('k') && this->key != key) {
+        return (false);
+    }
+    // if (modes.find('i') && client has no invite)
+    if (modes.find('l') && limit >= clients.size()) {
+        return (false);
+    }
+    // if user is banned
+    return (true);
+}
+
 void Channel::addClient(Client* client, const std::string& key) {
-    if (this->key == "" || this->key == key) {
+    if (canJoin(client, key)) {
         clients.push_back(client);
     } else {
         std::vector<std::string> errorParams;

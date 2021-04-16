@@ -34,6 +34,7 @@ class Channel {
     std::string key;
     std::string modes;
     unsigned int limit;
+    bool canJoin(Client* client, const std::string& key) const;
     //ban mask
     //v, ability to speak on moderated channel
 };
