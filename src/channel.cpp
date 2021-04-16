@@ -16,7 +16,7 @@ clients() {
         replyParams.push_back(this->chanop->nickName);
         replyParams.push_back(name);
         std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
-        throw ChannelException(reply, false);//I can't do this
+        throw ChannelException(reply, false);
     }
 }
 
