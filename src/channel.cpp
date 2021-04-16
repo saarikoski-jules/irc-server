@@ -20,7 +20,7 @@ modes("") {
         replyParams.push_back(chanop->nickName);
         replyParams.push_back(name);
         std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
-        throw ChannelException(reply, false);//I can't do this
+        throw ChannelException(reply, false);
     }
     addOperator(chanop);
 }

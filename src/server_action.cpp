@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 18:01:08 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/16 09:51:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,10 +144,13 @@ void ServerActionJoin::execute() {
         return;
     }
     std::vector<std::string> chans = Utils::String::tokenize(params[0], params[0].length(), ",");
-    std::vector<std::string> keys = Utils::String::tokenize(params[1], params[1].length(), ",");
+    std::vector<std::string> keys;
+    if (params.size() > 1) {
+        keys = Utils::String::tokenize(params[1], params[1].length(), ",");
+    }
     for (size_t i = 0; i < chans.size(); i++) {
         std::string key;
-        if (keys.size() < i) {
+        if (keys.size() > i) {
             key = keys[i];
         } else {
             key = "";
