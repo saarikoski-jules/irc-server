@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:08:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 12:19:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,5 +182,5 @@ void ServerActionMode::execute() {
             break;
         }
     }
-    // sendChannelModeIsReply(); //if mode has been edited
+    sendChannelModeIsReply(); //if mode has been edited
 }

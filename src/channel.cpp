@@ -72,12 +72,36 @@ void Channel::addMode(char c) {
     }
 }
 
-bool Channel::canJoin(Client*, const std::string& key) const {
-    if (modes.find('k') && this->key != key) {
+#include <iostream>
+bool Channel::isBanned(Client* client) const {
+    for (std::vector<std::string>::const_iterator i = bans.begin(); i != bans.end(); i++) {
+        size_t posUser = (*i).find('!') + 1;
+        size_t posHost = (*i).find('@') + 1;
+        std::string maskNick(*i, 0, posUser - 1);
+        std::string maskUser(*i, posUser, posHost - posUser);
+        std::string maskHost(*i, posHost, i->length() - posHost);
+
+        std::cout << "maskNick: " << maskNick << " client nick: " << client->nickName << std::endl;
+        std::cout << "maskUser: " << maskUser << " client user: " << client->userName << std::endl;
+        std::cout << "maskHost: " << maskHost << " client host: " << client->hostName << std::endl;
+        if ((client->nickName == maskNick || maskNick == "*")
+        && (client->userName == maskUser || maskUser == "*")
+        && (client->hostName == maskHost || maskHost == "*")) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
+bool Channel::canJoin(Client* client, const std::string& key) const {
+    if (modes.find('k') != std::string::npos && this->key != key) {
         return (false);
     }
     // if (modes.find('i') && client has no invite)
-    if (modes.find('l') && limit >= clients.size()) {
+    if (modes.find('l') != std::string::npos && limit >= clients.size()) {
+        return (false);
+    }
+    if (isBanned(client)) {
         return (false);
     }
     // if user is banned
@@ -131,4 +155,3 @@ const char* ChannelException::what() const throw() {
     }
     return (message.c_str());
 }
-
