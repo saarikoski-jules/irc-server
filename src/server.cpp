@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/20 13:11:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:33:43 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void Server::run() {
     while (true) {
         listenOnSocket();
         handleAction();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));//TODO: <- this
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 

@@ -6,13 +6,15 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 11:35:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:23:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_action_user.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 #include "server.h"
 #include "logger.h"

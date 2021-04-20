@@ -6,11 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:26:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:31:08 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_action_join.h"
+
+#include <vector>
+#include <string>
 
 #include "server.h"
 #include "logger.h"
@@ -22,7 +25,6 @@ IServerAction(clientFd, 1, cli, prefix),
 params(params) {}
 
 
-#include <iostream>
 Channel* ServerActionJoin::getChannel(
     const std::string& name, const std::string& key) {
     Channel* chan;

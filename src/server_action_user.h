@@ -6,19 +6,23 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:31:21 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 11:33:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:25:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_ACTION_USER_H_
 #define SERVER_ACTION_USER_H_
 
+#include <vector>
+#include <string>
+
 #include "iserver_action.h"
 
 class ServerActionUser: public IServerAction {
  public:
     ServerActionUser(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& clientFd,
+        Client* client, const std::string& prefix = "");
     void execute();
     ~ServerActionUser() {}
  private:

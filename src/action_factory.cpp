@@ -6,11 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:12:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:45:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "action_factory.h"
+
+#include <vector>
+
 #include "server_action_disconnect.h"
 #include "server_action_accept.h"
 #include "server_action_receive.h"
@@ -18,8 +21,6 @@
 #include "server_action_user.h"
 #include "server_action_join.h"
 #include "server_action_mode.h"
-
-#include <vector>
 
 const size_t actionFactory::actionFormatLen = 7;
 

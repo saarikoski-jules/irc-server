@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   channel.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
+/*   Updated: 2021/04/20 14:43:15 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "channel.h"
 
 #include <string>
@@ -6,6 +18,7 @@
 
 #include "client.h"
 #include "reply.h"
+#include "logger.h"
 
 Channel::Channel(const std::string& name, Client* chanop) :
 name(name),
@@ -54,11 +67,10 @@ void Channel::changeKey(const std::string& key) {
     this->key = key;
 }
 
-
-//TODO: check if +k "" sets password to no password
-//secret can't display anything, and you can't tell someone is in the channel
-//private shows up in channel listings, but you can't tell a user is in it
-//TODO: -k doesn't unset password
+// TODO(Jules): check if +k "" sets password to no password
+// secret can't display anything, and you can't tell someone is in the channel
+// private shows up in channel listings, but you can't tell a user is in it
+// TODO(Jules): -k doesn't unset password
 void Channel::removeMode(char c) {
     size_t pos = modes.find(c);
     if (pos != std::string::npos) {
@@ -72,7 +84,6 @@ void Channel::addMode(char c) {
     }
 }
 
-#include <iostream>
 bool Channel::isBanned(Client* client) const {
     for (std::vector<std::string>::const_iterator i = bans.begin(); i != bans.end(); i++) {
         size_t posUser = (*i).find('!') + 1;
@@ -81,9 +92,12 @@ bool Channel::isBanned(Client* client) const {
         std::string maskUser(*i, posUser, posHost - posUser);
         std::string maskHost(*i, posHost, i->length() - posHost);
 
-        std::cout << "maskNick: " << maskNick << " client nick: " << client->nickName << std::endl;
-        std::cout << "maskUser: " << maskUser << " client user: " << client->userName << std::endl;
-        std::cout << "maskHost: " << maskHost << " client host: " << client->hostName << std::endl;
+        Logger::log(LogLevelDebug,
+        std::string("maskNick: " + maskNick + " client nick: " + client->nickName));
+        Logger::log(LogLevelDebug,
+            std::string("maskUser: " + maskUser + " client user: " + client->userName));
+        Logger::log(LogLevelDebug,
+            std::string("maskHost: " + maskHost + " client host: " + client->hostName));
         if ((client->nickName == maskNick || maskNick == "*")
         && (client->userName == maskUser || maskUser == "*")
         && (client->hostName == maskHost || maskHost == "*")) {
@@ -104,7 +118,6 @@ bool Channel::canJoin(Client* client, const std::string& key) const {
     if (isBanned(client)) {
         return (false);
     }
-    // if user is banned
     return (true);
 }
 
@@ -122,7 +135,7 @@ void Channel::addBanMask(const std::string& mask) {
     bans.push_back(mask);
 }
 
-void Channel::removeBanMask(const std::string& mask) {//correct, should remove banmask
+void Channel::removeBanMask(const std::string& mask) {
     std::vector<std::string>::iterator pos = std::find(bans.begin(), bans.end(), mask);
     if (pos != bans.end()) {
         bans.erase(pos);

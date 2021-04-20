@@ -6,11 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:02:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:37:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "construct_reply.h"
+
+#include <vector>
 
 #include "reply.h"
 
@@ -34,7 +36,8 @@ std::string constructNoSuchNickReply(const std::string& cliNick, const std::stri
     return (reply);
 }
 
-std::string constructChanoPrivsNeededReply(const std::string& cliNick, const std::string& chanName) {
+std::string constructChanoPrivsNeededReply(
+    const std::string& cliNick, const std::string& chanName) {
     std::string reply;
     std::vector<std::string> replyParams;
 

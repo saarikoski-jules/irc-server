@@ -6,12 +6,15 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 11:18:38 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:29:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_ACTION_JOIN_H_
 #define SERVER_ACTION_JOIN_H_
+
+#include <vector>
+#include <string>
 
 #include "iserver_action.h"
 #include "channel.h"
@@ -19,7 +22,8 @@
 class ServerActionJoin: public IServerAction {
  public:
     ServerActionJoin(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& clientFd,
+        Client* cli, const std::string& prefix = "");
     void execute();
     ~ServerActionJoin() {}
  private:
@@ -29,4 +33,4 @@ class ServerActionJoin: public IServerAction {
     std::vector<std::string> params;
 };
 
-#endif  //SERVER_ACTION_JOIN_H_
+#endif  // SERVER_ACTION_JOIN_H_

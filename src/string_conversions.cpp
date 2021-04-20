@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:39:29 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/15 14:04:43 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:20:58 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <cinttypes>
 
 unsigned int StringConversion::toUint(const std::string& value) {
-    unsigned long num;
+    uint64_t num;
     std::stringstream ss;
 
     ss << value;

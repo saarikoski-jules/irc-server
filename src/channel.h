@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   channel.h                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
+/*   Updated: 2021/04/20 14:40:51 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CHANNEL_H_
 #define CHANNEL_H_
 
@@ -26,8 +38,8 @@ class Channel {
     void removeBanMask(const std::string& mask);
     void addBanMask(const std::string& mask);
     std::string getBanMask(size_t index) const;
+
  private:
-   //  Client* chanop;//turn into a vector
     std::vector<Client*> chanops;
     std::vector<Client*> clients;
     std::vector<std::string> bans;
@@ -36,8 +48,7 @@ class Channel {
     unsigned int limit;
     bool canJoin(Client* client, const std::string& key) const;
     bool isBanned(Client* client) const;
-    //ban mask
-    //v, ability to speak on moderated channel
+    // v, ability to speak on moderated channel
 };
 
 class ChannelException : public std::exception {

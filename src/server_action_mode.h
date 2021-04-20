@@ -6,22 +6,24 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:08:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:27:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_ACTION_MODE_H_
 #define SERVER_ACTION_MODE_H_
 
+#include <vector>
+#include <string>
+
 #include "iserver_action.h"
 #include "channel.h"
-
-#include <vector>
 
 class ServerActionMode: public IServerAction {
  public:
     ServerActionMode(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& clientFd,
+        Client* cli, const std::string& prefix = "");
     void execute();
     ~ServerActionMode() {}
  private:
@@ -39,4 +41,4 @@ class ServerActionMode: public IServerAction {
     Channel* chan;
 };
 
-#endif  // SERVER_ACTION_MODE_
+#endif  // SERVER_ACTION_MODE_H_

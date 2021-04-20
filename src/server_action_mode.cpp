@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:19:31 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 14:28:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ void ServerActionMode::execute() {
     for (size_t i = 0; i < params[1].length(); i++) {
         switch (params[1][i]) {
         case 'o':
-            modeO(sign, params[2]);//sometimes 2, smetimes 3
+            modeO(sign, params[2]);  // sometimes 2, smetimes 3
             break;
         case 'p':
         case 's':
@@ -167,7 +167,7 @@ void ServerActionMode::execute() {
             setLimit(sign, params[2]);
             break;
         case 'b':
-            setBanMask(sign, params[2]);//2, 3 or 4
+            setBanMask(sign, params[2]);  // 2, 3 or 4
             break;
             // can it only be one? or a list?
             //
@@ -175,12 +175,12 @@ void ServerActionMode::execute() {
             // TODO(Jules): b == ban mask
             // TODO(Jules): v == allow to speak on moderated channel
         case 'k':
-            setKey(sign, params[2]);//idk which param
+            setKey(sign, params[2]);  // idk which param
             break;
         default:
             sendUnknownModeReply(params[1][i]);
             break;
         }
     }
-    sendChannelModeIsReply(); //if mode has been edited
+    sendChannelModeIsReply();  // if mode has been edited
 }
