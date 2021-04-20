@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:28:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 18:21:40 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,31 +18,119 @@
 #include "construct_reply.h"
 #include "logger.h"
 
-void ServerActionMode::modeO(char sign, const std::string& user) {
+ServerActionMode::ServerActionMode(
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
+IServerAction(clientFd, 2, cli, prefix),
+params(params) {}
+
+void ServerActionMode::execute() {
+    Logger::log(LogLevelInfo, "Executing server action MODE");
+    try {
+        chan = server->findChannel(params[0]);
+    } catch (const std::exception& e) {
+        server->sendReplyToClient(clientFd, constructNoSuchChannelReply(cli->nickName, params[0]));
+        return;
+    }
+    if (!chan->isOperator(cli)) {
+        std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
+        server->sendReplyToClient(clientFd, reply);
+    }
+    char sign = '+';
+    if (params[1][0] == '-') {
+        sign = '-';
+    }
+    std::string returnOptions;
+    std::vector<std::string> returnParams;
+    bool success;
+    for (size_t i = 0; i < params[1].length(); i++) {
+        switch (params[1][i]) {
+        case 'p':
+        case 's':
+        case 'i':
+        case 't':
+        case 'n':
+        case 'm':
+            success = editMode(sign, params[1][i]);
+            break;
+        case 'o':
+            success = modeO(sign, params[i + 1]);  // sometimes 2, smetimes 3
+            break;
+        case 'l':
+            success = setLimit(sign, params[i + 1]);
+            break;
+        case 'b':
+            success = setBanMask(sign, params[i + 1]);  // 2, 3 or 4
+            break;
+            // +kl, +lk happen in order, so you can input +kl pass 10 or +lk 10 pass.
+            // if +lk pass 10, returns string +k 10, password is 10, l fails
+            // can be a list, params have to be in the same order as modes
+            // can it only be one? or a list?
+            //
+            // user in form of nick!user@host, wildcard allowed, look up for each type
+            // TODO(Jules): v == allow to speak on moderated channel
+        case 'k':
+            success = setKey(sign, params[i + 1]);  // idk which param
+            break;
+        default:
+            sendUnknownModeReply(params[1][i]);
+            break;
+        }
+        if (success) {
+            returnOptions.push_back(params[1][i]);
+            if (std::string("molbk").find(params[1][i])) {
+                returnParams.push_back(params[i + 1]);
+            }
+        }
+    }
+    if (returnParams.size() != 0) {
+        sendChannelModeIsReply(returnOptions, chan->name, returnParams);  // if mode has been edited
+    }
+}
+
+bool ServerActionMode::setBanMask(char sign, const std::string& mask) {
+    if (mask == "" && sign == '+') {
+        return (listBanMasks());
+    } else {
+        size_t nickEnd = mask.find('!');
+        size_t userEnd = mask.find('@');
+        if (userEnd != std::string::npos && userEnd > nickEnd && *(mask.end()) != '@') {
+            if (sign == '-') {
+                chan->removeBanMask(mask);
+            } else {
+                chan->addBanMask(mask);
+            }
+        }
+    }
+    return (true);
+}
+
+bool ServerActionMode::modeO(char sign, const std::string& user) {
     Client* target;
     try {
         target = server->getClientByNick(user);
     } catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(cli->nickName, user);
         server->sendReplyToClient(clientFd, reply);
-        return;
+        return (false);
     }
     if (sign == '-') {
         chan->removeOperator(target);
     } else {
         chan->addOperator(target);
     }
+    return (true);
 }
 
-void ServerActionMode::editMode(char sign, char mode) {
+bool ServerActionMode::editMode(char sign, char mode) {
     if (sign == '-') {
         chan->removeMode(mode);
     } else {
         chan->addMode(mode);
     }
+    return (true);
 }
 
-void ServerActionMode::setLimit(char sign, const std::string& limit) {
+bool ServerActionMode::setLimit(char sign, const std::string& limit) {
     if (sign == '-') {
         chan->removeMode('l');
     } else {
@@ -51,13 +139,14 @@ void ServerActionMode::setLimit(char sign, const std::string& limit) {
             uintLimit = StringConversion::toUint(limit);
         } catch (const std::exception& e) {
             // TODO(Jules): handle bad limit
-            return;
+            return (false);
         }
         chan->setLimit(uintLimit);
     }
+    return (true);
 }
 
-void ServerActionMode::setKey(char sign, const std::string& key) {
+bool ServerActionMode::setKey(char sign, const std::string& key) {
     if (sign == '-') {
         chan->removeMode('k');
         chan->changeKey("");
@@ -65,9 +154,10 @@ void ServerActionMode::setKey(char sign, const std::string& key) {
         chan->addMode('k');
         chan->changeKey(key);
     }
+    return (true);
 }
 
-void ServerActionMode::listBanMasks() const {
+bool ServerActionMode::listBanMasks() const {
     size_t i = 0;
     std::vector<std::string> replyParams;
     replyParams.push_back(cli->nickName);
@@ -88,38 +178,23 @@ void ServerActionMode::listBanMasks() const {
             }
             std::string reply = ReplyFactory::newReply(RPL_ENDOFBANLIST, replyParams);
             server->sendReplyToClient(clientFd, reply);
-            return;
+            return (false);//??
         }
     }
 }
 
-void ServerActionMode::setBanMask(char sign, const std::string& mask) {
-    if (mask == "" && sign == '+') {
-        listBanMasks();
-    } else {
-        size_t nickEnd = mask.find('!');
-        size_t userEnd = mask.find('@');
-        if (userEnd != std::string::npos && userEnd > nickEnd && *(mask.end()) != '@') {
-            if (sign == '-') {
-                chan->removeBanMask(mask);
-            } else {
-                chan->addBanMask(mask);
-            }
-        }
-    }
-}
-
-ServerActionMode::ServerActionMode(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 2, cli, prefix),
-params(params) {}
-
-void ServerActionMode::sendChannelModeIsReply() const {
+void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const {
     std::string reply;
     std::vector<std::string> replyParams;
 
     replyParams.push_back(cli->nickName);
-    replyParams.insert(replyParams.end(), params.begin(), params.end());
+    replyParams.push_back(channelName);
+    replyParams.push_back(modes);
+    std::string replyString;
+    for (std::vector<std::string>::const_iterator i = params.begin(); i != params.end(); i++) {
+        replyString = std::string(replyString + *i + " ");
+    }
+    replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
     server->sendReplyToClient(clientFd, reply);
 }
@@ -132,55 +207,4 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
     params.push_back(cli->nickName);
     params.push_back(character);
     reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
-}
-
-void ServerActionMode::execute() {
-    Logger::log(LogLevelInfo, "Executing server action MODE");
-    try {
-        chan = server->findChannel(params[0]);
-    } catch (const std::exception& e) {
-        server->sendReplyToClient(clientFd, constructNoSuchChannelReply(cli->nickName, params[0]));
-        return;
-    }
-    if (!chan->isOperator(cli)) {
-        std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
-        server->sendReplyToClient(clientFd, reply);
-    }
-    char sign = '+';
-    if (params[1][0] == '-') {
-        sign = '-';
-    }
-    for (size_t i = 0; i < params[1].length(); i++) {
-        switch (params[1][i]) {
-        case 'o':
-            modeO(sign, params[2]);  // sometimes 2, smetimes 3
-            break;
-        case 'p':
-        case 's':
-        case 'i':
-        case 't':
-        case 'n':
-        case 'm':
-            editMode(sign, params[1][i]);
-            break;
-        case 'l':
-            setLimit(sign, params[2]);
-            break;
-        case 'b':
-            setBanMask(sign, params[2]);  // 2, 3 or 4
-            break;
-            // can it only be one? or a list?
-            //
-            // user in form of nick!user@host, wildcard allowed, look up for each type
-            // TODO(Jules): b == ban mask
-            // TODO(Jules): v == allow to speak on moderated channel
-        case 'k':
-            setKey(sign, params[2]);  // idk which param
-            break;
-        default:
-            sendUnknownModeReply(params[1][i]);
-            break;
-        }
-    }
-    sendChannelModeIsReply();  // if mode has been edited
 }

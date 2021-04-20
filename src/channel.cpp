@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:43:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 17:15:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ bool Channel::canJoin(Client* client, const std::string& key) const {
         return (false);
     }
     // if (modes.find('i') && client has no invite)
-    if (modes.find('l') != std::string::npos && limit >= clients.size()) {
+    if (modes.find('l') != std::string::npos && limit <= clients.size()) {
         return (false);
     }
     if (isBanned(client)) {
