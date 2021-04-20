@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 18:02:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 12:07:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <queue>
 #include <vector>
 
-#include "server_action.h"
+#include "iserver_action.h"
 #include "client.h"
 
 #define MAX_MESSAGE_SIZE 512

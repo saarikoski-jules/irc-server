@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/15 11:50:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 12:08:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "iserver_action.h"
-#include "server_action.h"
 
 typedef struct actionFormat_s actionFormat_t;
 

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/16 18:16:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 12:08:17 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include "utils.h"
 
 #include "logger.h"
-#include "server_action.h"
+#include "iserver_action.h"
 #include "action_factory.h"
 
 Socket::Socket(std::queue<IServerAction*>* actions) :

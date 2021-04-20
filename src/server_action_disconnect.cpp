@@ -1,0 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   server_action_disconnect.cpp                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
+/*   Updated: 2021/04/20 11:44:48 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "server_action_disconnect.h"
+
+#include "logger.h"
+#include "server.h"
+
+ServerActionDisconnect::ServerActionDisconnect(
+    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
+IServerAction(clientFd, 0, cli, prefix),
+params(params) {}
+
+void ServerActionDisconnect::execute() {
+    Logger::log(LogLevelInfo, "server action disconnect");
+    server->deleteClient(clientFd);
+}

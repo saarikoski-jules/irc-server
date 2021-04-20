@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/15 11:41:08 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/20 12:08:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "socket.h"
 #include "client.h"
 #include "message_parser.h"
-#include "server_action.h"
+#include "iserver_action.h"
 #include "channel.h"
 
 class Server {
