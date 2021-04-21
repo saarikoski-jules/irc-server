@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 18:21:40 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 12:11:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,23 +25,31 @@ params(params) {}
 
 void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
+    char sign = '+';
     try {
         chan = server->findChannel(params[0]);
-    } catch (const std::exception& e) {
+        if (!chan->isOperator(cli)) {
+            std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
+            server->sendReplyToClient(clientFd, reply);
+            return;
+        }
+        if (params[1][0] == '-') {
+            sign = '-';
+        }
+        execByMode(sign);
+    } catch (const std::out_of_range& e) {
         server->sendReplyToClient(clientFd, constructNoSuchChannelReply(cli->nickName, params[0]));
-        return;
+    } catch (const std::exception& e) {
+        std::string errorMsg(e.what());
+        Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
     }
-    if (!chan->isOperator(cli)) {
-        std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
-        server->sendReplyToClient(clientFd, reply);
-    }
-    char sign = '+';
-    if (params[1][0] == '-') {
-        sign = '-';
-    }
+}
+
+void ServerActionMode::execByMode(char sign) {
     std::string returnOptions;
     std::vector<std::string> returnParams;
     bool success;
+
     for (size_t i = 0; i < params[1].length(); i++) {
         switch (params[1][i]) {
         case 'p':
@@ -53,23 +61,17 @@ void ServerActionMode::execute() {
             success = editMode(sign, params[1][i]);
             break;
         case 'o':
-            success = modeO(sign, params[i + 1]);  // sometimes 2, smetimes 3
+            success = modeO(sign, params[i + 1]);
             break;
         case 'l':
             success = setLimit(sign, params[i + 1]);
             break;
         case 'b':
-            success = setBanMask(sign, params[i + 1]);  // 2, 3 or 4
+            success = setBanMask(sign, params[i + 1]);
             break;
-            // +kl, +lk happen in order, so you can input +kl pass 10 or +lk 10 pass.
-            // if +lk pass 10, returns string +k 10, password is 10, l fails
-            // can be a list, params have to be in the same order as modes
-            // can it only be one? or a list?
-            //
-            // user in form of nick!user@host, wildcard allowed, look up for each type
             // TODO(Jules): v == allow to speak on moderated channel
         case 'k':
-            success = setKey(sign, params[i + 1]);  // idk which param
+            success = setKey(sign, params[i + 1]);
             break;
         default:
             sendUnknownModeReply(params[1][i]);
@@ -83,7 +85,8 @@ void ServerActionMode::execute() {
         }
     }
     if (returnParams.size() != 0) {
-        sendChannelModeIsReply(returnOptions, chan->name, returnParams);  // if mode has been edited
+        returnOptions.insert(returnOptions.begin(), sign);
+        sendChannelModeIsReply(returnOptions, chan->name, returnParams);
     }
 }
 

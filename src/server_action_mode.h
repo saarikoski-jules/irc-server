@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 17:35:53 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 11:27:11 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class ServerActionMode: public IServerAction {
     void execute();
     ~ServerActionMode() {}
  private:
+    void execByMode(char sign);
     Channel* getChannel(const std::string& name, const std::string& key);
     std::vector<std::string> params;
     bool modeO(char sign, const std::string& user);

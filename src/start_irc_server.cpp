@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:37:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/20 14:36:20 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/02 10:52:42 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ static void startNewIrcServerFromArguments(char* const* argv) {
         server.run();
     } catch (const std::out_of_range& e) {
         throw ArgumentException("Port number is not in range of valid ports", true);
-        // TODO(Jules): any uncaught exception will fall into this error,
-        // create separate error for server.run()
     }
 }
 
