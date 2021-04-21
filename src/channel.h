@@ -4,19 +4,20 @@
 #include <string>
 #include <vector>
 
+#include "connection.h"
 #include "client.h"
 #include "reply.h"
 
 class Channel {
  public:
-    Channel(const std::string& name, Client* chanop);
+    Channel(const std::string& name, Connection* chanop);
     const std::string name;
-    void addClient(Client* client, const std::string& key);
+    void addClient(Connection* client, const std::string& key);
     bool topicIsSet;
     std::string topic;
  private:
-    Client* chanop;
-    std::vector<Client *> clients;
+    Connection* chanop;
+    std::vector<Connection *> connections;
     std::string key;
 };
 

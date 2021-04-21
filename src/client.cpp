@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 12:50:28 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/09 17:55:50 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/21 19:00:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,11 @@
 
 #include <iostream>
 
-Client::Client(const int fd) :
-fd(fd),
+Client::Client() :
 nickName("*"),
 registered(false) {
 }
 
-Client::Client(const Client& client) :
-fd(client.fd),
-registered(false) {
-    *this = client;
-}
-
-Client& Client::operator = (const Client& client) {
-    nickName = client.nickName;
-    return (*this);
-}
 
 std::ostream& operator << (std::ostream& out, const Client& client) {
     std::cout << "Client (" << std::endl

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/16 09:47:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 18:23:09 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,17 @@
 #include "logger.h"
 #include "server.h"
 #include "utils.h"
+#include "connection.h"
 
 ServerActionNick::ServerActionNick(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
 
 void ServerActionNick::execute() {
     Logger::log(LogLevelInfo, "Executing server action NICK");
     try {
-        if (params.size() >= 1) {
+        if (params.size() >= requiredParams) {
             newNickName = &params[0];
             handleNickNameChange();
         } else {
@@ -42,9 +43,11 @@ void ServerActionNick::execute() {
 
 void ServerActionNick::handleNickNameChange() const {
     if (server->nicknameExists(*newNickName) == false) {
-        cli->nickName = *newNickName;
-        if (cli->userName.empty() == false) {
-            cli->registered = true;
+        Connection* connection = server->getConnectionByFd(fd);
+        Client* client = &connection->client;
+        client->nickName = *newNickName;
+        if (client->userName.empty() == false) {
+            connection->connectionType = Connection::ClientType;
         }
     } else {
         handleNickNameInUse();
@@ -52,42 +55,54 @@ void ServerActionNick::handleNickNameChange() const {
 }
 
 void ServerActionNick::handleNickNameInUse() const {
+    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
-    params.push_back(cli->nickName);
+    params.push_back(connection->client.nickName);
     params.push_back(*newNickName);
-    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {
+    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
-    params.push_back(cli->nickName);
-    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
+    params.push_back(connection->client.nickName);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
 ServerActionUser::ServerActionUser(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 4, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 4, prefix),
 params(params) {}
 
 void ServerActionUser::execute() {
     Logger::log(LogLevelInfo, "server action accept");
     try {
-        const std::string& newUserName = params[0];
-        const std::string& newHostName = params[1];
-        const std::string& newServerName = params[2];
-        const std::string& newRealName = params[3];
-        if (server->usernameExists(newUserName) == false) {
-            cli->userName = newUserName;
-            cli->hostName = newHostName;
-            cli->serverName = newServerName;
-            cli->realName = newRealName;
-            if (cli->nickName != "*") {
-                cli->registered = true;
+        if (params.size() >= requiredParams) {
+            Connection* connection = server->getConnectionByFd(fd);
+            Client* client = &connection->client;
+            if (connection->connectionType == Connection::NoType) {
+                newUserName = &params[0];
+                newHostName = &params[1];
+                newServerName = &params[2];
+                newRealName = &params[3];
+                client->userName = *newUserName;
+                client->hostName = *newHostName;
+                client->serverName = *newServerName;
+                client->realName = *newRealName;
+                if (client->nickName != "*") {
+                    connection->connectionType = Connection::ClientType;
+                }
+            } else {
+                std::vector<std::string> params;
+                params.push_back(client->nickName);
+                server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_ALREADYREGISTERED, params));
             }
-            std::cout << *cli << std::endl;
         } else {
-            Logger::log(LogLevelError, "Something went wrong while setting user info");
-            // server->sendErrorToClient(ERR_NONICKNAMEGIVEN, clientFd);
+            Connection* connection = server->getConnectionByFd(fd);
+            std::vector<std::string> params;
+            params.push_back(connection->client.nickName);
+            params.push_back("USER");
+            server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
         }
         // TODO(Jelle) Handle server error's
         // TODO(Jelle) Handle server2server communication
@@ -97,27 +112,16 @@ void ServerActionUser::execute() {
 }
 
 ServerActionJoin::ServerActionJoin(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
-
-Channel* ServerActionJoin::getChannel(
-    const std::string& name, const std::string& key) {
-    Channel* chan;
-    try {
-        chan = server->findChannel(name);
-        chan->addClient(server->getClientByFd(clientFd), key);
-    } catch (const std::exception &e) {
-        chan = server->createNewChannel(name, clientFd);
-    }
-    return (chan);
-}
 
 void ServerActionJoin::joinServer(const std::string& name, const std::string& key) {
     Channel* chan = getChannel(name, key);
     std::string reply;
     std::vector<std::string> replyParams;
-    replyParams.push_back(cli->nickName);
+    Connection* connection = server->getConnectionByFd(fd);
+    replyParams.push_back(connection->client.nickName);
     replyParams.push_back(chan->name);
     if (chan->topicIsSet) {
         replyParams.push_back(chan->topic);
@@ -125,15 +129,29 @@ void ServerActionJoin::joinServer(const std::string& name, const std::string& ke
     } else {
         reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
     }
-    server->sendReplyToClient(clientFd, reply);
+    server->sendReplyToClient(fd, reply);
+}
+
+Channel* ServerActionJoin::getChannel(
+    const std::string& name, const std::string& key) {
+    Channel* chan;
+    try {
+        chan = server->findChannel(name);
+        chan->addClient(server->getConnectionByFd(fd), key);
+    } catch (const std::exception &e) {
+        chan = server->createNewChannel(name, fd);
+    }
+    return (chan);
 }
 
 void ServerActionJoin::handleNeedMoreParams() const {
+    Connection* connection = server->getConnectionByFd(fd);
+    Client* client = &connection->client;
     std::vector<std::string> errParams;
-    errParams.push_back(cli->nickName);
+    errParams.push_back(client->nickName);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
-    server->sendReplyToClient(clientFd, errReply);
+    server->sendReplyToClient(fd, errReply);
 }
 
 void ServerActionJoin::execute() {
@@ -157,30 +175,30 @@ void ServerActionJoin::execute() {
         try {
             joinServer(chans[i], key);
         } catch (const ChannelException& e) {
-            server->sendReplyToClient(clientFd, e.what());
+            server->sendReplyToClient(fd, e.what());
         }
     }
 }
 
 ServerActionAccept::ServerActionAccept(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 0, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 0, prefix),
 params(params) {}
 
 void ServerActionAccept::execute() {
     Logger::log(LogLevelInfo, "server action accept");
-    server->acceptNewClient(clientFd);
+    server->acceptNewConnection(fd);
 }
 
 ServerActionReceive::ServerActionReceive(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
 
 void ServerActionReceive::execute() {
     Logger::log(LogLevelInfo, "server action receive");
     MessageParser parser;
-    std::vector<IServerAction*> newActions = parser.parse(params[0], clientFd, cli);
+    std::vector<IServerAction*> newActions = parser.parse(params[0], fd);
     while (!newActions.empty()) {
         server->addNewAction(newActions.front());
         newActions.erase(newActions.begin());
@@ -188,11 +206,11 @@ void ServerActionReceive::execute() {
 }
 
 ServerActionDisconnect::ServerActionDisconnect(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 0, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 0, prefix),
 params(params) {}
 
 void ServerActionDisconnect::execute() {
     Logger::log(LogLevelInfo, "server action disconnect");
-    server->deleteClient(clientFd);
+    server->deleteConnection(fd);
 }

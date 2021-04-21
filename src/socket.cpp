@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 18:01:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 18:26:44 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,12 @@
 #include <fcntl.h>
 #include <string>
 #include <vector>
-#include "utils.h"
+#include <map>
 
 #include "logger.h"
+#include "utils.h"
+#include "connection.h"
+#include "server_connection.h"
 #include "server_action.h"
 #include "action_factory.h"
 
@@ -54,59 +57,79 @@ void Socket::bindAndListenToPort(const int& port) {
 
 void Socket::checkNewConnections() {
     int addrlen;
-    int clientFd;
+    int fd;
     IServerAction* action;
 
     addrlen = sizeof(addr);
-    clientFd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
+    fd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
         reinterpret_cast<socklen_t*>(&addrlen));
-    if (clientFd >= 0) {
-        actionFactory factory;
-        fcntl(clientFd, F_SETFL, O_NONBLOCK);
-        std::vector<std::string> vec;
-        action = factory.newAction("ACCEPT", vec, clientFd, NULL);
-        actions->push(action);
+    if (fd >= 0) {
         Logger::log(LogLevelInfo, "Recieved a connection request");
+        fcntl(fd, F_SETFL, O_NONBLOCK);
+        actionFactory factory;
+        std::vector<std::string> vec;
+        action = factory.newAction("ACCEPT", vec, fd);
+        actions->push(action);
     } else {
         throw SocketException("No connection request detected", false);
     }
 }
 
-int Socket::createFdSet(std::vector<Client>* clients, fd_set* set) {
+void Socket::checkConnectionAndNewData(std::map<const int, Connection>* connections) {
+    struct timeval waitFor;
+
+    waitFor.tv_sec = 0;
+    waitFor.tv_usec = 100000;
+
+    int maxFd = createFdSet(connections);
+    int status = select(maxFd + 1, &readSet, NULL, NULL, &waitFor);
+    if (status != 0) {
+        readFromFds(maxFd);
+    } else {
+        throw SocketException("Select timeout", false);
+    }
+}
+
+int Socket::createFdSet(std::map<const int, Connection>* connections) {
     fd_set fdSet;
     FD_ZERO(&fdSet);
     int maxFd = 0;
 
-    for (std::vector<Client>::iterator i = clients->begin(); i != clients->end(); i++) {
-        FD_SET((*i).fd, &fdSet);
-        if ((*i).fd > maxFd) {
-            maxFd = (*i).fd;
+    // TODO(Jelle) Maybe initialize once and add to it?
+    std::map<const int, Connection>::iterator it;
+    for (it = connections->begin(); it != connections->end(); it++) {
+        const Connection& connection = it->second;
+        const int& fd = connection.fd;
+        FD_SET(fd, &fdSet);
+        if (fd > maxFd) {
+            maxFd = fd;
         }
     }
-    *set = fdSet;
+    readSet = fdSet;
     return (maxFd);
 }
 
-void Socket::readFromFds(std::vector<Client>* clients, fd_set readSet) {
+void Socket::readFromFds(const int& maxFd) {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
     IServerAction *action;
     actionFactory factory;
 
-    for (std::vector<Client>::iterator i = clients->begin(); i != clients->end(); i++) {
-        Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
-        if (FD_ISSET((*i).fd, &readSet)) {
-            chars_read = read((*i).fd, data_buffer, MAX_MESSAGE_SIZE);
-            std::vector<std::string> vec;
+    for (int fd = 0; fd <= maxFd; fd++) {
+        if (FD_ISSET(fd, &readSet)) {
+            Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
+            chars_read = read(fd, data_buffer, MAX_MESSAGE_SIZE);
             if (chars_read > 0) {
+                std::vector<std::string> vec;
                 vec.push_back(data_buffer);
-                action = factory.newAction("RECEIVE", vec, (*i).fd, &(*i));
+                action = factory.newAction("RECEIVE", vec, fd);
                 actions->push(action);
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
             } else {
-                action = factory.newAction("DISCONNECT", vec, (*i).fd, &(*i));
+                std::vector<std::string> vec;
+                action = factory.newAction("DISCONNECT", vec, fd);
                 actions->push(action);
             }
         }
@@ -114,36 +137,19 @@ void Socket::readFromFds(std::vector<Client>* clients, fd_set readSet) {
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
 }
 
-void Socket::checkConnectionAndNewDataFrom(std::vector<Client>* clients) {
-    struct timeval waitFor;
-    fd_set readSet;
-
-    waitFor.tv_sec = 0;
-    waitFor.tv_usec = 100000;
-
-    int maxFd = createFdSet(clients, &readSet);
-    int status = select(maxFd + 1, &readSet, NULL, NULL, &waitFor);
-
-    if (status != 0) {
-        readFromFds(clients, readSet);
-    } else {
-        throw SocketException("Select timeout", false);
-    }
-}
-
-void Socket::sendData(const int& clientFd, const std::string& msg) const {
+void Socket::sendData(const int& fd, const std::string& msg) const {
     const char* cmsg = msg.c_str();
     const size_t msg_len = msg.length();
     struct timeval waitFor;
     fd_set writeSet;
 
     FD_ZERO(&writeSet);
-    FD_SET(clientFd, &writeSet);
+    FD_SET(fd, &writeSet);
     waitFor.tv_sec = 0;
     waitFor.tv_usec = 0;
 
-    if (select(clientFd + 1, NULL, &writeSet, NULL, &waitFor) > 0) {
-        if (send(clientFd, cmsg, msg_len, 0) <= 0) {
+    if (select(fd + 1, NULL, &writeSet, NULL, &waitFor) > 0) {
+        if (send(fd, cmsg, msg_len, 0) <= 0) {
             throw SocketException("No data sent", false);
         }
     }

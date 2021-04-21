@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 18:50:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 13:28:53 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,28 @@ typedef struct actionFormat_s actionFormat_t;
 class actionFactory {
  private:
     IServerAction* accept(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* receive(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* disconnect(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* nick(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* user(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* join(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;
  public:
     IServerAction* newAction(
         std::string cmd, std::vector<std::string> params,
-        const int& clientFd, Client* cli, const std::string& prefix = "");
+        const int& fd, const std::string& prefix = "");
 };
 
 typedef struct  actionFormat_s {
     IServerAction* (actionFactory::*action)(
-        std::vector<std::string>, const int& clientFd, Client* cli, const std::string& prefix);
+        std::vector<std::string>, const int& fd, const std::string& prefix);
     std::string type;
 }               actionFormat_t;
 

@@ -4,7 +4,7 @@
 
 # Compiler settings - Customizable
 CC = clang++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98 -fsanitize=address
 LDFLAGS =
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
@@ -18,6 +18,8 @@ SRCLST = main \
 		socket \
 		utils \
 		start_irc_server \
+		connection \
+		server_connection \
 		server \
 		server_action \
 		client \
