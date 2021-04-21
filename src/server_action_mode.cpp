@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 12:11:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 18:27:44 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,17 @@ void ServerActionMode::execute() {
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
     }
 }
-
+#include <iostream>
 void ServerActionMode::execByMode(char sign) {
     std::string returnOptions;
     std::vector<std::string> returnParams;
     bool success;
+    size_t i = 0;
 
-    for (size_t i = 0; i < params[1].length(); i++) {
+    if (params[1][0] == '+' || params[1][0] == '-') {
+        i++;
+    }
+    for (; i < params[1].length(); i++) {
         switch (params[1][i]) {
         case 'p':
         case 's':
@@ -71,20 +75,23 @@ void ServerActionMode::execByMode(char sign) {
             break;
             // TODO(Jules): v == allow to speak on moderated channel
         case 'k':
+            //change key handling, so that it's only removed when typing in a password/the correct password?
             success = setKey(sign, params[i + 1]);
             break;
         default:
+            success = false;
             sendUnknownModeReply(params[1][i]);
             break;
         }
         if (success) {
+            std::cout << "success on: " << params[1][i] << std::endl;
             returnOptions.push_back(params[1][i]);
-            if (std::string("molbk").find(params[1][i])) {
+            if (std::string("molbk").find(params[1][i]) != std::string::npos && params.size() > i + 1) {
                 returnParams.push_back(params[i + 1]);
             }
         }
     }
-    if (returnParams.size() != 0) {
+    if (returnOptions.length() > 0) {
         returnOptions.insert(returnOptions.begin(), sign);
         sendChannelModeIsReply(returnOptions, chan->name, returnParams);
     }
@@ -135,9 +142,14 @@ bool ServerActionMode::editMode(char sign, char mode) {
 
 bool ServerActionMode::setLimit(char sign, const std::string& limit) {
     if (sign == '-') {
+        std::cout << "here?" << std::endl;
+        chan->setLimit(UINT32_MAX);
         chan->removeMode('l');
     } else {
         unsigned int uintLimit;
+        if (limit == "") {
+            return (false);
+        }
         try {
             uintLimit = StringConversion::toUint(limit);
         } catch (const std::exception& e) {
@@ -145,6 +157,7 @@ bool ServerActionMode::setLimit(char sign, const std::string& limit) {
             return (false);
         }
         chan->setLimit(uintLimit);
+        chan->addMode('l');
     }
     return (true);
 }
@@ -153,9 +166,11 @@ bool ServerActionMode::setKey(char sign, const std::string& key) {
     if (sign == '-') {
         chan->removeMode('k');
         chan->changeKey("");
-    } else {
+    } else if (key != "") {
         chan->addMode('k');
         chan->changeKey(key);
+    } else {
+        return (false);
     }
     return (true);
 }
