@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 18:27:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/23 11:08:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,51 +44,62 @@ void ServerActionMode::execute() {
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
     }
 }
-#include <iostream>
+
 void ServerActionMode::execByMode(char sign) {
     std::string returnOptions;
     std::vector<std::string> returnParams;
-    bool success;
-    size_t i = 0;
+    std::vector<std::string>::iterator param = params.begin() + 2;
+    std::string::iterator mode = params[1].begin();
 
-    if (params[1][0] == '+' || params[1][0] == '-') {
-        i++;
+    if (*mode == '+' || *mode == '-') {
+        mode++;
     }
-    for (; i < params[1].length(); i++) {
-        switch (params[1][i]) {
+    for (; mode != params[1].end(); mode++) {
+        switch (*mode) {
         case 'p':
         case 's':
         case 'i':
         case 't':
         case 'n':
         case 'm':
-            success = editMode(sign, params[1][i]);
+            if (editMode(sign, *mode)) {
+                returnOptions.push_back(*mode);
+            }
             break;
         case 'o':
-            success = modeO(sign, params[i + 1]);
+            if (modeO(sign, *param)) {
+                returnOptions.push_back(*mode);
+                returnParams.push_back(*param);
+            }
+            param++;
             break;
         case 'l':
-            success = setLimit(sign, params[i + 1]);
+            if (setLimit(sign, *param)) {
+                returnOptions.push_back(*mode);
+                returnParams.push_back(*param);
+                
+            }
+            param++;
             break;
         case 'b':
-            success = setBanMask(sign, params[i + 1]);
+            if (setBanMask(sign, *param)) {
+                returnOptions.push_back(*mode);
+                returnParams.push_back(*param);
+
+            }
+            param++;
+            break;
+        case 'k':
+            if (setKey(sign, *param)) {
+                returnOptions.push_back(*mode);
+                returnParams.push_back(*param);
+            }
+            param++;
             break;
             // TODO(Jules): v == allow to speak on moderated channel
-        case 'k':
-            //change key handling, so that it's only removed when typing in a password/the correct password?
-            success = setKey(sign, params[i + 1]);
-            break;
         default:
-            success = false;
-            sendUnknownModeReply(params[1][i]);
+            sendUnknownModeReply(*mode);
             break;
-        }
-        if (success) {
-            std::cout << "success on: " << params[1][i] << std::endl;
-            returnOptions.push_back(params[1][i]);
-            if (std::string("molbk").find(params[1][i]) != std::string::npos && params.size() > i + 1) {
-                returnParams.push_back(params[i + 1]);
-            }
         }
     }
     if (returnOptions.length() > 0) {
@@ -142,7 +153,6 @@ bool ServerActionMode::editMode(char sign, char mode) {
 
 bool ServerActionMode::setLimit(char sign, const std::string& limit) {
     if (sign == '-') {
-        std::cout << "here?" << std::endl;
         chan->setLimit(UINT32_MAX);
         chan->removeMode('l');
     } else {
