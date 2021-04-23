@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 16:20:38 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 17:27:57 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class ServerActionNick: public IServerAction {
     ServerActionNick(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionNick() {}
  private:
     void handleNickNameChange() const;
@@ -41,6 +42,7 @@ class ServerActionUser: public IServerAction {
     ServerActionUser(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionUser() {}
  private:
     std::vector<std::string> params;
@@ -55,6 +57,7 @@ class ServerActionJoin: public IServerAction {
     ServerActionJoin(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionJoin() {}
  private:
     Channel* getChannel(const std::string& name, const std::string& key);
@@ -68,6 +71,7 @@ class ServerActionAccept: public IServerAction {
     ServerActionAccept(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionAccept() {}
  private:
     std::vector<std::string> params;
@@ -78,6 +82,7 @@ class ServerActionReceive: public IServerAction {
     ServerActionReceive(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionReceive() {}
  private:
     std::vector<std::string> params;
@@ -88,6 +93,7 @@ class ServerActionDisconnect: public IServerAction {
     ServerActionDisconnect(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionDisconnect() {}
  private:
     std::vector<std::string> params;

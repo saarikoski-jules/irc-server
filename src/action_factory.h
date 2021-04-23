@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 11:11:18 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 17:59:07 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ class actionFactory {
     IServerAction* user(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* join(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* send(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;

@@ -22,6 +22,7 @@ SRCLST = main \
 		server_connection \
 		server \
 		server_action \
+		server_action_send \
 		client \
 		logger \
 		reply \

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 12:25:57 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 17:52:13 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void Socket::checkConnectionAndNewData(std::map<const int, Connection>* connecti
     waitFor.tv_usec = 100000;
 
     int maxFd = createFdSet(connections);
-    int status = select(maxFd + 1, &readSet, NULL, NULL, &waitFor);
+    int status = select(maxFd + 1, &readSet, &writeSet, NULL, &waitFor);
     if (status != 0) {
         readFromFds(maxFd);
     } else {
@@ -106,6 +106,7 @@ int Socket::createFdSet(std::map<const int, Connection>* connections) {
         }
     }
     readSet = fdSet;
+    writeSet = fdSet;
     return (maxFd);
 }
 
@@ -137,21 +138,14 @@ void Socket::readFromFds(const int& maxFd) {
     // TODO(Jelle) See what happens when a message is longer than 512 bytes.
 }
 
-void Socket::sendData(const int& fd, const std::string& msg) const {
-    const char* cmsg = msg.c_str();
-    const size_t msg_len = msg.length();
-    struct timeval waitFor;
-    fd_set writeSet;
-
-    FD_ZERO(&writeSet);
-    FD_SET(fd, &writeSet);
-    waitFor.tv_sec = 0;
-    waitFor.tv_usec = 0;
-
-    if (select(fd + 1, NULL, &writeSet, NULL, &waitFor) > 0) {
-        if (send(fd, cmsg, msg_len, 0) <= 0) {
+void Socket::sendData(const int& fd, const std::string& msg) {
+    if (FD_ISSET(fd, &writeSet)) {
+        FD_CLR(fd, &writeSet);
+        if (send(fd, msg.c_str(), msg.length(), 0) <= 0) {
             throw SocketException("No data sent", false);
         }
+    } else {
+        throw SocketException("Fd not available for writing", false);
     }
 }
 
