@@ -21,8 +21,7 @@
 class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(
-        std::vector<std::string> params, const int& clientFd,
-        Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionNick() {}
  private:

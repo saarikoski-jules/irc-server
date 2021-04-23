@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:45:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/23 11:18:54 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,46 +36,46 @@ const actionFormat_t actionFactory::actionFormats[] = {
 
 // TODO(Jules): send numeric reply when needed
 IServerAction* actionFactory::accept(
-    std::vector<std::string> params, const int& clientFd, Client*, const std::string& prefix) {
-    return (new ServerActionAccept(params, clientFd, NULL, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionAccept(params, fd, prefix));
 }
 
 IServerAction* actionFactory::receive(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionReceive(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionReceive(params, fd, prefix));
 }
 
 IServerAction* actionFactory::disconnect(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionDisconnect(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionDisconnect(params, fd, prefix));
 }
 
 IServerAction* actionFactory::nick(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionNick(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionNick(params, fd, prefix));
 }
 
 IServerAction* actionFactory::user(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionUser(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionUser(params, fd, prefix));
 }
 
 IServerAction* actionFactory::join(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionJoin(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionJoin(params, fd, prefix));
 }
 
 IServerAction* actionFactory::mode(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) {
-    return (new ServerActionMode(params, clientFd, cli, prefix));
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionMode(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(
     std::string cmd, std::vector<std::string> params,
-    const int& clientFd, Client* cli, const std::string& prefix) {
+    const int& fd, const std::string& prefix) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
         if (actionFormats[i].type == cmd) {
-            return (this->*actionFormats[i].action)(params, clientFd, cli, prefix);
+            return (this->*actionFormats[i].action)(params, fd, prefix);
         }
     }
     throw ActionFactoryException("invalid action", false);
@@ -84,6 +84,11 @@ IServerAction* actionFactory::newAction(
 ActionFactoryException::ActionFactoryException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal action factory exception: " + message);
+    } else {
+        fullMessage = std::string("Action factory exception: " + message);
+    }
 }
 
 ActionFactoryException::~ActionFactoryException() throw() {
@@ -94,8 +99,5 @@ const bool& ActionFactoryException::isFatal() const {
 }
 
 const char* ActionFactoryException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal action factory exception: " + message).c_str());
-    }
-    return (std::string("Action factory exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

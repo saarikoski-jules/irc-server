@@ -18,16 +18,16 @@
 #include "server.h"
 
 ServerActionReceive::ServerActionReceive(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
 
 void ServerActionReceive::execute() {
-    // Logger::log(LogLevelInfo, "server action receive");
     MessageParser parser;
-    std::vector<IServerAction*> newActions = parser.parse(params[0], clientFd, cli);
+    std::vector<IServerAction*> newActions = parser.parse(params[0], fd);
     while (!newActions.empty()) {
         server->addNewAction(newActions.front());
         newActions.erase(newActions.begin());
     }
 }
+

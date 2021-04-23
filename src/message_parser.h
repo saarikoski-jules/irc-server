@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:18 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 17:20:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/23 11:17:06 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 
 class MessageParser {
  public:
-    std::vector<IServerAction*> parse(const std::string& data, const int& clientFd, Client* cli);
+    std::vector<IServerAction*> parse(const std::string& data, const int& fd);
  private:
-    IServerAction* createActionFromMessage(std::string command, const int& clientFd, Client* cli);
+    IServerAction* createActionFromMessage(std::string command, const int& fd);
     std::string genPrefix(std::string* message, std::string::iterator* it) const;
     std::string genCommand(std::string* message, std::string::iterator* it) const;
     std::vector<std::string> genParams(std::string* message, std::string::iterator* it) const;
@@ -41,6 +41,7 @@ class MessageParserException: public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // MESSAGE_PARSER_H_

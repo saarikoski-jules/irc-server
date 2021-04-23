@@ -22,7 +22,7 @@
 #include <utility>
 
 #include "socket.h"
-#include "client.h"
+#include "connection.h"
 #include "message_parser.h"
 #include "iserver_action.h"
 #include "channel.h"
@@ -30,25 +30,27 @@
 class Server {
  public:
     Server(const uint16_t& port, const std::string& password);
+    Server(Connection* startingServer, const uint16_t& port, const std::string& password);
     ~Server();
     void run();
+    // TODO(Jelle) generalized connection here.
     void sendReplyToClient(const int& clientFd, const std::string& message);
-    void acceptNewClient(const int& clientFd);
-    void deleteClient(const int& clientFd);
-    Client* getClientByFd(const int& clientFd);
-    Client* getClientByNick(const std::string& nick);
+    Connection* getClientByNick(const std::string& nick);
+    void acceptNewConnection(const int& fd);
+    void deleteConnection(const int& fd);
+    Connection* getConnectionByFd(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
  protected:
-    std::vector<Client> clients;
+    std::map<const int, Connection> connections;
  private:
     Server();
     std::queue<IServerAction*> actions;
     std::map<std::string, Channel> channels;
-    Socket socket;
+    Socket serverSocket;
     MessageParser parser;
     void validatePassword(std::string const& password) const;
     void openSocket(const uint16_t& port);
@@ -65,6 +67,7 @@ class ServerException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // SERVER_H_

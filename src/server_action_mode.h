@@ -22,8 +22,7 @@
 class ServerActionMode: public IServerAction {
  public:
     ServerActionMode(
-        std::vector<std::string> params, const int& clientFd,
-        Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
     void execute();
     ~ServerActionMode() {}
  private:
@@ -39,6 +38,7 @@ class ServerActionMode: public IServerAction {
     void sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const;
     void sendUnknownModeReply(char c) const;
     Channel* chan;
+    Client* cli;
 };
 
 #endif  // SERVER_ACTION_MODE_H_

@@ -22,14 +22,14 @@
 #include "string_conversions.h"
 
 ServerActionNick::ServerActionNick(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
 
 void ServerActionNick::execute() {
     Logger::log(LogLevelInfo, "Executing server action NICK");
     try {
-        if (params.size() >= 1) {
+        if (params.size() >= requiredParams) {
             newNickName = &params[0];
             handleNickNameChange();
         } else {
@@ -43,9 +43,11 @@ void ServerActionNick::execute() {
 
 void ServerActionNick::handleNickNameChange() const {
     if (server->nicknameExists(*newNickName) == false) {
-        cli->nickName = *newNickName;
-        if (cli->userName.empty() == false) {
-            cli->registered = true;
+        Connection* connection = server->getConnectionByFd(fd);
+        Client* client = &connection->client;
+        client->nickName = *newNickName;
+        if (client->userName.empty() == false) {
+            connection->connectionType = Connection::ClientType;
         }
     } else {
         handleNickNameInUse();
@@ -53,16 +55,18 @@ void ServerActionNick::handleNickNameChange() const {
 }
 
 void ServerActionNick::handleNickNameInUse() const {
+    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
-    params.push_back(cli->nickName);
+    params.push_back(connection->client.nickName);
     params.push_back(*newNickName);
-    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {
+    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
-    params.push_back(cli->nickName);
-    server->sendReplyToClient(clientFd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
+    params.push_back(connection->client.nickName);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
 // TODO(Jules): construct general channel replies from functions, maybe under reply?

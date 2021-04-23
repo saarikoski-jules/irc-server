@@ -19,18 +19,20 @@
 #include "logger.h"
 
 ServerActionMode::ServerActionMode(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 2, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 2, prefix),
 params(params) {}
 
 void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
     char sign = '+';
-    try {
+    Connection* connection = server->getConnectionByFd(fd);
+    Client* cli = &connection->client;
+	try {
         chan = server->findChannel(params[0]);
-        if (!chan->isOperator(cli)) {
+        if (!chan->isOperator(connection)) {
             std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
-            server->sendReplyToClient(clientFd, reply);
+            server->sendReplyToClient(fd, reply);
             return;
         }
         if (params[1][0] == '-') {
@@ -38,7 +40,7 @@ void ServerActionMode::execute() {
         }
         execByMode(sign);
     } catch (const std::out_of_range& e) {
-        server->sendReplyToClient(clientFd, constructNoSuchChannelReply(cli->nickName, params[0]));
+        server->sendReplyToClient(fd, constructNoSuchChannelReply(cli->nickName, params[0]));
     } catch (const std::exception& e) {
         std::string errorMsg(e.what());
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
@@ -85,7 +87,6 @@ void ServerActionMode::execByMode(char sign) {
             if (setBanMask(sign, *param)) {
                 returnOptions.push_back(*mode);
                 returnParams.push_back(*param);
-
             }
             param++;
             break;
@@ -126,12 +127,12 @@ bool ServerActionMode::setBanMask(char sign, const std::string& mask) {
 }
 
 bool ServerActionMode::modeO(char sign, const std::string& user) {
-    Client* target;
+    Connection* target;
     try {
         target = server->getClientByNick(user);
     } catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(cli->nickName, user);
-        server->sendReplyToClient(clientFd, reply);
+        server->sendReplyToClient(fd, reply);
         return (false);
     }
     if (sign == '-') {
@@ -199,13 +200,13 @@ bool ServerActionMode::listBanMasks() const {
             }
             replyParams.push_back(m);
             std::string reply = ReplyFactory::newReply(RPL_BANLIST, replyParams);
-            server->sendReplyToClient(clientFd, reply);
+            server->sendReplyToClient(fd, reply);
         } catch (const std::exception& e) {
             if (replyParams.size() == 3) {
                 replyParams.pop_back();
             }
             std::string reply = ReplyFactory::newReply(RPL_ENDOFBANLIST, replyParams);
-            server->sendReplyToClient(clientFd, reply);
+            server->sendReplyToClient(fd, reply);
             return (false);//??
         }
     }
@@ -224,7 +225,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     }
     replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
-    server->sendReplyToClient(clientFd, reply);
+    server->sendReplyToClient(fd, reply);
 }
 
 void ServerActionMode::sendUnknownModeReply(char c) const {

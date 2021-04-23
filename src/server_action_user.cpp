@@ -20,29 +20,39 @@
 #include "logger.h"
 
 ServerActionUser::ServerActionUser(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 4, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 4, prefix),
 params(params) {}
 
 void ServerActionUser::execute() {
     Logger::log(LogLevelInfo, "server action accept");
     try {
-        const std::string& newUserName = params[0];
-        const std::string& newHostName = params[1];
-        const std::string& newServerName = params[2];
-        const std::string& newRealName = params[3];
-        if (server->usernameExists(newUserName) == false) {
-            cli->userName = newUserName;
-            cli->hostName = newHostName;
-            cli->serverName = newServerName;
-            cli->realName = newRealName;
-            if (cli->nickName != "*") {
-                cli->registered = true;
+        if (params.size() >= requiredParams) {
+            Connection* connection = server->getConnectionByFd(fd);
+            Client* client = &connection->client;
+            if (connection->connectionType == Connection::NoType) {
+                newUserName = &params[0];
+                newHostName = &params[1];
+                newServerName = &params[2];
+                newRealName = &params[3];
+                client->userName = *newUserName;
+                client->hostName = *newHostName;
+                client->serverName = *newServerName;
+                client->realName = *newRealName;
+                if (client->nickName != "*") {
+                    connection->connectionType = Connection::ClientType;
+                }
+            } else {
+                std::vector<std::string> params;
+                params.push_back(client->nickName);
+                server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_ALREADYREGISTERED, params));
             }
-            std::cout << *cli << std::endl;
         } else {
-            Logger::log(LogLevelError, "Something went wrong while setting user info");
-            // server->sendErrorToClient(ERR_NONICKNAMEGIVEN, clientFd);
+            Connection* connection = server->getConnectionByFd(fd);
+            std::vector<std::string> params;
+            params.push_back(connection->client.nickName);
+            params.push_back("USER");
+            server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
         }
         // TODO(Jelle) Handle server error's
         // TODO(Jelle) Handle server2server communication
@@ -50,3 +60,4 @@ void ServerActionUser::execute() {
         // TODO(Jelle) Handle non valid client fd
     }
 }
+

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 12:07:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/23 12:25:31 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <map>
 
 #include "iserver_action.h"
+#include "server_connection.h"
 #include "client.h"
+#include "connection.h"
 
 #define MAX_MESSAGE_SIZE 512
 
@@ -28,14 +31,15 @@ class Socket {
     explicit Socket(std::queue<IServerAction*>* actions);
     void bindAndListenToPort(const int& port);
     void checkNewConnections();
-    void checkConnectionAndNewDataFrom(std::vector<Client>* clients);
+    void checkConnectionAndNewData(std::map<const int, Connection>* connections);
     void sendData(const int& clientFd, const std::string& msg) const;
  private:
     Socket();
     int socketFd;
     struct sockaddr_in addr;
-    int createFdSet(std::vector<Client>* clients, fd_set* set);
-    void readFromFds(std::vector<Client>* clients, fd_set readSet);
+    fd_set readSet;
+    int createFdSet(std::map<const int, Connection>* connections);
+    void readFromFds(const int& maxFd);
     std::queue<IServerAction*>* actions;
 };
 
@@ -48,6 +52,7 @@ class SocketException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  //  SOCKET_H_

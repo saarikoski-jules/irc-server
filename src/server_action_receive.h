@@ -20,9 +20,8 @@
 
 class ServerActionReceive: public IServerAction {
  public:
-    ServerActionReceive(
-        std::vector<std::string> params, const int& clientFd,
-        Client* client, const std::string& prefix = "");
+     ServerActionReceive(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionReceive() {}
  private:

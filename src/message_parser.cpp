@@ -95,8 +95,7 @@ std::vector<std::string> MessageParser::genParams(
     return (params);
 }
 
-IServerAction* MessageParser::createActionFromMessage(
-    std::string message, const int& clientFd, Client* cli) {
+IServerAction* MessageParser::createActionFromMessage(std::string message, const int& fd) {
     std::string prefix;
     std::string cmd;
     std::vector<std::string> params;
@@ -110,7 +109,7 @@ IServerAction* MessageParser::createActionFromMessage(
         prefix = genPrefix(&message, &it);
         cmd = genCommand(&message, &it);
         params = genParams(&message, &it);
-        action = factory.newAction(cmd, params, clientFd, cli, prefix);
+        action = factory.newAction(cmd, params, fd, prefix);
     } catch (const ActionFactoryException& e) {
         throw MessageParserException(e.what(), e.isFatal());
     } catch (const std::exception& e) {
@@ -120,14 +119,13 @@ IServerAction* MessageParser::createActionFromMessage(
     return (action);
 }
 
-std::vector<IServerAction*> MessageParser::parse(
-    const std::string& data, const int& clientFd, Client* cli) {
+std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& fd) {
     std::vector<IServerAction*> actions;
     std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
 
     for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
-            IServerAction* action = createActionFromMessage(*i, clientFd, cli);
+            IServerAction* action = createActionFromMessage(*i, fd);
             actions.push_back(action);
         } catch (const MessageParserException& e) {
             Logger::log(LogLevelDebug, "Couldn't generate action from message");
@@ -139,6 +137,11 @@ std::vector<IServerAction*> MessageParser::parse(
 MessageParserException::MessageParserException(std::string const& what, const bool& fatal) :
 fatal(fatal),
 message(what) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal message parser exception: " + message);
+    } else {
+        fullMessage = std::string("Message parser exception: " + message);
+    }
 }
 
 MessageParserException::~MessageParserException() throw() {
@@ -149,8 +152,5 @@ const bool& MessageParserException::isFatal() const {
 }
 
 const char* MessageParserException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal message parser exception: " + message).c_str());
-    }
-    return (std::string("Message parser exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

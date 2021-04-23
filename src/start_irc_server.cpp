@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:37:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/02 10:52:42 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:33:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #include "server.h"
 #include "logger.h"
+#include "connection.h"
 #include "string_conversions.h"
 
 static void startNewIrcServerFromArguments(char* const* argv) {
@@ -28,13 +29,24 @@ static void startNewIrcServerFromArguments(char* const* argv) {
     }
 }
 
+static void startConnectingIrcServerFromArguments(char* const* argv) {
+    try {
+        Connection startingServer(argv[1]);
+        Server server(&startingServer, StringConversion::toUint16(argv[2]), argv[3]);
+        server.run();
+    } catch (const ServerConnectionException& e) {
+        Logger::log(LogLevelFatal, e.what());
+        throw ArgumentException("Invalid first argument", true);
+    }
+}
+
 void startIrcServerFromArguments(const int argc, char* const* argv) {
     if (argc == 3) {
         Logger::log(LogLevelDebug, "Attempting to start new irc server");
         startNewIrcServerFromArguments(argv);
     } else if (argc == 4) {
         Logger::log(LogLevelDebug, "Attempting to connect to existing irc server");
-        // TODO(Jelle) Connect server to other server.
+        startConnectingIrcServerFromArguments(argv);
     } else {
         throw ArgumentException("Invalid amount of arguments provided", true);
     }
@@ -43,6 +55,11 @@ void startIrcServerFromArguments(const int argc, char* const* argv) {
 ArgumentException::ArgumentException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal argument exception: " + message);
+    } else {
+        fullMessage = std::string("Argument exception: " + message);
+    }
 }
 
 ArgumentException::~ArgumentException() throw() {
@@ -53,8 +70,5 @@ const bool& ArgumentException::isFatal() const {
 }
 
 const char* ArgumentException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal argument exception: " + message).c_str());
-    }
-    return (std::string("Argument exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

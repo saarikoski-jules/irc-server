@@ -21,12 +21,15 @@
 class ServerActionUser: public IServerAction {
  public:
     ServerActionUser(
-        std::vector<std::string> params, const int& clientFd,
-        Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionUser() {}
  private:
     std::vector<std::string> params;
+    const std::string* newUserName;
+    const std::string* newHostName;
+    const std::string* newServerName;
+    const std::string* newRealName;
 };
 
 #endif  // SERVER_ACTION_USER_H_

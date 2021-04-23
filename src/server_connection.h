@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   start_irc_server.h                                 :+:    :+:            */
+/*   server_connection.h                                :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/03/31 15:38:06 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 12:30:21 by jvisser       ########   odam.nl         */
+/*   Created: 2021/04/16 14:05:04 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/23 12:19:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef START_IRC_SERVER_H_
-#define START_IRC_SERVER_H_
+#ifndef SERVER_CONNECTION
+#define SERVER_CONNECTION
 
 #include <string>
-#include <exception>
 
-void startIrcServerFromArguments(const int argc, char* const* argv);
+struct ServerConnection {
+    ServerConnection();
+    ServerConnection(const std::string& configuration);
+    void connectToServer(int* fd);
+    std::string hostName;
+    std::string password;
+    uint16_t port;
+};
 
-class ArgumentException : public std::exception {
+class ServerConnectionException : public std::exception {
  public:
-    ArgumentException(std::string const& what, const bool& fatal);
-    ~ArgumentException() throw();
+    ServerConnectionException(std::string const& what, const bool& fatal);
+    ~ServerConnectionException() throw();
     const bool& isFatal() const;
     const char* what() const throw();
  private:
@@ -30,4 +36,4 @@ class ArgumentException : public std::exception {
     std::string fullMessage;
 };
 
-#endif  // START_IRC_SERVER_H_
+#endif  // SERVER_CONNECTION

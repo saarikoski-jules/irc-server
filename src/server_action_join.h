@@ -22,8 +22,7 @@
 class ServerActionJoin: public IServerAction {
  public:
     ServerActionJoin(
-        std::vector<std::string> params, const int& clientFd,
-        Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionJoin() {}
  private:

@@ -12,15 +12,13 @@
 
 #include "server_action_disconnect.h"
 
-#include "logger.h"
 #include "server.h"
 
 ServerActionDisconnect::ServerActionDisconnect(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 0, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 0, prefix),
 params(params) {}
 
 void ServerActionDisconnect::execute() {
-    Logger::log(LogLevelInfo, "server action disconnect");
-    server->deleteClient(clientFd);
+    server->deleteConnection(fd);
 }

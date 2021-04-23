@@ -18,11 +18,11 @@
 #include "server.h"
 
 ServerActionAccept::ServerActionAccept(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 0, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 0, prefix),
 params(params) {}
 
 void ServerActionAccept::execute() {
-    // Logger::log(LogLevelInfo, "server action accept");
-    server->acceptNewClient(clientFd);
+    server->acceptNewConnection(fd);
 }
+

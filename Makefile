@@ -18,6 +18,8 @@ SRCLST = main \
 		socket \
 		utils \
 		start_irc_server \
+		connection \
+		server_connection \
 		server \
 		client \
 		logger \

@@ -21,9 +21,8 @@
 class ServerActionDisconnect: public IServerAction {
  public:
     ServerActionDisconnect(
-        std::vector<std::string> params, const int& clientFd,
-        Client* client, const std::string& prefix = "");
-    void execute();
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+ void execute();
     ~ServerActionDisconnect() {}
  private:
     std::vector<std::string> params;

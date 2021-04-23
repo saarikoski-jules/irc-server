@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   client.h                                           :+:    :+:            */
+/*   connection.cpp                                     :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/02 12:50:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 19:00:31 by jvisser       ########   odam.nl         */
+/*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/21 13:39:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_H_
-#define CLIENT_H_
+#include "connection.h"
 
 #include <string>
 
-struct Client {
-    Client();
-    friend std::ostream& operator << (std::ostream& out, const Client& client);
-    std::string nickName;
-    std::string userName;
-    std::string hostName;
-    std::string serverName;
-    std::string realName;
-    bool registered;
-};
+Connection::Connection() :
+fd(-1),
+connectionType(Connection::NoType) {
+}
 
-#endif  // CLIENT_H_
+Connection::Connection(const int& fd) :
+fd(fd),
+connectionType(Connection::NoType) {
+}
+
+Connection::Connection(const std::string& serverConfiguration) :
+fd(-1),
+connectionType(Connection::ServerType),
+server(serverConfiguration) {
+}

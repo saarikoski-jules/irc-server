@@ -16,19 +16,20 @@
 #include <string>
 #include <vector>
 
+#include "connection.h"
 #include "client.h"
 #include "reply.h"
 
 class Channel {
  public:
-    Channel(const std::string& name, Client* chanop);
+    Channel(const std::string& name, Connection* chanop);
     const std::string name;
-    void addClient(Client* client, const std::string& key);
+    void addClient(Connection* client, const std::string& key);
     bool topicIsSet;
     std::string topic;
-    void addOperator(Client* newChanop);
-    void removeOperator(Client* newChanop);
-    bool isOperator(Client* cli) const;
+    void addOperator(Connection* newChanop);
+    void removeOperator(Connection* newChanop);
+    bool isOperator(Connection* cli) const;
     void removeMode(char c);
     void addMode(char c);
     std::string getModes() const;
@@ -40,9 +41,12 @@ class Channel {
     std::string getBanMask(size_t index) const;
 
  private:
-    std::vector<Client*> chanops;
-    std::vector<Client*> clients;
+    //std::vector<Client*> chanops;
+    //std::vector<Client*> clients;
     std::vector<std::string> bans;
+    std::vector<Connection*> chanops;
+    //Connection* chanop;
+    std::vector<Connection *> connections;
     std::string key;
     std::string modes;
     unsigned int limit;
@@ -60,6 +64,7 @@ class ChannelException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // CHANNEL_H_

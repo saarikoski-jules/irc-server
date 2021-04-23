@@ -20,10 +20,9 @@
 #include "utils.h"
 
 ServerActionJoin::ServerActionJoin(
-    std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix) :
-IServerAction(clientFd, 1, cli, prefix),
+    std::vector<std::string> params, const int& fd, const std::string& prefix) :
+IServerAction(fd, 1, prefix),
 params(params) {}
-
 
 Channel* ServerActionJoin::getChannel(
     const std::string& name, const std::string& key) {
@@ -31,9 +30,9 @@ Channel* ServerActionJoin::getChannel(
     try {
         chan = server->findChannel(name);
     } catch (const std::exception &e) {
-        chan = server->createNewChannel(name, clientFd);
+        chan = server->createNewChannel(name, fd);
     }
-    chan->addClient(server->getClientByFd(clientFd), key);
+    chan->addClient(server->getConnectionByFd(fd), key);
     return (chan);
 }
 
@@ -42,7 +41,8 @@ void ServerActionJoin::joinServer(const std::string& name, const std::string& ke
     Channel* chan;
     std::vector<std::string> replyParams;
 
-    replyParams.push_back(cli->nickName);
+    Connection* connection = server->getConnectionByFd(fd);
+    replyParams.push_back(connection->client.nickName);
     replyParams.push_back(name);
     try {
         chan = getChannel(name, key);
@@ -55,15 +55,16 @@ void ServerActionJoin::joinServer(const std::string& name, const std::string& ke
     } catch (const ChannelException& e) {
         reply = e.what();
     }
-    server->sendReplyToClient(clientFd, reply);
+    server->sendReplyToClient(fd, reply);
 }
 
 void ServerActionJoin::handleNeedMoreParams() const {
     std::vector<std::string> errParams;
-    errParams.push_back(cli->nickName);
+    Connection* connection = server->getConnectionByFd(fd);
+    errParams.push_back(connection->client.nickName);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
-    server->sendReplyToClient(clientFd, errReply);
+    server->sendReplyToClient(fd, errReply);
 }
 
 void ServerActionJoin::execute() {
@@ -87,7 +88,7 @@ void ServerActionJoin::execute() {
         try {
             joinServer(chans[i], key);
         } catch (const ChannelException& e) {
-            server->sendReplyToClient(clientFd, e.what());
+            server->sendReplyToClient(fd, e.what());
         }
     }
 }
