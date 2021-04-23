@@ -24,8 +24,8 @@ fd(fd),
 connectionType(Connection::NoType) {
 }
 
-Connection::Connection(const std::string& serverConfiguratin) :
+Connection::Connection(const std::string& serverConfiguration) :
 fd(-1),
 connectionType(Connection::ServerType),
-server(serverConfiguratin) {
+server(serverConfiguration) {
 }
