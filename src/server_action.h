@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:41:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 18:53:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 16:20:38 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class Server;
 class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionNick() {}
  private:
@@ -39,17 +39,21 @@ class ServerActionNick: public IServerAction {
 class ServerActionUser: public IServerAction {
  public:
     ServerActionUser(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionUser() {}
  private:
     std::vector<std::string> params;
+    const std::string* newUserName;
+    const std::string* newHostName;
+    const std::string* newServerName;
+    const std::string* newRealName;
 };
 
 class ServerActionJoin: public IServerAction {
  public:
     ServerActionJoin(
-        std::vector<std::string> params, const int& clientFd, Client* cli, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionJoin() {}
  private:
@@ -62,7 +66,7 @@ class ServerActionJoin: public IServerAction {
 class ServerActionAccept: public IServerAction {
  public:
     ServerActionAccept(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionAccept() {}
  private:
@@ -72,7 +76,7 @@ class ServerActionAccept: public IServerAction {
 class ServerActionReceive: public IServerAction {
  public:
     ServerActionReceive(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionReceive() {}
  private:
@@ -82,7 +86,7 @@ class ServerActionReceive: public IServerAction {
 class ServerActionDisconnect: public IServerAction {
  public:
     ServerActionDisconnect(
-        std::vector<std::string> params, const int& clientFd, Client* client, const std::string& prefix = "");
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     ~ServerActionDisconnect() {}
  private:

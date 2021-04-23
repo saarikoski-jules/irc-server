@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:44:15 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/14 17:22:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 13:31:49 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 Server* IServerAction::server = NULL;
 
 IServerAction::IServerAction(
-    const int& clientFd, const size_t& requiredParams, Client* cli, const std::string& prefix) :
-clientFd(clientFd),
+    const int& fd, const size_t& requiredParams, const std::string& prefix) :
+fd(fd),
 prefix(prefix),
-requiredParams(requiredParams),
-cli(cli) {}
+requiredParams(requiredParams) {
+}

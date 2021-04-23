@@ -3,29 +3,30 @@
 #include <string>
 #include <vector>
 
+#include "connection.h"
 #include "client.h"
 #include "reply.h"
 
-Channel::Channel(const std::string& name, Client* chanop) :
+Channel::Channel(const std::string& name, Connection* chanop) :
 name(name),
 topicIsSet(false),
 chanop(chanop),
-clients() {
+connections() {
     if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
         std::vector<std::string> replyParams;
-        replyParams.push_back(this->chanop->nickName);
+        replyParams.push_back(this->chanop->client.nickName);
         replyParams.push_back(name);
         std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
         throw ChannelException(reply, false);
     }
 }
 
-void Channel::addClient(Client* client, const std::string& key) {
+void Channel::addClient(Connection* connection, const std::string& key) {
     if (this->key == "" || this->key == key) {
-        clients.push_back(client);
+        connections.push_back(connection);
     } else {
         std::vector<std::string> errorParams;
-        errorParams.push_back(client->nickName);
+        errorParams.push_back(connection->client.nickName);
         errorParams.push_back(name);
         throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
     }

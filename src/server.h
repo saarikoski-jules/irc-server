@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/14 11:16:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/21 18:57:56 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include <utility>
 
 #include "socket.h"
-#include "client.h"
+#include "connection.h"
 #include "message_parser.h"
 #include "server_action.h"
 #include "channel.h"
@@ -30,24 +30,26 @@
 class Server {
  public:
     Server(const uint16_t& port, const std::string& password);
+    Server(Connection* startingServer, const uint16_t& port, const std::string& password);
     ~Server();
     void run();
+    // TODO(Jelle) generalized connection here.
     void sendReplyToClient(const int& clientFd, const std::string& message);
-    void acceptNewClient(const int& clientFd);
-    void deleteClient(const int& clientFd);
-    Client* getClientByFd(const int& clientFd);
+    void acceptNewConnection(const int& fd);
+    void deleteConnection(const int& fd);
+    Connection* getConnectionByFd(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
  protected:
-    std::vector<Client> clients;
+    std::map<const int, Connection> connections;
  private:
     Server();
     std::queue<IServerAction*> actions;
     std::map<std::string, Channel> channels;
-    Socket socket;
+    Socket serverSocket;
     MessageParser parser;
     void validatePassword(std::string const& password) const;
     void openSocket(const uint16_t& port);
