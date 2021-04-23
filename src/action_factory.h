@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 13:28:53 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 11:11:18 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ class ActionFactoryException: public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // ACTION_FACTORY_H_

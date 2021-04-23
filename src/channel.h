@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   channel.h                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/04/23 12:35:51 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/23 12:35:52 by jvisser       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CHANNEL_H_
 #define CHANNEL_H_
 
@@ -30,6 +42,7 @@ class ChannelException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // CHANNEL_H_

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 13:35:58 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 11:18:54 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,11 @@ IServerAction* actionFactory::newAction(
 ActionFactoryException::ActionFactoryException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal action factory exception: " + message);
+    } else {
+        fullMessage = std::string("Action factory exception: " + message);
+    }
 }
 
 ActionFactoryException::~ActionFactoryException() throw() {
@@ -80,8 +85,5 @@ const bool& ActionFactoryException::isFatal() const {
 }
 
 const char* ActionFactoryException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal action factory exception: " + message).c_str());
-    }
-    return (std::string("Action factory exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

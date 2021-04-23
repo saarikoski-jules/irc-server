@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:37:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:57:02 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:33:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,11 @@ void startIrcServerFromArguments(const int argc, char* const* argv) {
 ArgumentException::ArgumentException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal argument exception: " + message);
+    } else {
+        fullMessage = std::string("Argument exception: " + message);
+    }
 }
 
 ArgumentException::~ArgumentException() throw() {
@@ -65,8 +70,5 @@ const bool& ArgumentException::isFatal() const {
 }
 
 const char* ArgumentException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal argument exception: " + message).c_str());
-    }
-    return (std::string("Argument exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

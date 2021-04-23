@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:50:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:21:18 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,11 @@ void Server::addNewAction(IServerAction* action) {
 ServerException::ServerException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal server exception: " + message);
+    } else {
+        fullMessage = std::string("Server exception: " + message);
+    }
 }
 
 ServerException::~ServerException() throw() {
@@ -200,8 +205,5 @@ const bool& ServerException::isFatal() const {
 }
 
 const char* ServerException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal server exception: " + message).c_str());
-    }
-    return (std::string("Server exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

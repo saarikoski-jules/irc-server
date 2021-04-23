@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 14:05:04 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:18:33 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:19:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class ServerConnectionException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // SERVER_CONNECTION

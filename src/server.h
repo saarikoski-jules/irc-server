@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:57:56 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:21:40 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ class ServerException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // SERVER_H_

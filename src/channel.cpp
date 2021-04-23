@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   channel.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/04/23 12:35:03 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/23 12:35:04 by jvisser       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "channel.h"
 
 #include <string>
@@ -35,6 +47,11 @@ void Channel::addClient(Connection* connection, const std::string& key) {
 ChannelException::ChannelException(const std::string& what, const bool& fatal) :
 fatal(fatal),
 message(what) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal channel exception: " + message);
+    } else {
+        fullMessage = std::string("Channel exception: " + message);
+    }
 }
 
 ChannelException::~ChannelException() throw() {
@@ -45,9 +62,6 @@ const bool& ChannelException::isFatal() const {
 }
 
 const char* ChannelException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal channel exception: " + message).c_str());
-    }
-    return (message.c_str());
+    return (fullMessage.c_str());
 }
 

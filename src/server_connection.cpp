@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 14:04:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:19:06 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:19:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,11 @@ void ServerConnection::connectToServer(int* fd) {
 ServerConnectionException::ServerConnectionException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal server connection exception: " + message);
+    } else {
+        fullMessage = std::string("Server connection exception: " + message);
+    }
 }
 
 ServerConnectionException::~ServerConnectionException() throw() {
@@ -77,8 +82,5 @@ const bool& ServerConnectionException::isFatal() const {
 }
 
 const char* ServerConnectionException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal server connection exception: " + message).c_str());
-    }
-    return (std::string("Server connection exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

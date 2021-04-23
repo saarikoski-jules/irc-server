@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:38:06 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/03/31 15:41:20 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:30:21 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class ArgumentException : public std::exception {
  private:
     const bool fatal;
     const std::string message;
+    std::string fullMessage;
 };
 
 #endif  // START_IRC_SERVER_H_
