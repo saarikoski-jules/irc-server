@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 18:59:50 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:17:34 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,11 @@ std::vector<IServerAction*> MessageParser::parse(const std::string& data, const 
 MessageParserException::MessageParserException(std::string const& what, const bool& fatal) :
 fatal(fatal),
 message(what) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal message parser exception: " + message);
+    } else {
+        fullMessage = std::string("Message parser exception: " + message);
+    }
 }
 
 MessageParserException::~MessageParserException() throw() {
@@ -147,8 +152,5 @@ const bool& MessageParserException::isFatal() const {
 }
 
 const char* MessageParserException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal message parser exception: " + message).c_str());
-    }
-    return (std::string("Message parser exception: " + message).c_str());
+    return (fullMessage.c_str());
 }

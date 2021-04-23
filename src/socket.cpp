@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 18:26:44 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 12:25:57 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,11 @@ void Socket::sendData(const int& fd, const std::string& msg) const {
 SocketException::SocketException(const std::string& message, const bool& fatal) :
 fatal(fatal),
 message(message) {
+    if (isFatal()) {
+        fullMessage = std::string("Fatal socket exception: " + message);
+    } else {
+        fullMessage = std::string("Socket exception: " + message);
+    }
 }
 
 SocketException::~SocketException() throw() {
@@ -168,8 +173,5 @@ const bool& SocketException::isFatal() const {
 }
 
 const char* SocketException::what() const throw() {
-    if (isFatal()) {
-        return (std::string("Fatal socket exception: " + message).c_str());
-    }
-    return (std::string("Socket exception: " + message).c_str());
+    return (fullMessage.c_str());
 }
