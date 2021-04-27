@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:22:11 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/27 15:54:37 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "server_action_mode.h"
 #include "server_action_send.h"
 
-const size_t actionFactory::actionFormatLen = 7;
+const size_t actionFactory::actionFormatLen = 8;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
