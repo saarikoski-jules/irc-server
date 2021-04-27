@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.cpp                                        :+:    :+:            */
+/*   channel.cpp                                       :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 18:18:02 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 15:35:53 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,8 @@ void Channel::changeKey(const std::string& key) {
     this->key = key;
 }
 
-// TODO(Jules): check if +k "" sets password to no password
-// secret can't display anything, and you can't tell someone is in the channel
-// private shows up in channel listings, but you can't tell a user is in it
-// TODO(Jules): -k doesn't unset password
+// TODO(Jules): secret can't display anything, and you can't tell someone is in the channel
+// TODO(Jules): private shows up in channel listings, but you can't tell a user is in it
 void Channel::removeMode(char c) {
     size_t pos = modes.find(c);
     if (pos != std::string::npos) {
