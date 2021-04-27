@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 18:23:09 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 17:46:39 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,10 @@ void ServerActionNick::handleNoNicknameGiven() const {
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
 }
 
+IServerAction* ServerActionNick::clone() const {
+    return (new ServerActionNick(*this));
+}
+
 ServerActionUser::ServerActionUser(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 4, prefix),
@@ -109,6 +113,10 @@ void ServerActionUser::execute() {
     } catch (const std::out_of_range& e) {
         // TODO(Jelle) Handle non valid client fd
     }
+}
+
+IServerAction* ServerActionUser::clone() const {
+    return (new ServerActionUser(*this));
 }
 
 ServerActionJoin::ServerActionJoin(
@@ -180,6 +188,10 @@ void ServerActionJoin::execute() {
     }
 }
 
+IServerAction* ServerActionJoin::clone() const {
+    return (new ServerActionJoin(*this));
+}
+
 ServerActionAccept::ServerActionAccept(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 0, prefix),
@@ -188,6 +200,10 @@ params(params) {}
 void ServerActionAccept::execute() {
     Logger::log(LogLevelInfo, "server action accept");
     server->acceptNewConnection(fd);
+}
+
+IServerAction* ServerActionAccept::clone() const {
+    return (new ServerActionAccept(*this));
 }
 
 ServerActionReceive::ServerActionReceive(
@@ -205,6 +221,10 @@ void ServerActionReceive::execute() {
     }
 }
 
+IServerAction* ServerActionReceive::clone() const {
+    return (new ServerActionReceive(*this));
+}
+
 ServerActionDisconnect::ServerActionDisconnect(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 0, prefix),
@@ -213,4 +233,8 @@ params(params) {}
 void ServerActionDisconnect::execute() {
     Logger::log(LogLevelInfo, "server action disconnect");
     server->deleteConnection(fd);
+}
+
+IServerAction* ServerActionDisconnect::clone() const {
+    return (new ServerActionDisconnect(*this));
 }

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 12:21:40 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 18:13:25 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,9 @@ class Server {
     Server(const uint16_t& port, const std::string& password);
     Server(Connection* startingServer, const uint16_t& port, const std::string& password);
     ~Server();
+    void sendAuthenticationTo(const int& fd, const std::string& password);
     void run();
-    // TODO(Jelle) generalized connection here.
+    void sendMessage(const int& fd, const std::string& message);
     void sendReplyToClient(const int& clientFd, const std::string& message);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
@@ -43,11 +44,13 @@ class Server {
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
+    void delayFirstAction();
  protected:
     std::map<const int, Connection> connections;
  private:
     Server();
     std::queue<IServerAction*> actions;
+    std::queue<IServerAction*> delayedActions;
     std::map<std::string, Channel> channels;
     Socket serverSocket;
     MessageParser parser;

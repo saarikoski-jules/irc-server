@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 12:25:31 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 17:52:03 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@ class Socket {
     void bindAndListenToPort(const int& port);
     void checkNewConnections();
     void checkConnectionAndNewData(std::map<const int, Connection>* connections);
-    void sendData(const int& clientFd, const std::string& msg) const;
+    void sendData(const int& clientFd, const std::string& msg);
  private:
     Socket();
     int socketFd;
     struct sockaddr_in addr;
     fd_set readSet;
+    fd_set writeSet;
     int createFdSet(std::map<const int, Connection>* connections);
     void readFromFds(const int& maxFd);
     std::queue<IServerAction*>* actions;
