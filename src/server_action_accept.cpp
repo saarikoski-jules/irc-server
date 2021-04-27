@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_accept.cpp                           :+:    :+:            */
+/*   server_action_accept.cpp                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:48:09 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:32:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 13:20:20 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,3 +26,6 @@ void ServerActionAccept::execute() {
     server->acceptNewConnection(fd);
 }
 
+IServerAction* ServerActionAccept::clone() const {
+    return (new ServerActionAccept(*this));
+}

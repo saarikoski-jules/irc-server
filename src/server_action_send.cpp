@@ -1,28 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_disconnect.cpp                      :+:    :+:             */
+/*   server_action_send.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 12:35:53 by jules        ########   odam.nl          */
+/*   Created: 2021/04/23 16:35:08 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/23 17:25:50 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server_action_disconnect.h"
+#include "server_action_send.h"
+
+#include <vector>
+#include <string>
 
 #include "server.h"
 
-ServerActionDisconnect::ServerActionDisconnect(
+ServerActionSend::ServerActionSend(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 0, prefix),
 params(params) {}
 
-void ServerActionDisconnect::execute() {
-    server->deleteConnection(fd);
+void ServerActionSend::execute() {
+    try {
+        server->sendMessage(fd, params[0]);
+    } catch (const ServerException& e) {
+        server->delayFirstAction();
+    }
 }
 
-IServerAction* ServerActionDisconnect::clone() const {
-    return (new ServerActionDisconnect(*this));
+IServerAction* ServerActionSend::clone() const {
+    return (new ServerActionSend(*this));
 }

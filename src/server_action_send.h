@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_accept.h                            :+:    :+:             */
+/*   server_action_send.h                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:45:40 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:20:43 by jules        ########   odam.nl          */
+/*   Created: 2021/04/23 16:35:17 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/23 17:26:00 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_ACCEPT_H_
-#define SERVER_ACTION_ACCEPT_H_
+#ifndef SERVER_ACTION_SEND_H_
+#define SERVER_ACTION_SEND_H_
 
 #include <vector>
 #include <string>
 
 #include "iserver_action.h"
 
-class ServerActionAccept: public IServerAction {
+class ServerActionSend : public IServerAction {
  public:
-    ServerActionAccept(
+    ServerActionSend(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     IServerAction* clone() const;
-    ~ServerActionAccept() {}
+    ~ServerActionSend() {}
  private:
     std::vector<std::string> params;
 };
 
-#endif  // SERVER_ACTION_ACCEPT_H_
+#endif  // SERVER_ACTION_SEND_H_

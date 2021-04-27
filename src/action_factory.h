@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.h                                   :+:    :+:            */
+/*   action_factory.h                                  :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:43:36 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:13:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ class actionFactory {
     IServerAction* join(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* mode(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* send(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;

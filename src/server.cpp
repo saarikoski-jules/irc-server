@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 12:21:18 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/23 18:12:46 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "socket.h"
 #include "connection.h"
+#include "action_factory.h"
 
 Server::Server(const uint16_t& port, const std::string& password) :
 channels(),
@@ -49,6 +50,7 @@ serverSocket(&actions) {
         validatePassword(password);
         openSocket(port);
         startingServer->server.connectToServer(&startingServer->fd);
+        sendAuthenticationTo(startingServer->fd, startingServer->server.password);
         connections.insert(std::pair<const int, Connection>(startingServer->fd, *startingServer));
     } catch (const ServerException& e) {
         if (e.isFatal()) {
@@ -87,6 +89,18 @@ void Server::openSocket(const uint16_t& port) {
     }
 }
 
+void Server::sendAuthenticationTo(const int& fd, const std::string& password) {
+    try {
+        actionFactory factory;
+        std::vector<std::string> params;
+        params.push_back("PASS " + password + " 0211 IRC|\r\n"
+            "SERVER irc.jelle 1 4242 :Codam development irc\r\n");
+        actions.push(factory.newAction("SEND", params, fd));
+    } catch (const ActionFactoryException& e) {
+        Logger::log(LogLevelError, e.what());
+    }
+}
+
 void Server::run() {
     Logger::log(LogLevelInfo, "Starting up the server");
     while (true) {
@@ -117,6 +131,16 @@ void Server::handleAction() {
         action->execute();
         delete action;
         actions.pop();
+    }
+    std::swap(actions, delayedActions);
+}
+
+void Server::sendMessage(const int& fd, const std::string& message) {
+    try {
+        serverSocket.sendData(fd, message);
+    } catch (const SocketException& e) {
+        Logger::log(LogLevelDebug, e.what());
+        throw ServerException("Could not send message", false);
     }
 }
 
@@ -193,6 +217,10 @@ Channel* Server::findChannel(const std::string& name) {
         return (&(*it).second);
     }
     throw std::out_of_range("Channel not found");
+}
+
+void Server::delayFirstAction() {
+    delayedActions.push(actions.front()->clone());
 }
 
 void Server::addNewAction(IServerAction* action) {

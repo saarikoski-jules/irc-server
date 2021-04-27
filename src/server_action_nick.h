@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.h                               :+:    :+:            */
+/*   server_action_nick.h                              :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:50:04 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:26:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:43:53 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class ServerActionNick: public IServerAction {
  public:
     ServerActionNick(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* clone() const;
     void execute();
     ~ServerActionNick() {}
  private:

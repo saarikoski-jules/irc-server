@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.h                               :+:    :+:            */
+/*   server_action_join.h                              :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:29:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:37:57 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ class ServerActionJoin: public IServerAction {
     ServerActionJoin(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionJoin() {}
  private:
     Channel* getChannel(const std::string& name, const std::string& key);

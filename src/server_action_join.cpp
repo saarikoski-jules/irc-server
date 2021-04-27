@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                             :+:    :+:            */
+/*   server_action_join.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:31:08 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 13:18:55 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,4 +91,8 @@ void ServerActionJoin::execute() {
             server->sendReplyToClient(fd, e.what());
         }
     }
+}
+
+IServerAction* ServerActionJoin::clone() const {
+    return (new ServerActionJoin(*this));
 }

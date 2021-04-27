@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_receive.cpp                          :+:    :+:            */
+/*   server_action_receive.cpp                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:38:56 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 11:41:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:45:37 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,3 +31,6 @@ void ServerActionReceive::execute() {
     }
 }
 
+IServerAction* ServerActionReceive::clone() const {
+    return (new ServerActionReceive(*this));
+}

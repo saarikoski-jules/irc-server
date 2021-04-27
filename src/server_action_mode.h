@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.h                               :+:    :+:            */
+/*   server_action_mode.h                              :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/21 11:27:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:39:16 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ class ServerActionMode: public IServerAction {
     ServerActionMode(
         std::vector<std::string> params, const int& clientFd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionMode() {}
  private:
     void execByMode(char sign);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_receive.h                            :+:    :+:            */
+/*   server_action_receive.h                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:37:56 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:25:32 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:46:06 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class ServerActionReceive: public IServerAction {
      ServerActionReceive(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionReceive() {}
  private:
     std::vector<std::string> params;

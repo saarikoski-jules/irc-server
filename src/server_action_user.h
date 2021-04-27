@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_user.h                               :+:    :+:            */
+/*   server_action_user.h                              :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:31:21 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:25:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 13:08:44 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class ServerActionUser: public IServerAction {
     ServerActionUser(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
+    IServerAction* clone() const;
     ~ServerActionUser() {}
  private:
     std::vector<std::string> params;

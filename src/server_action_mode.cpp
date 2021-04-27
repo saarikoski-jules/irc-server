@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 11:08:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 15:31:33 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
     char sign = '+';
     Connection* connection = server->getConnectionByFd(fd);
-    Client* cli = &connection->client;
-	try {
+    cli = &connection->client;
+    try {
         chan = server->findChannel(params[0]);
         if (!chan->isOperator(connection)) {
             std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
@@ -52,7 +52,7 @@ void ServerActionMode::execByMode(char sign) {
     std::vector<std::string> returnParams;
     std::vector<std::string>::iterator param = params.begin() + 2;
     std::string::iterator mode = params[1].begin();
-
+// TODO(Jules): MODE &channel, or in general handle bad n. params
     if (*mode == '+' || *mode == '-') {
         mode++;
     }
@@ -71,31 +71,42 @@ void ServerActionMode::execByMode(char sign) {
         case 'o':
             if (modeO(sign, *param)) {
                 returnOptions.push_back(*mode);
-                returnParams.push_back(*param);
+                if (param != params.end()) {
+                    returnParams.push_back(*param);
+                }
             }
             param++;
             break;
         case 'l':
             if (setLimit(sign, *param)) {
-                returnOptions.push_back(*mode);
-                returnParams.push_back(*param);
-                
+                    returnOptions.push_back(*mode);
+                if (param != params.end()) {
+                    returnParams.push_back(*param);
+                }
             }
-            param++;
+            if (sign == '+') {
+                param++;
+            }
             break;
         case 'b':
             if (setBanMask(sign, *param)) {
                 returnOptions.push_back(*mode);
-                returnParams.push_back(*param);
+                if (param != params.end()) {
+                    returnParams.push_back(*param);
+                }
             }
             param++;
             break;
         case 'k':
             if (setKey(sign, *param)) {
                 returnOptions.push_back(*mode);
-                returnParams.push_back(*param);
+                if (param != params.end()) {
+                    returnParams.push_back(*param);
+                }
             }
-            param++;
+            if (sign == '+') {
+                param++;
+            }
             break;
             // TODO(Jules): v == allow to speak on moderated channel
         default:
@@ -236,4 +247,10 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
     params.push_back(cli->nickName);
     params.push_back(character);
     reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
+    server->sendReplyToClient(fd, reply);
 }
+
+IServerAction* ServerActionMode::clone() const {
+    return (new ServerActionMode(*this));
+}
+

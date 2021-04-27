@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_user.cpp                             :+:    :+:            */
+/*   server_action_user.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:23:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 13:07:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,3 +61,6 @@ void ServerActionUser::execute() {
     }
 }
 
+IServerAction* ServerActionUser::clone() const {
+    return (new ServerActionUser(*this));
+}

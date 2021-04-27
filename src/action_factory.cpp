@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                 :+:    :+:            */
+/*   action_factory.cpp                                :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 11:18:54 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/27 13:22:11 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "server_action_user.h"
 #include "server_action_join.h"
 #include "server_action_mode.h"
+#include "server_action_send.h"
 
 const size_t actionFactory::actionFormatLen = 7;
 
@@ -32,6 +33,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::user, "USER"},
     {&actionFactory::join, "JOIN"},
     {&actionFactory::mode, "MODE"},
+    {&actionFactory::send, "SEND"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -68,6 +70,11 @@ IServerAction* actionFactory::join(
 IServerAction* actionFactory::mode(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionMode(params, fd, prefix));
+}
+
+IServerAction* actionFactory::send(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionSend(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

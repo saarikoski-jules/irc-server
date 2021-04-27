@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                             :+:    :+:            */
+/*   server_action_nick.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/20 12:09:58 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/27 12:43:24 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,10 @@ void ServerActionNick::handleNoNicknameGiven() const {
     std::vector<std::string> params;
     params.push_back(connection->client.nickName);
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));
+}
+
+IServerAction* ServerActionNick::clone() const {
+    return (new ServerActionNick(*this));
 }
 
 // TODO(Jules): construct general channel replies from functions, maybe under reply?
