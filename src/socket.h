@@ -19,9 +19,10 @@
 #include <vector>
 #include <map>
 
+#include "iserver_action.h"
 #include "server_connection.h"
-#include "server_action.h"
 #include "client.h"
+#include "connection.h"
 
 #define MAX_MESSAGE_SIZE 512
 

@@ -37,6 +37,15 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_NEEDMOREPARAMS:
         ss << params[1] << " :Not enough parameters";
         break;
+    case ERR_NOSUCHNICK:
+        ss << params[1] << " :No such nick/channel";
+        break;
+    case ERR_CHANOPRIVSNEEDED:
+        ss << params[1] << " :You're not channel operator";
+        break;
+    case ERR_UNKNOWNMODE:
+        ss << params[1] << " :is unknown mode char to me";
+	break;
     case ERR_ALREADYREGISTERED:
         ss << " :You may not reregister";
         break;
@@ -45,6 +54,15 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case RPL_NOTOPIC:
         ss << params[1] << " :No topic is set";
+        break;
+    case RPL_CHANNELMODEIS:
+        ss << params[1] << " " << params[2] << " " << params[3];
+        break;
+    case RPL_BANLIST:
+        ss << params[1] << " " << params[2];
+        break;
+    case RPL_ENDOFBANLIST:
+        ss << params[1] << " :End of channel ban list";
         break;
     default:
         break;

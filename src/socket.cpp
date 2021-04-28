@@ -21,10 +21,10 @@
 #include <map>
 
 #include "logger.h"
+#include "iserver_action.h"
 #include "utils.h"
 #include "connection.h"
 #include "server_connection.h"
-#include "server_action.h"
 #include "action_factory.h"
 
 Socket::Socket(std::queue<IServerAction*>* actions) :

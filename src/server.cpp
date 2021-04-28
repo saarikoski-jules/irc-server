@@ -166,6 +166,18 @@ Connection* Server::getConnectionByFd(const int& fd) {
     return (&connections[fd]);
 }
 
+Connection* Server::getClientByNick(const std::string& nick) {
+    std::map<const int, Connection>::iterator it = connections.begin();
+    for (; it != connections.end(); it++) {
+	std::pair<const int, Connection> client = *it;
+        Client myClient = client.second.client;
+	if (myClient.nickName == nick) {
+            return &(it->second);
+        }
+    }
+    throw std::invalid_argument("Could not find the nick in list of clients");
+}
+
 bool Server::nicknameExists(const std::string& nickName) {
     std::map<const int, Connection>::iterator it;
     for (it = connections.begin(); it != connections.end(); it++) {

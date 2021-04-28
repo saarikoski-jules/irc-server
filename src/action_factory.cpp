@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                 :+:    :+:            */
+/*   action_factory.cpp                                :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 18:07:26 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/27 13:22:11 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 
 #include <vector>
 
+#include "server_action_disconnect.h"
+#include "server_action_accept.h"
+#include "server_action_receive.h"
+#include "server_action_nick.h"
+#include "server_action_user.h"
+#include "server_action_join.h"
+#include "server_action_mode.h"
 #include "server_action_send.h"
 
 const size_t actionFactory::actionFormatLen = 7;
@@ -25,6 +32,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::nick, "NICK"},
     {&actionFactory::user, "USER"},
     {&actionFactory::join, "JOIN"},
+    {&actionFactory::mode, "MODE"},
     {&actionFactory::send, "SEND"},
 };
 
@@ -57,6 +65,11 @@ IServerAction* actionFactory::user(
 IServerAction* actionFactory::join(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionJoin(params, fd, prefix));
+}
+
+IServerAction* actionFactory::mode(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionMode(params, fd, prefix));
 }
 
 IServerAction* actionFactory::send(

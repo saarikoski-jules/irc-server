@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 18:13:25 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/27 12:17:24 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "socket.h"
 #include "connection.h"
 #include "message_parser.h"
-#include "server_action.h"
+#include "iserver_action.h"
 #include "channel.h"
 
 class Server {
@@ -36,6 +36,7 @@ class Server {
     void run();
     void sendMessage(const int& fd, const std::string& message);
     void sendReplyToClient(const int& clientFd, const std::string& message);
+    Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
     Connection* getConnectionByFd(const int& fd);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.h                                   :+:    :+:            */
+/*   action_factory.h                                  :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 17:59:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/27 12:13:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "iserver_action.h"
-#include "server_action.h"
 
 typedef struct actionFormat_s actionFormat_t;
 
@@ -35,10 +34,13 @@ class actionFactory {
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* join(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* mode(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* send(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;
+
  public:
     IServerAction* newAction(
         std::string cmd, std::vector<std::string> params,

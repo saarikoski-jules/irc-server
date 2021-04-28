@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   channel.h                                          :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/23 12:35:51 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 12:35:52 by jvisser       ########   odam.nl         */
+/*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
+/*   Updated: 2021/04/20 14:40:51 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,32 @@ class Channel {
     void addClient(Connection* client, const std::string& key);
     bool topicIsSet;
     std::string topic;
+    void addOperator(Connection* newChanop);
+    void removeOperator(Connection* newChanop);
+    bool isOperator(Connection* cli) const;
+    void removeMode(char c);
+    void addMode(char c);
+    std::string getModes() const;
+    std::string getModeParams() const;
+    void setLimit(unsigned int lim);
+    void changeKey(const std::string& key);
+    void removeBanMask(const std::string& mask);
+    void addBanMask(const std::string& mask);
+    std::string getBanMask(size_t index) const;
+
  private:
-    Connection* chanop;
+    //std::vector<Client*> chanops;
+    //std::vector<Client*> clients;
+    std::vector<std::string> bans;
+    std::vector<Connection*> chanops;
+    //Connection* chanop;
     std::vector<Connection *> connections;
     std::string key;
+    std::string modes;
+    unsigned int limit;
+    bool canJoin(Client* client, const std::string& key) const;
+    bool isBanned(Client* client) const;
+    // v, ability to speak on moderated channel
 };
 
 class ChannelException : public std::exception {

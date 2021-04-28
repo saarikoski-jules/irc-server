@@ -21,7 +21,6 @@ SRCLST = main \
 		connection \
 		server_connection \
 		server \
-		server_action \
 		server_action_send \
 		client \
 		logger \
@@ -29,8 +28,16 @@ SRCLST = main \
 		string_conversions \
 		message_parser \
 		iserver_action \
+		server_action_user \
+		server_action_nick \
+		server_action_join \
+		server_action_mode \
+		server_action_receive \
+		server_action_accept \
+		server_action_disconnect \
 		action_factory \
 		channel \
+		construct_reply \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################
