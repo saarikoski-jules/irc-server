@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 15:35:53 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 10:57:50 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ void Channel::addMode(char c) {
     }
 }
 
+// TODO(Jules): write a matching function for partial masks
 bool Channel::isBanned(Client* client) const {
     for (std::vector<std::string>::const_iterator i = bans.begin(); i != bans.end(); i++) {
         size_t posUser = (*i).find('!') + 1;
