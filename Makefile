@@ -35,6 +35,7 @@ SRCLST = main \
 		server_action_receive \
 		server_action_accept \
 		server_action_disconnect \
+		server_action_ping \
 		action_factory \
 		channel \
 		construct_reply \

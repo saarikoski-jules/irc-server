@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                :+:    :+:             */
+/*   action_factory.cpp                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:22:11 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 17:48:41 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 #include "server_action_join.h"
 #include "server_action_mode.h"
 #include "server_action_send.h"
+#include "server_action_ping.h"
 
-const size_t actionFactory::actionFormatLen = 7;
+const size_t actionFactory::actionFormatLen = 9;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -34,6 +35,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::join, "JOIN"},
     {&actionFactory::mode, "MODE"},
     {&actionFactory::send, "SEND"},
+    {&actionFactory::ping, "PING"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -75,6 +77,11 @@ IServerAction* actionFactory::mode(
 IServerAction* actionFactory::send(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionSend(params, fd, prefix));
+}
+
+IServerAction* actionFactory::ping(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionPing(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

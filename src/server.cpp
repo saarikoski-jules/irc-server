@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 18:12:46 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/28 17:52:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void Server::sendAuthenticationTo(const int& fd, const std::string& password) {
         actionFactory factory;
         std::vector<std::string> params;
         params.push_back("PASS " + password + " 0211 IRC|\r\n"
-            "SERVER irc.jelle 1 4242 :Codam development irc\r\n");
+            "SERVER " + SERVERNAME + " 1 4242 :Codam development irc\r\n");
         actions.push(factory.newAction("SEND", params, fd));
     } catch (const ActionFactoryException& e) {
         Logger::log(LogLevelError, e.what());
@@ -146,7 +146,9 @@ void Server::sendMessage(const int& fd, const std::string& message) {
 
 void Server::sendReplyToClient(const int& clientFd, const std::string& message) {
     // TODO(Jelle) Append the correct servername when it's available.
-    serverSocket.sendData(clientFd, ":SERVERNAME " + message + "\r\n");
+    Logger::log(LogLevelDebug, "Messages going to be send to client.");
+    Logger::log(LogLevelDebug, message);
+    serverSocket.sendData(clientFd, SERVERNAME " " + message + "\r\n");
 }
 
 void Server::acceptNewConnection(const int& fd) {

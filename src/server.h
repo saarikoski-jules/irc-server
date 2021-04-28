@@ -1,17 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                          :+:    :+:             */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/27 12:17:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 18:02:05 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
+
+#define SERVERNAME CHANGE_LOCALLY
 
 #include <string>
 #include <vector>
