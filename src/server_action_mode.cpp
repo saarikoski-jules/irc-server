@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 15:31:33 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 13:00:52 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,13 @@ params(params) {}
 
 void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
-    char sign = '+';
+        char sign = '+';
     Connection* connection = server->getConnectionByFd(fd);
     cli = &connection->client;
+    if (params.size() < requiredParams) {
+        server->sendReplyToClient(fd, constructNeedMoreParamsReply(cli->nickName, "MODE"));
+        return;
+    }
     try {
         chan = server->findChannel(params[0]);
         if (!chan->isOperator(connection)) {
