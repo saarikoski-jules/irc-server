@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 19:00:22 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/28 12:27:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ struct Connection {
         ServerType,
         NoType
     } connectionType;
+    std::string password;
     Client client;
     ServerConnection server;
 };

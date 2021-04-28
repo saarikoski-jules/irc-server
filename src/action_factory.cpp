@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                :+:    :+:             */
+/*   action_factory.cpp                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:22:11 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 15:00:32 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,10 @@
 #include "server_action_join.h"
 #include "server_action_mode.h"
 #include "server_action_send.h"
+#include "server_action_pass.h"
+#include "server_action_server.h"
 
-const size_t actionFactory::actionFormatLen = 7;
+const size_t actionFactory::actionFormatLen = 10;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -34,6 +36,8 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::join, "JOIN"},
     {&actionFactory::mode, "MODE"},
     {&actionFactory::send, "SEND"},
+    {&actionFactory::pass, "PASS"},
+    {&actionFactory::server, "SERVER"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -75,6 +79,16 @@ IServerAction* actionFactory::mode(
 IServerAction* actionFactory::send(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionSend(params, fd, prefix));
+}
+
+IServerAction* actionFactory::pass(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionPass(params, fd, prefix));
+}
+
+IServerAction* actionFactory::server(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionServer(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(
