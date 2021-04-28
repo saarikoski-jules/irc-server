@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   construct_reply.cpp                                :+:    :+:            */
+/*   construct_reply.cpp                               :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:37:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/28 13:02:08 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,3 +46,15 @@ std::string constructChanoPrivsNeededReply(
     reply = ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams);
     return (reply);
 }
+
+std::string constructNeedMoreParamsReply(
+	const std::string& cliNick, const std::string& command) {
+	std::string reply;
+	std::vector<std::string> replyParams;
+
+	replyParams.push_back(cliNick);
+	replyParams.push_back(command);
+	reply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, replyParams);
+	return (reply);
+}
+
