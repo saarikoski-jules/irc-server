@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 18:16:28 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 18:20:57 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,12 +83,12 @@ std::vector<std::string> MessageParser::genParams(
         return (params);
     }
     std::string str(*it, message->end());
-	std::string::size_type len;
-	if (str[0] == ':') {
-		len = 0;
-	} else {
-		len = str.find(" :");
-	}
+    std::string::size_type len;
+    if (str[0] == ':') {
+        len = 0;
+    } else {
+        len = str.find(" :");
+    }
 
     params = Utils::String::tokenize(str, len, " ");
 
