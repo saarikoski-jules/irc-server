@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 15:00:32 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/28 17:48:41 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 #include "server_action_join.h"
 #include "server_action_mode.h"
 #include "server_action_send.h"
+#include "server_action_ping.h"
 #include "server_action_pass.h"
 #include "server_action_server.h"
 
-const size_t actionFactory::actionFormatLen = 10;
+const size_t actionFactory::actionFormatLen = 11;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -36,6 +37,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::join, "JOIN"},
     {&actionFactory::mode, "MODE"},
     {&actionFactory::send, "SEND"},
+    {&actionFactory::ping, "PING"},
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
 };
@@ -79,6 +81,11 @@ IServerAction* actionFactory::mode(
 IServerAction* actionFactory::send(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionSend(params, fd, prefix));
+}
+
+IServerAction* actionFactory::ping(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionPing(params, fd, prefix));
 }
 
 IServerAction* actionFactory::pass(

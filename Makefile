@@ -35,6 +35,7 @@ SRCLST = main \
 		server_action_receive \
 		server_action_accept \
 		server_action_disconnect \
+		server_action_ping \
 		server_action_pass \
 		server_action_server \
 		action_factory \
