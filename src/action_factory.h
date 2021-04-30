@@ -40,6 +40,10 @@ class actionFactory {
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* ping(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* pass(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* server(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;
 

@@ -44,6 +44,7 @@ class Server {
     Connection* getConnectionByFd(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
+    bool serverTokenExists(const std::string& serverToken);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);

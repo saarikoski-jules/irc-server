@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
@@ -148,7 +148,13 @@ void Server::sendReplyToClient(const int& clientFd, const std::string& message) 
     // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
     Logger::log(LogLevelDebug, message);
-    serverSocket.sendData(clientFd, SERVERNAME " " + message + "\r\n");
+
+    actionFactory factory;
+    std::string replyString(SERVERNAME " " + message + "\r\n");
+    std::vector<std::string> replyVector;
+    replyVector.push_back(replyString);
+
+    this->addNewAction(factory.newAction("SEND", replyVector, clientFd));
 }
 
 void Server::acceptNewConnection(const int& fd) {
@@ -198,6 +204,18 @@ bool Server::usernameExists(const std::string& userName) {
         const Connection& connection = it->second;
         if (connection.connectionType == Connection::ClientType
         && connection.client.nickName == userName) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
+bool Server::serverTokenExists(const std::string& serverToken) {
+    std::map<const int, Connection>::iterator it;
+    for (it = connections.begin(); it != connections.end(); it++) {
+        const Connection& connection = it->second;
+        if (connection.connectionType == Connection::ServerType
+        && connection.server.token == serverToken) {
             return (true);
         }
     }
