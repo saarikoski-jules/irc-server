@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                          :+:    :+:             */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/27 12:17:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 16:14:19 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Server {
     Connection* getConnectionByFd(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
+    bool serverTokenExists(const std::string& serverToken);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);

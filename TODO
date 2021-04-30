@@ -8,3 +8,4 @@
 - Max 15 paramaters
 
 - Nickname collision with s2s communication
+- Same nickname before registering is allowed

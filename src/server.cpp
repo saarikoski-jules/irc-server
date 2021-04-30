@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 12:28:59 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/28 16:37:01 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,18 @@ bool Server::usernameExists(const std::string& userName) {
         const Connection& connection = it->second;
         if (connection.connectionType == Connection::ClientType
         && connection.client.nickName == userName) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
+bool Server::serverTokenExists(const std::string& serverToken) {
+    std::map<const int, Connection>::iterator it;
+    for (it = connections.begin(); it != connections.end(); it++) {
+        const Connection& connection = it->second;
+        if (connection.connectionType == Connection::ServerType
+        && connection.server.token == serverToken) {
             return (true);
         }
     }
