@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 12:50:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 19:00:31 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/30 17:15:43 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ struct Client {
     std::string hostName;
     std::string serverName;
     std::string realName;
+    std::string mode;
     bool registered;
 };
 
