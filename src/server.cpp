@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
@@ -146,7 +146,12 @@ void Server::sendMessage(const int& fd, const std::string& message) {
 
 void Server::sendReplyToClient(const int& clientFd, const std::string& message) {
     // TODO(Jelle) Append the correct servername when it's available.
-    serverSocket.sendData(clientFd, ":SERVERNAME " + message + "\r\n");
+    actionFactory factory;
+    std::string replyString(":SERVERNAME " + message + "\r\n");
+    std::vector<std::string> replyVector;
+    replyVector.push_back(replyString);
+
+    this->addNewAction(factory.newAction("SEND", replyVector, clientFd));
 }
 
 void Server::acceptNewConnection(const int& fd) {
