@@ -9,3 +9,6 @@
 
 - Nickname collision with s2s communication
 - Same nickname before registering is allowed
+
+- Register clients
+- Error check if user is allowed to send to channels
