@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 16:27:30 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/03 12:46:03 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ enum ReplyCode {
     ERR_CHANOPRIVSNEEDED = 482,
     ERR_UNKNOWNMODE = 472,
     ERR_ALREADYREGISTERED = 462,
+    ERR_NOTEXTTOSEND = 412,
+    ERR_NORECIPIENT = 411,
     RPL_NOTOPIC = 331,
     RPL_TOPIC = 332,
     RPL_CHANNELMODEIS = 324,

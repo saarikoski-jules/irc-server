@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 16:28:25 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/03 12:46:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,13 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case ERR_UNKNOWNMODE:
         ss << params[1] << " :is unknown mode char to me";
-	break;
+        break;
+    case ERR_NOTEXTTOSEND:
+        ss << ":No text to send";
+        break;
+    case ERR_NORECIPIENT:
+        ss << ":No recipient given " << params[1];
+        break;
     case ERR_ALREADYREGISTERED:
         ss << " :You may not reregister";
         break;

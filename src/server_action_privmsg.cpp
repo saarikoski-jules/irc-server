@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/03 11:31:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/03 12:53:28 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@ ServerActionPrivmsg::ServerActionPrivmsg(
         std::string reply = constructNeedMoreParamsReply(cli.nickName, "PRIVMSG");
         Logger::log(LogLevelDebug, "too few params");
         Logger::log(LogLevelDebug, reply);
-        server->sendReplyToClient(fd, constructNeedMoreParamsReply(cli.nickName, "PRIVMSG"));
+        if (params.size() == 1) {
+            server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
+        } else {
+            server->sendReplyToClient(fd, constructNoRecipientReply(cli.nickName, "PRIVMSG"));
+        }
         throw std::length_error("Bad amount of params for PRIVMSG");
     }
 }
@@ -56,6 +60,7 @@ void ServerActionPrivmsg::execute() {
                 sendTo.push_back(make_pair(cli, cli->client.nickName));
             }
         } catch (const std::exception& e) {
+            server->sendReplyToClient(fd, constructNoSuchNickReply(sender->client.nickName, *i));
             // no such client
         }
     }
