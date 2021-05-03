@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.h                                         :+:    :+:             */
+/*   channel.h                                          :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/30 14:08:29 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/03 09:53:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Channel {
     void removeBanMask(const std::string& mask);
     void addBanMask(const std::string& mask);
     std::string getBanMask(size_t index) const;
-	void sendToAllConnections(const std::string& message);
+	std::vector<Connection*> getConnections() const;
 
  private:
     //std::vector<Client*> chanops;

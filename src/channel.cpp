@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.cpp                                       :+:    :+:             */
+/*   channel.cpp                                        :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/30 18:47:17 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/03 09:53:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,10 +151,8 @@ std::string Channel::getBanMask(size_t index) const {
     }
 }
 
-void Channel::sendToAllConnections(const std::string&) {
-	for (std::vector<Connection*>::iterator i = connections.begin(); i != connections.end(); i++) {
-		/* server->sendReplyToClient(i->fd, message); */
-	}
+std::vector<Connection*> Channel::getConnections() const {
+    return (connections);
 }
 
 ChannelException::ChannelException(const std::string& what, const bool& fatal) :
