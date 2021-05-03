@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                            :+:    :+:             */
+/*   server_action_nick.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/27 12:43:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/03 13:24:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,12 @@ void ServerActionNick::execute() {
     Logger::log(LogLevelInfo, "Executing server action NICK");
     try {
         if (params.size() >= requiredParams) {
-            newNickName = &params[0];
-            handleNickNameChange();
+            if (Utils::String::isAlnum(params[0])) {
+                newNickName = &params[0];
+                handleNickNameChange();
+            } else {
+                handleErroneusNickName();
+            }
         } else {
             handleNoNicknameGiven();
         }
@@ -60,6 +64,14 @@ void ServerActionNick::handleNickNameInUse() const {
     params.push_back(connection->client.nickName);
     params.push_back(*newNickName);
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
+}
+
+void ServerActionNick::handleErroneusNickName() const {
+    Connection* connection = server->getConnectionByFd(fd);
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);
+    params.push_back(params[0]);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_ERRONEUSNICKNAME, params));
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {
