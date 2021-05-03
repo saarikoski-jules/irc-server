@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/03 12:53:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/03 12:58:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,15 @@ void ServerActionPrivmsg::execute() {
         try {
             if (std::string("$&#").find((*i)[0]) != std::string::npos) {
                 Channel* chan = server->findChannel(*i);
+                //TODO(Jules): also look through host/server masks
                 std::vector<Connection*> channelClients = chan->getConnections();
                 for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
                     if (*cli != sender) {
                         sendTo.push_back(make_pair(*cli, *i));
                     }
                 }
+            } else if (i->find('@') != std::string::npos) {
+                //TODO(Jules): find by user@host
             } else {
                 Connection* cli = server->getClientByNick(*i);
                 sendTo.push_back(make_pair(cli, cli->client.nickName));
