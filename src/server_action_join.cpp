@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 12:01:21 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 13:24:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,12 @@ void ServerActionJoin::execute() {
             //idk what to do
             // addExternalClientToChannel();
             //find correct leaf connection, pass that to ServerActionJoin::connection
+            try {
+                //TODO(Jules): This is prefix stuff. Make sure prefixstuff works
+                connection = connection->getLeafConnection(prefix);
+            } catch (const std::exception& e) {
+                // Connection not found. This should never happen?
+            }
         case Connection::ClientType:
             joinChannels();
             break;
