@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 09:53:23 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 15:10:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,19 @@ std::string Channel::getBanMask(size_t index) const {
     }
 }
 
-std::vector<Connection*> Channel::getConnections() const {
-    return (connections);
+std::vector<Connection*> Channel::getConnections(const Connection& client) const {
+    //if client can access connections
+    if (modes.find('n') != std::string::npos) {
+        for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
+            if (*user == &client) {
+                return (connections);//TODO(Jules): chanops?
+            }
+        }
+    } else {
+        return (connections);
+    }
+    //TODO(Jules): private, secret, invite-only?? bans?? moderated??
+    throw ChannelException("User is not allowed to access the users on this channel", false);
 }
 
 ChannelException::ChannelException(const std::string& what, const bool& fatal) :

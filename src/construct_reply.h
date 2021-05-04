@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:28 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 12:45:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 15:06:57 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,6 @@ std::string constructChanoPrivsNeededReply(const std::string& cliNick, const std
 std::string constructNeedMoreParamsReply(const std::string& cliNick, const std::string& command);
 std::string constructNoTextToSendReply(const std::string& cliNick);
 std::string constructNoRecipientReply(const std::string& cliNick, const std::string& command);
+std::string constructCannotSendToChanReply(const std::string& senderNick, const std::string& chanName);
 
 #endif  // CONSTRUCT_REPLY_H_

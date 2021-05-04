@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 14:04:45 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 15:04:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case ERR_ALREADYREGISTERED:
         ss << " :You may not reregister";
+        break;
+    case ERR_CANNOTSENDTOCHAN:
+        ss << params[1] << " :Cannot send to chan";
         break;
     case RPL_TOPIC:
         ss << params[1] << " :" << params[2];

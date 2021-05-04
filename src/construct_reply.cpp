@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 12:47:36 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 15:07:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,16 @@ std::string constructNoRecipientReply(
     replyParams.push_back(cliNick);
     replyParams.push_back(command);
     reply = ReplyFactory::newReply(ERR_NORECIPIENT, replyParams);
+    return (reply);
+}
+
+std::string constructCannotSendToChanReply(
+    const std::string& senderNick, const std::string& chanName) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(senderNick);
+    replyParams.push_back(chanName);
+    reply = ReplyFactory::newReply(ERR_CANNOTSENDTOCHAN, replyParams);
     return (reply);
 }
