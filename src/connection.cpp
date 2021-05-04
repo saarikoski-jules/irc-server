@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/21 13:39:59 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/04/28 16:23:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,6 @@ connectionType(Connection::NoType) {
 
 Connection::Connection(const std::string& serverConfiguration) :
 fd(-1),
-connectionType(Connection::ServerType),
+connectionType(Connection::NoType),
 server(serverConfiguration) {
 }

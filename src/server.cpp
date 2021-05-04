@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/03 11:02:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 14:06:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void Server::sendAuthenticationTo(const int& fd, const std::string& password) {
         actionFactory factory;
         std::vector<std::string> params;
         params.push_back("PASS " + password + " 0211 IRC|\r\n"
-            "SERVER irc.jelle 1 4242 :Codam development irc\r\n");
+            "SERVER " + SERVERNAME + " 1 4242 :Codam development irc\r\n");
         actions.push(factory.newAction("SEND", params, fd));
     } catch (const ActionFactoryException& e) {
         Logger::log(LogLevelError, e.what());
@@ -147,6 +147,9 @@ void Server::sendMessage(const int& fd, const std::string& message) {
 
 void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
     // TODO(Jelle) Append the correct servername when it's available.
+    Logger::log(LogLevelDebug, "Messages going to be send to client.");
+    Logger::log(LogLevelDebug, message);
+
     actionFactory factory;
     std::string replyString(":" + prefix + " " + message + "\r\n");
     std::vector<std::string> replyVector;
@@ -204,6 +207,18 @@ bool Server::usernameExists(const std::string& userName) {
         const Connection& connection = it->second;
         if (connection.connectionType == Connection::ClientType
         && connection.client.nickName == userName) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
+bool Server::serverTokenExists(const std::string& serverToken) {
+    std::map<const int, Connection>::iterator it;
+    for (it = connections.begin(); it != connections.end(); it++) {
+        const Connection& connection = it->second;
+        if (connection.connectionType == Connection::ServerType
+        && connection.server.token == serverToken) {
             return (true);
         }
     }

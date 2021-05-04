@@ -1,41 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.h                               :+:    :+:            */
+/*   server_action_pass.h                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:50:04 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/30 17:25:53 by jvisser       ########   odam.nl         */
+/*   Created: 2021/04/28 11:50:17 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/28 14:39:21 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_NICK_H_
-#define SERVER_ACTION_NICK_H_
+#ifndef SERVER_ACTION_PASS_H_
+#define SERVER_ACTION_PASS_H_
 
 #include <vector>
 #include <string>
 
-#include "connection.h"
 #include "iserver_action.h"
+#include "connection.h"
 
-class ServerActionNick: public IServerAction {
+class ServerActionPass : public IServerAction {
  public:
-    ServerActionNick(
+    ServerActionPass(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* clone() const;
     void execute();
-    ~ServerActionNick() {}
+    IServerAction* clone() const;
+    ~ServerActionPass() {}
  private:
-    void handleServerNick();
-    void handleNickNameCollision() const;
-    void handleClientNick();
-    void handleNickNameChange() const;
-    void handleNickNameInUse() const;
-    void handleNoNicknameGiven() const;
     Connection* connection;
     std::vector<std::string> params;
-    const std::string* newNickName;
+    void handlePass() const;
+    void handleAlreadyRegistered() const;
+    void handleNeedMoreParams() const;
 };
 
-#endif  // SERVER_ACTION_NICK_H_
+#endif  // SERVER_ACTION_PASS_H_

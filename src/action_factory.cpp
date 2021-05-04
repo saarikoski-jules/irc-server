@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 10:54:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 14:02:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@
 #include "server_action_mode.h"
 #include "server_action_send.h"
 #include "server_action_privmsg.h"
+#include "server_action_ping.h"
+#include "server_action_pass.h"
+#include "server_action_server.h"
 
-const size_t actionFactory::actionFormatLen = 9;
+const size_t actionFactory::actionFormatLen = 12;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -36,6 +39,9 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::mode, "MODE"},
     {&actionFactory::send, "SEND"},
     {&actionFactory::privmsg, "PRIVMSG"},
+    {&actionFactory::ping, "PING"},
+    {&actionFactory::pass, "PASS"},
+    {&actionFactory::server, "SERVER"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -82,6 +88,21 @@ IServerAction* actionFactory::send(
 IServerAction* actionFactory::privmsg(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionPrivmsg(params, fd, prefix));
+}
+
+IServerAction* actionFactory::ping(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionPing(params, fd, prefix));
+}
+
+IServerAction* actionFactory::pass(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionPass(params, fd, prefix));
+}
+
+IServerAction* actionFactory::server(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionServer(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

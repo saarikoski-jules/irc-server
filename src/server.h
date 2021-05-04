@@ -6,12 +6,14 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/03 11:01:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 14:06:29 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
+
+#define SERVERNAME CHANGE_LOCALLY
 
 #include <string>
 #include <vector>
@@ -35,13 +37,14 @@ class Server {
     void sendAuthenticationTo(const int& fd, const std::string& password);
     void run();
     void sendMessage(const int& fd, const std::string& message);
-    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = "SERVERNAME");
+    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
     Connection* getConnectionByFd(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
+    bool serverTokenExists(const std::string& serverToken);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);

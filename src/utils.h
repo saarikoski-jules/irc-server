@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:31:08 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/12 12:27:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/04/28 14:50:02 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,16 @@
 #include <vector>
 
 namespace Utils {
+template<typename T>
+T clamp(T value, T min, T max) {
+    if (value > max) {
+        return (max);
+    } else if (value < min) {
+        return (min);
+    }
+    return (value);
+}
+
 namespace Mem {
     void    *set(void *ptr, int c, size_t n);
 }

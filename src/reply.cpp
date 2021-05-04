@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/03 12:46:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 14:04:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case ERR_NOSUCHCHANNEL:
         ss << params[1] << " :No such channel";
+        break;
+    case ERR_NOTREGISTERED:
+        ss << " :You have not registered";
         break;
     case ERR_NEEDMOREPARAMS:
         ss << params[1] << " :Not enough parameters";

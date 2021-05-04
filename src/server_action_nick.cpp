@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                            :+:    :+:             */
+/*   server_action_nick.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/27 12:43:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/30 18:01:42 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_action_nick.h"
 
 #include <vector>
-#include <iostream>
 
 #include "reply.h"
 #include "logger.h"
 #include "server.h"
-#include "utils.h"
-#include "string_conversions.h"
+#include "connection.h"
+
+#define REQUIRED_SERVER_PARAMS 7
 
 ServerActionNick::ServerActionNick(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -28,24 +28,58 @@ params(params) {}
 
 void ServerActionNick::execute() {
     Logger::log(LogLevelInfo, "Executing server action NICK");
-    try {
-        if (params.size() >= requiredParams) {
-            newNickName = &params[0];
-            handleNickNameChange();
+    connection = server->getConnectionByFd(fd);
+    switch (connection->connectionType)
+    {
+    case Connection::ServerType:
+        handleServerNick();
+        break;
+    case Connection::ClientType:
+    case Connection::NoType:
+        handleClientNick();
+        break;
+    }
+}
+
+void ServerActionNick::handleServerNick() {
+    if (params.size() >= REQUIRED_SERVER_PARAMS) {
+        if (server->nicknameExists(params[0]) == false) {
+            Connection newConnection;
+            Client* client = &newConnection.client;
+            newConnection.connectionType = Connection::ClientType;
+            client->nickName = params[0];
+            client->userName = params[2];
+            client->hostName = params[3];
+            client->serverName = params[4];  // Currently servertoken here, change?
+            client->mode = params[5];  // TODO(Jelle) Validate mode?
+            connection->leafConnections.push_back(newConnection);
         } else {
-            handleNoNicknameGiven();
+            Logger::log(LogLevelError, "Nickname collision, need to kill colliding users");
+            handleNickNameCollision();
         }
-    } catch (const std::out_of_range& e) {
-        Logger::log(LogLevelError, "No valid fd found in NICK action");
-        // TODO(Jelle) Handle non valid client fd
+    } else {
+        Logger::log(LogLevelInfo, "Bad parameter count from server for NICK");
+    }
+}
+
+void ServerActionNick::handleNickNameCollision() const {
+    // TODO(Jelle) Kill nickname when colliding.
+}
+
+void ServerActionNick::handleClientNick() {
+    if (params.size() >= requiredParams) {
+        newNickName = &params[0];
+        handleNickNameChange();
+    } else {
+        handleNoNicknameGiven();
     }
 }
 
 void ServerActionNick::handleNickNameChange() const {
     if (server->nicknameExists(*newNickName) == false) {
-        Connection* connection = server->getConnectionByFd(fd);
         Client* client = &connection->client;
         client->nickName = *newNickName;
+        // TODO(Jelle) Broadcast nickname/connection to other servers.
         if (client->userName.empty() == false) {
             connection->connectionType = Connection::ClientType;
         }
@@ -55,7 +89,6 @@ void ServerActionNick::handleNickNameChange() const {
 }
 
 void ServerActionNick::handleNickNameInUse() const {
-    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
     params.push_back(connection->client.nickName);
     params.push_back(*newNickName);
@@ -63,7 +96,6 @@ void ServerActionNick::handleNickNameInUse() const {
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {
-    Connection* connection = server->getConnectionByFd(fd);
     std::vector<std::string> params;
     params.push_back(connection->client.nickName);
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NONICKNAMEGIVEN, params));

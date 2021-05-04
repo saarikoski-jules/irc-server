@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.h                               :+:    :+:            */
+/*   server_action_ping.h                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:50:04 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/30 17:25:53 by jvisser       ########   odam.nl         */
+/*   Created: 2021/04/28 17:01:54 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/04/28 18:03:09 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_NICK_H_
-#define SERVER_ACTION_NICK_H_
+#ifndef SERVER_ACTION_PING_H_
+#define SERVER_ACTION_PING_H_
 
 #include <vector>
 #include <string>
@@ -19,23 +19,20 @@
 #include "connection.h"
 #include "iserver_action.h"
 
-class ServerActionNick: public IServerAction {
+class ServerActionPing: public IServerAction {
  public:
-    ServerActionNick(
+    ServerActionPing(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* clone() const;
     void execute();
-    ~ServerActionNick() {}
+    IServerAction* clone() const;
+    ~ServerActionPing() {}
  private:
-    void handleServerNick();
-    void handleNickNameCollision() const;
-    void handleClientNick();
-    void handleNickNameChange() const;
-    void handleNickNameInUse() const;
-    void handleNoNicknameGiven() const;
     Connection* connection;
     std::vector<std::string> params;
-    const std::string* newNickName;
+    void handlePingClient() const;
+    void handlePingServer() const;
+    void handleNotRegistered() const;
+    void handleNotEnoughParams() const;
 };
 
-#endif  // SERVER_ACTION_NICK_H_
+#endif  // SERVER_ACTION_PING_H_
