@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 18:20:57 by jules        ########   odam.nl          */
+/*   Updated: 2021/04/30 12:56:03 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,16 @@ std::vector<std::string> MessageParser::genParams(
         len = 0;
     } else {
         len = str.find(" :");
+        params = Utils::String::tokenize(str, len, " ");
     }
 
-    params = Utils::String::tokenize(str, len, " ");
-
     if (len != std::string::npos) {
-        std::string final(str, len + 2);
+        std::string final;
+        if (len == 0) {
+            final = std::string(str, len);
+        } else {
+            final = std::string(str, len + 2);
+        }
         params.push_back(final);
     }
     *it = message->end();
