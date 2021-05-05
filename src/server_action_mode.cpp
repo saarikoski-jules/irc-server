@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                            :+:    :+:             */
+/*   server_action_mode.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 13:00:52 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/04 13:54:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,24 @@ params(params) {}
 void ServerActionMode::execute() {
     Logger::log(LogLevelInfo, "Executing server action MODE");
         char sign = '+';
-    Connection* connection = server->getConnectionByFd(fd);
-    cli = &connection->client;
+    connection = server->getConnectionByFd(fd);
+    switch (connection->connectionType) {
+        case Connection::ServerType:
+            connection = connection->getLeafConnection(prefix);
+        case Connection::ClientType:
+            break;
+        case Connection::NoType:
+            connectionNotRegistered();
+            return;
+    }
     if (params.size() < requiredParams) {
-        server->sendReplyToClient(fd, constructNeedMoreParamsReply(cli->nickName, "MODE"));
+        server->sendReplyToClient(fd, constructNeedMoreParamsReply(connection->client.nickName, "MODE"));
         return;
     }
     try {
         chan = server->findChannel(params[0]);
         if (!chan->isOperator(connection)) {
-            std::string reply = constructChanoPrivsNeededReply(cli->userName, chan->name);
+            std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
             server->sendReplyToClient(fd, reply);
             return;
         }
@@ -44,7 +52,7 @@ void ServerActionMode::execute() {
         }
         execByMode(sign);
     } catch (const std::out_of_range& e) {
-        server->sendReplyToClient(fd, constructNoSuchChannelReply(cli->nickName, params[0]));
+        server->sendReplyToClient(fd, constructNoSuchChannelReply(connection->client.nickName, params[0]));
     } catch (const std::exception& e) {
         std::string errorMsg(e.what());
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
@@ -146,7 +154,7 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
     try {
         target = server->getClientByNick(user);
     } catch (const std::exception& e) {
-        std::string reply = constructNoSuchNickReply(cli->nickName, user);
+        std::string reply = constructNoSuchNickReply(connection->client.nickName, user);
         server->sendReplyToClient(fd, reply);
         return (false);
     }
@@ -204,7 +212,7 @@ bool ServerActionMode::setKey(char sign, const std::string& key) {
 bool ServerActionMode::listBanMasks() const {
     size_t i = 0;
     std::vector<std::string> replyParams;
-    replyParams.push_back(cli->nickName);
+    replyParams.push_back(connection->client.nickName);
     replyParams.push_back(chan->name);
     while (true) {
         try {
@@ -231,7 +239,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     std::string reply;
     std::vector<std::string> replyParams;
 
-    replyParams.push_back(cli->nickName);
+    replyParams.push_back(connection->client.nickName);
     replyParams.push_back(channelName);
     replyParams.push_back(modes);
     std::string replyString;
@@ -248,10 +256,16 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
     std::vector<std::string> params;
     std::string character(1, c);
 
-    params.push_back(cli->nickName);
+    params.push_back(connection->client.nickName);
     params.push_back(character);
     reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
     server->sendReplyToClient(fd, reply);
+}
+
+void ServerActionMode::connectionNotRegistered() const {
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
 }
 
 IServerAction* ServerActionMode::clone() const {

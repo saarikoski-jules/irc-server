@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/30 18:01:42 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/05 12:10:51 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "reply.h"
 #include "logger.h"
 #include "server.h"
+#include "utils.h"
 #include "connection.h"
 
 #define REQUIRED_SERVER_PARAMS 7
@@ -68,8 +69,12 @@ void ServerActionNick::handleNickNameCollision() const {
 
 void ServerActionNick::handleClientNick() {
     if (params.size() >= requiredParams) {
-        newNickName = &params[0];
-        handleNickNameChange();
+        if (Utils::String::isAlnum(params[0])) {
+            newNickName = &params[0];
+            handleNickNameChange();
+        } else {
+            handleErroneusNickName();
+        }
     } else {
         handleNoNicknameGiven();
     }
@@ -93,6 +98,14 @@ void ServerActionNick::handleNickNameInUse() const {
     params.push_back(connection->client.nickName);
     params.push_back(*newNickName);
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NICKNAMEINUSE, params));
+}
+
+void ServerActionNick::handleErroneusNickName() const {
+    Connection* connection = server->getConnectionByFd(fd);
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);
+    params.push_back(params[0]);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_ERRONEUSNICKNAME, params));
 }
 
 void ServerActionNick::handleNoNicknameGiven() const {

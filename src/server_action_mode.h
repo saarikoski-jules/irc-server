@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.h                              :+:    :+:             */
+/*   server_action_mode.h                               :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 12:39:16 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/04 13:47:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ class ServerActionMode: public IServerAction {
     bool listBanMasks() const;
     void sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const;
     void sendUnknownModeReply(char c) const;
+    void connectionNotRegistered() const;
     Channel* chan;
-    Client* cli;
+    Connection* connection;
 };
 
 #endif  // SERVER_ACTION_MODE_H_

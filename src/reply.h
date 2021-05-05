@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 15:03:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 12:25:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 enum ReplyCode {
     ERR_NONICKNAMEGIVEN = 431,
     ERR_NICKNAMEINUSE = 433,
+    ERR_ERRONEUSNICKNAME = 432,
     ERR_BADCHANNELKEY = 475,
     ERR_NOSUCHCHANNEL = 403,
     ERR_NOTREGISTERED = 451,
