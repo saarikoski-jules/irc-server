@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 18:02:05 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/05 17:43:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,12 @@ class Server {
     void run();
     void sendMessage(const int& fd, const std::string& message);
     void sendReplyToClient(const int& clientFd, const std::string& message);
+    void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
     Connection* getConnectionByFd(const int& fd);
+    bool hasLocalConnection(const Connection& connection);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     bool serverTokenExists(const std::string& serverToken);

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:50:04 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 12:10:31 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 16:40:44 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ class ServerActionNick: public IServerAction {
  private:
     void handleServerNick();
     void handleNickNameCollision() const;
+    void sendKillMessageToServer() const;
+    void scheduleConnectionCollisionKill() const;
     void handleClientNick();
     void handleNickNameChange() const;
     void handleNickNameInUse() const;

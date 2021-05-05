@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 17:52:17 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/05 17:53:41 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,12 +150,22 @@ void Server::sendReplyToClient(const int& clientFd, const std::string& message) 
     Logger::log(LogLevelDebug, message);
 
     actionFactory factory;
-    std::string replyString(SERVERNAME " " + message + "\r\n");
+    std::string replyString(":" SERVERNAME " " + message + "\r\n");
     std::vector<std::string> replyVector;
     replyVector.push_back(replyString);
 
     this->addNewAction(factory.newAction("SEND", replyVector, clientFd));
 }
+
+void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message) {
+    try {
+        std::string fullMessage("ERROR :" SERVERNAME " " + message + "\r\n");
+        sendMessage(fd, fullMessage);
+    } catch (const ServerException& e) {
+        // Could not send message immediately. This is okay here.
+    }
+}
+
 
 void Server::acceptNewConnection(const int& fd) {
     connections.insert(std::pair<const int, Connection>(fd, Connection(fd)));
@@ -177,13 +187,37 @@ Connection* Server::getConnectionByFd(const int& fd) {
 Connection* Server::getClientByNick(const std::string& nick) {
     std::map<const int, Connection>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
-	std::pair<const int, Connection> client = *it;
-        Client myClient = client.second.client;
-	if (myClient.nickName == nick) {
-            return &(it->second);
+	    Connection* connection = &it->second;
+        if (connection->connectionType == Connection::ClientType) {
+            if (connection->client.nickName == nick) {
+                return &(it->second);
+            }
+        } else if (connection->connectionType == Connection::ServerType) {
+            try {
+                Connection* c = connection->getLeafConnection(nick);
+                return (c);
+            } catch (const std::out_of_range& e) {
+                // Nickname not present in this leaf connection.
+            }
         }
     }
     throw std::invalid_argument("Could not find the nick in list of clients");
+}
+
+bool Server::hasLocalConnection(const Connection& connection) {
+    const Connection* otherConnection = getConnectionByFd(connection.fd);
+    if (connection.connectionType != otherConnection->connectionType) {
+        return (false);
+    } else if (connection.connectionType == Connection::ClientType) {
+        if (connection.client.nickName != otherConnection->client.nickName) {
+            return (false);
+        }
+    } else if (connection.connectionType == Connection::ServerType) {
+        if (connection.server.name != otherConnection->server.name) {
+            return (false);
+        }
+    }
+    return (true);
 }
 
 bool Server::nicknameExists(const std::string& nickName) {

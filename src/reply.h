@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/03 13:25:43 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 14:40:35 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ enum ReplyCode {
     ERR_NOTREGISTERED = 451,
     ERR_NEEDMOREPARAMS = 461,
     ERR_NOSUCHNICK = 401,
+    ERR_NOPRIVILEGES = 481,
     ERR_CHANOPRIVSNEEDED = 482,
     ERR_UNKNOWNMODE = 472,
     ERR_ALREADYREGISTERED = 462,

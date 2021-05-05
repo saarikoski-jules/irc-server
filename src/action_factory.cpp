@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 17:48:41 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/05 16:10:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@
 #include "server_action_ping.h"
 #include "server_action_pass.h"
 #include "server_action_server.h"
+#include "server_action_kill.h"
 
-const size_t actionFactory::actionFormatLen = 11;
+const size_t actionFactory::actionFormatLen = 12;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -40,6 +41,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::ping, "PING"},
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
+    {&actionFactory::kill, "KILL"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -96,6 +98,11 @@ IServerAction* actionFactory::pass(
 IServerAction* actionFactory::server(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionServer(params, fd, prefix));
+}
+
+IServerAction* actionFactory::kill(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionKill(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(
