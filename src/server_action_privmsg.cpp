@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/05 12:28:53 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 12:53:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,6 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
                         sendTo.push_back(make_pair(*cli, *i));
                     }
                 }
-            } else if (i->find('@') != std::string::npos) {
-                //TODO(Jules): find by user@host
             } else {
                 Connection* cli = server->getClientByNick(*i);
                 sendTo.push_back(make_pair(cli, cli->client.nickName));
