@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:50:04 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 13:32:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 12:10:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 
+#include "connection.h"
 #include "iserver_action.h"
 
 class ServerActionNick: public IServerAction {
@@ -26,10 +27,14 @@ class ServerActionNick: public IServerAction {
     void execute();
     ~ServerActionNick() {}
  private:
+    void handleServerNick();
+    void handleNickNameCollision() const;
+    void handleClientNick();
     void handleNickNameChange() const;
     void handleNickNameInUse() const;
     void handleNoNicknameGiven() const;
     void handleErroneusNickName() const;
+    Connection* connection;
     std::vector<std::string> params;
     const std::string* newNickName;
 };
