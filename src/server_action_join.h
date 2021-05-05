@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.h                              :+:    :+:             */
+/*   server_action_join.h                               :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 12:37:57 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/04 11:53:58 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,13 @@ class ServerActionJoin: public IServerAction {
     ~ServerActionJoin() {}
  private:
     Channel* getChannel(const std::string& name, const std::string& key);
-    void joinServer(const std::string& name, const std::string& key);
+    void joinChannels();
+    void addClientToChannel(const std::string& name, const std::string& key);
+    void addExternalClientToChannel();
+    void connectionNotRegistered() const;
     void handleNeedMoreParams() const;
     std::vector<std::string> params;
+    Connection* connection;
 };
 
 #endif  // SERVER_ACTION_JOIN_H_

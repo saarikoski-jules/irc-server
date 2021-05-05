@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                            :+:    :+:             */
+/*   server_action_join.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:18:55 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/04 13:24:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,11 @@ Channel* ServerActionJoin::getChannel(
     return (chan);
 }
 
-void ServerActionJoin::joinServer(const std::string& name, const std::string& key) {
+void ServerActionJoin::addClientToChannel(const std::string& name, const std::string& key) {
     std::string reply;
     Channel* chan;
     std::vector<std::string> replyParams;
 
-    Connection* connection = server->getConnectionByFd(fd);
     replyParams.push_back(connection->client.nickName);
     replyParams.push_back(name);
     try {
@@ -69,6 +68,36 @@ void ServerActionJoin::handleNeedMoreParams() const {
 
 void ServerActionJoin::execute() {
     Logger::log(LogLevelInfo, "server action join");
+    connection = server->getConnectionByFd(fd);
+    switch (connection->connectionType) {
+        case Connection::ServerType:
+            //idk what to do
+            // addExternalClientToChannel();
+            //find correct leaf connection, pass that to ServerActionJoin::connection
+            try {
+                //TODO(Jules): This is prefix stuff. Make sure prefixstuff works
+                connection = connection->getLeafConnection(prefix);
+            } catch (const std::exception& e) {
+                // Connection not found. This should never happen?
+            }
+        case Connection::ClientType:
+            joinChannels();
+            break;
+        
+        case Connection::NoType:
+            connectionNotRegistered();
+            //error
+            break;
+    }
+}
+
+void ServerActionJoin::connectionNotRegistered() const {
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);//TODO(Jules): what nick should I use/where should I get it from
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
+} 
+
+void ServerActionJoin::joinChannels() {
     if (params.size() < 1) {    // TODO(Jules): handle need more params somewhere else
         handleNeedMoreParams();
         return;
@@ -86,7 +115,7 @@ void ServerActionJoin::execute() {
             key = "";
         }
         try {
-            joinServer(chans[i], key);
+            addClientToChannel(chans[i], key);
         } catch (const ChannelException& e) {
             server->sendReplyToClient(fd, e.what());
         }
