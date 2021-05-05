@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 12:25:23 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 16:39:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,12 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case RPL_ENDOFBANLIST:
         ss << params[1] << " :End of channel ban list";
+        break;
+    case RPL_NAMREPLY:
+        ss << params[1] << " :" << params[2];
+        break;
+    case RPL_ENDOFNAMES:
+        ss << params[1] << " :Enf of /NAMES list";
         break;
     default:
         break;
