@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/10 13:08:35 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/03 13:29:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,15 @@ std::vector<std::string> Utils::String::tokenize(
         prev = pos + delim.length();
     }
     return (vec);
+}
+
+bool Utils::String::isAlnum(const std::string& str) {
+    for (std::string::const_iterator i = str.begin(); i != str.end(); i++) {
+        if ((*i > '9' || *i < '0')
+        && (*i > 'z' || *i < 'a')
+        && (*i > 'Z' || *i < 'A')) {
+            return (false);
+        }
+    }
+    return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:31:08 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 14:50:02 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/03 13:15:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ namespace Mem {
 namespace String {
     std::vector<std::string> tokenize(
         const std::string& orig, const std::string::size_type end, const std::string& delim);
+    bool isAlnum(const std::string& str);
 }
 }
 
