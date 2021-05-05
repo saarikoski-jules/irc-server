@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/20 14:40:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/04 14:40:42 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Channel {
     void removeBanMask(const std::string& mask);
     void addBanMask(const std::string& mask);
     std::string getBanMask(size_t index) const;
+	std::vector<Connection*> getConnections(const Connection& client) const;
 
  private:
     //std::vector<Client*> chanops;

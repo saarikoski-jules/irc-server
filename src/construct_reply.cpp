@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   construct_reply.cpp                               :+:    :+:             */
+/*   construct_reply.cpp                                :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/28 13:02:08 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/04 15:07:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,3 +58,34 @@ std::string constructNeedMoreParamsReply(
 	return (reply);
 }
 
+std::string constructNoTextToSendReply(
+    const std::string& cliNick) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cliNick);
+    reply = ReplyFactory::newReply(ERR_NOTEXTTOSEND, replyParams);
+    return (reply);
+}
+
+std::string constructNoRecipientReply(
+    const std::string& cliNick, const std::string& command) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(cliNick);
+    replyParams.push_back(command);
+    reply = ReplyFactory::newReply(ERR_NORECIPIENT, replyParams);
+    return (reply);
+}
+
+std::string constructCannotSendToChanReply(
+    const std::string& senderNick, const std::string& chanName) {
+    std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(senderNick);
+    replyParams.push_back(chanName);
+    reply = ReplyFactory::newReply(ERR_CANNOTSENDTOCHAN, replyParams);
+    return (reply);
+}

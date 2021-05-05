@@ -1,14 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 17:52:17 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/04 14:06:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "server.h"
 
@@ -144,13 +145,13 @@ void Server::sendMessage(const int& fd, const std::string& message) {
     }
 }
 
-void Server::sendReplyToClient(const int& clientFd, const std::string& message) {
+void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
     // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
     Logger::log(LogLevelDebug, message);
 
     actionFactory factory;
-    std::string replyString(SERVERNAME " " + message + "\r\n");
+    std::string replyString(":" + prefix + " " + message + "\r\n");
     std::vector<std::string> replyVector;
     replyVector.push_back(replyString);
 
@@ -177,12 +178,14 @@ Connection* Server::getConnectionByFd(const int& fd) {
 Connection* Server::getClientByNick(const std::string& nick) {
     std::map<const int, Connection>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
-	std::pair<const int, Connection> client = *it;
-        Client myClient = client.second.client;
-	if (myClient.nickName == nick) {
-            return &(it->second);
-        }
-    }
+		if (it->second.connectionType == Connection::ClientType) {
+			std::pair<const int, Connection> client = *it;
+			Client myClient = client.second.client;
+			if (myClient.nickName == nick) {
+				return &(it->second);
+			}
+		}
+	}
     throw std::invalid_argument("Could not find the nick in list of clients");
 }
 

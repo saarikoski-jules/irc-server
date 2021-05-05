@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 18:02:05 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/04 14:06:29 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Server {
     void sendAuthenticationTo(const int& fd, const std::string& password);
     void run();
     void sendMessage(const int& fd, const std::string& message);
-    void sendReplyToClient(const int& clientFd, const std::string& message);
+    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
