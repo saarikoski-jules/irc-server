@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/04 15:03:00 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 12:28:53 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,7 @@ ServerActionPrivmsg::ServerActionPrivmsg(
     if (params.size() < requiredParams) {
         Connection* connect = server->getConnectionByFd(fd);
         Client cli = connect->client;
-        std::string reply = constructNeedMoreParamsReply(cli.nickName, "PRIVMSG");
         Logger::log(LogLevelDebug, "too few params");
-        Logger::log(LogLevelDebug, reply);
         if (params.size() == 1) {
             server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
         } else {
