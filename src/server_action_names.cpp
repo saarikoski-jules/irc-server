@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 16:41:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 17:58:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,16 @@ void ServerActionNames::execute() {
 		
 	}
 	if (params.size() == 0) {
+		std::map<std::string, Channel> channels = server->getListOfChannels();
+		for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+			try {
+				std::string names = (*i).second.getNames(connection);
+				namesReply((*i).second.name, names);
+			} catch (const ChannelException& e) {
+				//do non
+			}
+		}
+		endOfNamesReply("*");
 		//send all names after which only one end of names reply
 	} else {
 		std::vector<std::string> channels = Utils::String::tokenize(params[0], params[0].length(), ",");
@@ -44,11 +54,11 @@ void ServerActionNames::execute() {
 				Channel* chan = server->findChannel(*i);
 				std::string names = chan->getNames(connection);
 				namesReply(chan->name, names);
-				endOfNamesReply(chan->name);
 			} catch (const std::exception& e) {
 				//channel not found. No numeric reply?
 			}
 			//send end of names reply
+			endOfNamesReply(*i);
 		}
 	}
 	//do things

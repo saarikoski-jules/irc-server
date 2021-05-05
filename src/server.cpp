@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 14:06:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 17:57:49 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,10 @@ Channel* Server::findChannel(const std::string& name) {
         return (&(*it).second);
     }
     throw std::out_of_range("Channel not found");
+}
+
+std::map<std::string, Channel> Server::getListOfChannels() {
+    return (channels);
 }
 
 void Server::delayFirstAction() {

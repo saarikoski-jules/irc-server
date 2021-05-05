@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 15:55:20 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 17:41:16 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Channel {
     std::vector<std::string> bans;
     std::vector<Connection*> chanops;
     //Connection* chanop;
+    void clientHasAccess(Connection* connection) const;
     std::vector<Connection *> connections;
     std::string key;
     std::string modes;
