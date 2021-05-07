@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/07 15:24:48 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/07 15:59:30 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/07 16:13:30 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void ServerActionTopic::execute() {
 	Channel* chan = server->findChannel(params[0]);
 	if (params.size() > 1) {
 		params.push_back(chan->topic);
-
+		//TODO(Jules): Change channel topic if client has rights
 		server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_TOPIC, params));
 	} else {
 		if (chan->topic == "") {
