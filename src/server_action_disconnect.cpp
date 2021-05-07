@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 17:51:00 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/07 15:18:22 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,38 @@ void ServerActionDisconnect::execute() {
     switch (connection->connectionType)
     {
     case Connection::ServerType:
-        // TODO(Jelle) Do thing.
+        // TODO(Jelle) Do thing, coming from SQUIT.
         break;
     case Connection::ClientType:
         disconnectClient();
         break;
     case Connection::NoType:
-        // TODO(Jelle) Do thing.
+        disconnectNoType();
         break;
     }
 }
 
-void ServerActionDisconnect::disconnectClient() const {
+void ServerActionDisconnect::disconnectClient() {
     if (params.size() >= 1) {
-        server->sendErrorToConnectionBypassingQueue(fd, params[0]);
+        disconnectMessage = params[0];
     } else {
-        server->sendErrorToConnectionBypassingQueue(fd, "Disconnecting connection");
+        disconnectMessage = "EOF from client";
     }
+    server->sendErrorToConnectionBypassingQueue(fd, disconnectMessage);
     close(fd);
-    // TODO(Jelle) QUIT message of the client to all servers.
+    std::string reply(":" + connection->client.nickName + " QUIT :" + disconnectMessage + "\r\n");
+    server->sendMessageToAllServers(reply);
+    server->deleteConnection(fd);
+}
+
+void ServerActionDisconnect::disconnectNoType() {
+    if (params.size() >= 1) {
+        disconnectMessage = params[0];
+    } else {
+        disconnectMessage = "EOF from client";
+    }
+    server->sendErrorToConnectionBypassingQueue(fd, disconnectMessage);
+    close(fd);
     server->deleteConnection(fd);
 }
 

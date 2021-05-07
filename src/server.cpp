@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/07 12:01:12 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/07 15:22:02 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,27 @@ void Server::sendMessage(const int& fd, const std::string& message) {
     }
 }
 
+void Server::sendMessageToAllServers(const std::string& message) {
+    sendMessageToAllServersButOne(message, -1);
+}
+
+void Server::sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd) {
+    try {
+        actionFactory factory;
+        std::vector<std::string> replyVector;
+        replyVector.push_back(message);
+        std::map<const int, Connection>::iterator it = connections.begin();
+        for (; it != connections.end(); it++) {
+            const Connection& connection = it->second;
+            if (connection.connectionType == Connection::ServerType && connection.fd != exceptionFd) {
+                addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+            }
+        }
+    } catch (const std::exception& e) {
+        Logger::log(LogLevelError, e.what());
+    }
+}
+
 void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
     // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
@@ -222,15 +243,13 @@ bool Server::hasLocalConnection(const Connection& connection) {
 }
 
 bool Server::nicknameExists(const std::string& nickName) {
-    std::map<const int, Connection>::iterator it;
-    for (it = connections.begin(); it != connections.end(); it++) {
-        const Connection& connection = it->second;
-        if (connection.connectionType == Connection::ClientType
-        && connection.client.nickName == nickName) {
-            return (true);
-        }
+    try {
+        Connection *dummy = getClientByNick(nickName);
+        (void)dummy;
+        return (true);
+    } catch (const std::invalid_argument& e) {
+        return (false);
     }
-    return (false);
 }
 
 bool Server::usernameExists(const std::string& userName) {

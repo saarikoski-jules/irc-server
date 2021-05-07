@@ -40,6 +40,7 @@ SRCLST = main \
 		server_action_pass \
 		server_action_server \
 		server_action_kill \
+		server_action_quit \
 		action_factory \
 		channel \
 		construct_reply \
