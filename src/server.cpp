@@ -6,9 +6,10 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 17:53:41 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/07 12:01:12 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "server.h"
 
@@ -144,13 +145,13 @@ void Server::sendMessage(const int& fd, const std::string& message) {
     }
 }
 
-void Server::sendReplyToClient(const int& clientFd, const std::string& message) {
+void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
     // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
     Logger::log(LogLevelDebug, message);
 
     actionFactory factory;
-    std::string replyString(":" SERVERNAME " " + message + "\r\n");
+    std::string replyString(":" + prefix + " " + message + "\r\n");
     std::vector<std::string> replyVector;
     replyVector.push_back(replyString);
 

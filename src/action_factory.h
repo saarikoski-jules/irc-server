@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 14:21:19 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/07 11:58:38 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ class actionFactory {
     IServerAction* mode(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* send(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* privmsg(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* ping(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
