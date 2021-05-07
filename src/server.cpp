@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 14:06:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/07 15:10:12 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <thread>
 #include <cinttypes>
 #include <exception>
+#include <ctime>
 
 #include "logger.h"
 #include "socket.h"
@@ -28,7 +29,8 @@ Server::Server(const uint16_t& port, const std::string& password) :
 channels(),
 serverSocket(&actions) {
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
-    IServerAction::server = this;
+	time(&serverStart);
+	IServerAction::server = this;
     try {
         validatePassword(password);
         openSocket(port);

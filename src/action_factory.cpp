@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                 :+:    :+:            */
+/*   action_factory.cpp                                :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 14:02:23 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/07 13:52:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@
 #include "server_action_ping.h"
 #include "server_action_pass.h"
 #include "server_action_server.h"
+#include "server_action_motd.h"
 
-const size_t actionFactory::actionFormatLen = 12;
+const size_t actionFactory::actionFormatLen = 13;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -42,6 +43,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::ping, "PING"},
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
+    {&actionFactory::motd, "MOTD"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -103,6 +105,11 @@ IServerAction* actionFactory::pass(
 IServerAction* actionFactory::server(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionServer(params, fd, prefix));
+}
+
+IServerAction* actionFactory::motd(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionMotd(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

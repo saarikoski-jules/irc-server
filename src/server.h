@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 14:06:29 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/07 15:08:32 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME CHANGE_LOCALLY
+/* #define SERVERNAME CHANGE_LOCALLY */
+#define SERVERNAME "TMP"
 
 #include <string>
 #include <vector>
@@ -49,7 +50,8 @@ class Server {
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
     void delayFirstAction();
- protected:
+	time_t serverStart;
+protected:
     std::map<const int, Connection> connections;
  private:
     Server();

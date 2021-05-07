@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:07:28 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/07 14:33:44 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 
 #include "server.h"
 #include "logger.h"
+#include "action_factory.h"
+#include "welcome_client.h"
 
 ServerActionUser::ServerActionUser(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -41,7 +43,8 @@ void ServerActionUser::execute() {
                 client->realName = *newRealName;
                 if (client->nickName != "*") {
                     connection->connectionType = Connection::ClientType;
-                }
+					welcomeClient(server, fd, prefix);
+				}
             } else {
                 std::vector<std::string> params;
                 params.push_back(client->nickName);

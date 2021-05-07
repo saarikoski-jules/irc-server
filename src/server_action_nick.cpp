@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                             :+:    :+:            */
+/*   server_action_nick.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 12:10:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/07 14:31:57 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include "server.h"
 #include "utils.h"
 #include "connection.h"
+#include "action_factory.h"
+#include "welcome_client.h"
 
 #define REQUIRED_SERVER_PARAMS 7
 
@@ -87,7 +89,8 @@ void ServerActionNick::handleNickNameChange() const {
         // TODO(Jelle) Broadcast nickname/connection to other servers.
         if (client->userName.empty() == false) {
             connection->connectionType = Connection::ClientType;
-        }
+			welcomeClient(server, fd, prefix);
+		}
     } else {
         handleNickNameInUse();
     }
