@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 15:07:21 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 16:06:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,14 @@ std::string constructCannotSendToChanReply(
     replyParams.push_back(senderNick);
     replyParams.push_back(chanName);
     reply = ReplyFactory::newReply(ERR_CANNOTSENDTOCHAN, replyParams);
+    return (reply);
+}
+
+std::string constructNotRegisteredReply(const std::string& name) {
+    std::string reply;
+    std::vector<std::string> params;
+    
+    params.push_back(name);
+    reply = ReplyFactory::newReply(ERR_NOTREGISTERED, params);
     return (reply);
 }

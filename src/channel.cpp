@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 15:10:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 17:41:28 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,46 @@ std::string Channel::getBanMask(size_t index) const {
     } else {
         throw std::out_of_range("index not present in masks");
     }
+}
+
+std::string Channel::getNames(Connection* connection) const {
+    std::string names;
+
+    clientHasAccess(connection);
+    for (std::vector<Connection*>::const_iterator user = chanops.begin(); user != chanops.end(); user++) {
+        names = names + "@" + (*user)->client.nickName + " ";
+    }
+    for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
+        if (!isOper(*user)) {
+            if (names != "") {
+                names = names + "+";
+            }
+            names = names + (*user)->client.nickName + " ";
+        }
+    }
+    return (names);
+}
+
+void Channel::clientHasAccess(Connection* connection) const {
+    if (modes.find('s') != std::string::npos || modes.find('p') != std::string::npos) {
+        for (std::vector<Connection*>::const_iterator i = connections.begin(); i != connections.end(); i++) {
+            if (i + 1 == connections.end()) {
+                throw ChannelException("Channel not visible to user", false);
+            }
+            if ((*i)->client.nickName == connection->client.nickName) {
+                return;
+            }
+        }
+    }
+}
+
+bool Channel::isOper(Connection* connection) const {
+    for (std::vector<Connection*>::const_iterator oper = chanops.begin(); oper != chanops.end(); oper++) {
+        if (connection->client.nickName == (*oper)->client.nickName) {
+            return (true);
+        }
+    }
+    return (false);
 }
 
 std::vector<Connection*> Channel::getConnections(const Connection& client) const {
