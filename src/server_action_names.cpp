@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/10 11:03:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/10 11:06:58 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void ServerActionNames::execute() {
 			endOfNamesReply(*i);
 		}
 	}
-	//do things
 }
 
 void ServerActionNames::namesReply(const std::string& channelName, const std::string& names) const {
