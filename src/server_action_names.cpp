@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 17:58:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/10 11:03:19 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ ServerActionNames::ServerActionNames(
 	std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 0, prefix),
 params(params) {}
-#include <iostream>
+
 void ServerActionNames::execute() {
 	connection = server->getConnectionByFd(fd);
 	switch (connection->connectionType) {
