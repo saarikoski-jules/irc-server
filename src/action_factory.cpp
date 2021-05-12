@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 16:26:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 10:50:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@
 #include "server_action_ping.h"
 #include "server_action_pass.h"
 #include "server_action_server.h"
+#include "server_action_kill.h"
+#include "server_action_quit.h"
 #include "server_action_names.h"
 
-const size_t actionFactory::actionFormatLen = 13;
+const size_t actionFactory::actionFormatLen = 15;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -43,6 +45,8 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::ping, "PING"},
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
+    {&actionFactory::kill, "KILL"},
+    {&actionFactory::quit, "QUIT"},
     {&actionFactory::names, "NAMES"},
 };
 
@@ -105,6 +109,16 @@ IServerAction* actionFactory::pass(
 IServerAction* actionFactory::server(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionServer(params, fd, prefix));
+}
+
+IServerAction* actionFactory::kill(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionKill(params, fd, prefix));
+}
+
+IServerAction* actionFactory::quit(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionQuit(params, fd, prefix));
 }
 
 IServerAction* actionFactory::names(

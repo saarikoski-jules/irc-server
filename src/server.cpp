@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 17:57:49 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 10:52:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,27 @@ void Server::sendMessage(const int& fd, const std::string& message) {
     }
 }
 
+void Server::sendMessageToAllServers(const std::string& message) {
+    sendMessageToAllServersButOne(message, -1);
+}
+
+void Server::sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd) {
+    try {
+        actionFactory factory;
+        std::vector<std::string> replyVector;
+        replyVector.push_back(message);
+        std::map<const int, Connection>::iterator it = connections.begin();
+        for (; it != connections.end(); it++) {
+            const Connection& connection = it->second;
+            if (connection.connectionType == Connection::ServerType && connection.fd != exceptionFd) {
+                addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+            }
+        }
+    } catch (const std::exception& e) {
+        Logger::log(LogLevelError, e.what());
+    }
+}
+
 void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
     // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
@@ -157,6 +178,16 @@ void Server::sendReplyToClient(const int& clientFd, const std::string& message, 
 
     this->addNewAction(factory.newAction("SEND", replyVector, clientFd));
 }
+
+void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message) {
+    try {
+        std::string fullMessage("ERROR :" SERVERNAME " " + message + "\r\n");
+        sendMessage(fd, fullMessage);
+    } catch (const ServerException& e) {
+        // Could not send message immediately. This is okay here.
+    }
+}
+
 
 void Server::acceptNewConnection(const int& fd) {
     connections.insert(std::pair<const int, Connection>(fd, Connection(fd)));
@@ -178,27 +209,47 @@ Connection* Server::getConnectionByFd(const int& fd) {
 Connection* Server::getClientByNick(const std::string& nick) {
     std::map<const int, Connection>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
-		if (it->second.connectionType == Connection::ClientType) {
-			std::pair<const int, Connection> client = *it;
-			Client myClient = client.second.client;
-			if (myClient.nickName == nick) {
-				return &(it->second);
-			}
-		}
-	}
+	    Connection* connection = &it->second;
+        if (connection->connectionType == Connection::ClientType) {
+            if (connection->client.nickName == nick) {
+                return &(it->second);
+            }
+        } else if (connection->connectionType == Connection::ServerType) {
+            try {
+                Connection* c = connection->getLeafConnection(nick);
+                return (c);
+            } catch (const std::out_of_range& e) {
+                // Nickname not present in this leaf connection.
+            }
+        }
+    }
     throw std::invalid_argument("Could not find the nick in list of clients");
 }
 
-bool Server::nicknameExists(const std::string& nickName) {
-    std::map<const int, Connection>::iterator it;
-    for (it = connections.begin(); it != connections.end(); it++) {
-        const Connection& connection = it->second;
-        if (connection.connectionType == Connection::ClientType
-        && connection.client.nickName == nickName) {
-            return (true);
+bool Server::hasLocalConnection(const Connection& connection) {
+    const Connection* otherConnection = getConnectionByFd(connection.fd);
+    if (connection.connectionType != otherConnection->connectionType) {
+        return (false);
+    } else if (connection.connectionType == Connection::ClientType) {
+        if (connection.client.nickName != otherConnection->client.nickName) {
+            return (false);
+        }
+    } else if (connection.connectionType == Connection::ServerType) {
+        if (connection.server.name != otherConnection->server.name) {
+            return (false);
         }
     }
-    return (false);
+    return (true);
+}
+
+bool Server::nicknameExists(const std::string& nickName) {
+    try {
+        Connection *dummy = getClientByNick(nickName);
+        (void)dummy;
+        return (true);
+    } catch (const std::invalid_argument& e) {
+        return (false);
+    }
 }
 
 bool Server::usernameExists(const std::string& userName) {

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 12:10:51 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 18:08:00 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "server.h"
 #include "utils.h"
 #include "connection.h"
+#include "action_factory.h"
 
 #define REQUIRED_SERVER_PARAMS 7
 
@@ -47,12 +48,14 @@ void ServerActionNick::handleServerNick() {
         if (server->nicknameExists(params[0]) == false) {
             Connection newConnection;
             Client* client = &newConnection.client;
+            newConnection.fd = fd;
             newConnection.connectionType = Connection::ClientType;
             client->nickName = params[0];
             client->userName = params[2];
             client->hostName = params[3];
             client->serverName = params[4];  // Currently servertoken here, change?
             client->mode = params[5];  // TODO(Jelle) Validate mode?
+            client->realName = params[6];
             connection->leafConnections.push_back(newConnection);
         } else {
             Logger::log(LogLevelError, "Nickname collision, need to kill colliding users");
@@ -64,7 +67,21 @@ void ServerActionNick::handleServerNick() {
 }
 
 void ServerActionNick::handleNickNameCollision() const {
-    // TODO(Jelle) Kill nickname when colliding.
+    sendKillMessageToServer();
+    scheduleConnectionCollisionKill();
+}
+
+void ServerActionNick::sendKillMessageToServer() const {
+    std::string killMessage("KILL " + params[0] + " :Nickname collision");
+    server->sendReplyToClient(fd, killMessage);
+}
+
+void ServerActionNick::scheduleConnectionCollisionKill() const {
+    actionFactory factory;
+    std::vector<std::string> killParams;
+    killParams.push_back(params[0]);  // Nickname to kill.
+    killParams.push_back("Nickname collision");  // Message to give to user and servers.
+    server->addNewAction(factory.newAction("KILL", killParams, fd));
 }
 
 void ServerActionNick::handleClientNick() {
@@ -81,6 +98,7 @@ void ServerActionNick::handleClientNick() {
 }
 
 void ServerActionNick::handleNickNameChange() const {
+    // TODO(Jelle) Collision detection?
     if (server->nicknameExists(*newNickName) == false) {
         Client* client = &connection->client;
         client->nickName = *newNickName;
