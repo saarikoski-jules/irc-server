@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/07 12:05:23 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/12 11:01:40 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:35:41 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,11 @@ ServerActionMotd::ServerActionMotd(
 IServerAction(fd, 0, prefix),
 params(params) {}
 
-std::string constructNotRegisteredReply(const std::string& nick) {
-    std::vector<std::string> params;
-    params.push_back(nick);
-    std::string reply = ReplyFactory::newReply(ERR_NOTREGISTERED, params);
-    return (reply);
-}
-
 void ServerActionMotd::execute() {
    Connection* connection = server->getConnectionByFd(fd);
    switch(connection->connectionType) {
         case Connection::ServerType:
-            connection = connection->getLeafConnection(prefix);//TODO(Jules): will this work?
+            connection = connection->getLeafConnection(prefix);
         case Connection::ClientType:
             break;
         case Connection::NoType:

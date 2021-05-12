@@ -6,11 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-<<<<<<< HEAD
-/*   Updated: 2021/05/12 11:09:43 by jules        ########   odam.nl          */
-=======
-/*   Updated: 2021/05/12 10:50:14 by jvisser       ########   odam.nl         */
->>>>>>> main
+/*   Updated: 2021/05/12 11:43:06 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +117,7 @@ IServerAction* actionFactory::server(
 IServerAction* actionFactory::motd(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionMotd(params, fd, prefix));
+}
 
 IServerAction* actionFactory::kill(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
@@ -168,3 +165,4 @@ const bool& ActionFactoryException::isFatal() const {
 const char* ActionFactoryException::what() const throw() {
     return (fullMessage.c_str());
 }
+
