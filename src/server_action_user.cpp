@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 14:54:26 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 16:13:04 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include "server.h"
 #include "logger.h"
 #include "construct_reply.h"
+#include "action_factory.h"
+#include "welcome_client.h"
 
 ServerActionUser::ServerActionUser(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -44,6 +46,7 @@ void ServerActionUser::execute() {
                     connection->connectionType = Connection::ClientType;
                     std::string reply = constructNewNickBroadcast(*connection);
                     server->sendMessageToAllServers(reply);
+					welcomeClient(server, fd, prefix);
                 }
             } else {
                 std::vector<std::string> params;

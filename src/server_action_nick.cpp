@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 15:37:09 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 16:12:33 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "connection.h"
 #include "action_factory.h"
 #include "construct_reply.h"
+#include "welcome_client.h"
 
 #define REQUIRED_SERVER_PARAMS 7
 
@@ -133,6 +134,7 @@ void ServerActionNick::handleNickNameChange() const {
                 connection->connectionType = Connection::ClientType;
                 std::string reply = constructNewNickBroadcast(*connection);
                 server->sendMessageToAllServers(reply);
+    			welcomeClient(server, fd, prefix);
             }
         }
     } else {
