@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 15:33:48 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 16:11:02 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,7 +261,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
 		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
 	}
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
-		if ((*it)->connectionType == Connection::ClientType) {
+		if (server->hasLocalConnection(**it)) {
 			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
 		}
 	}
