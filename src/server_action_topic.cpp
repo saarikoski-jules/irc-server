@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/12 14:42:28 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 16:32:21 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,13 @@ params(params) {
 				break;
 			case Connection::NoType:
 				server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
-				// throw std::invalid_argument("Bad user");//TODO(Jules): yeah how about you don't
+				throw std::invalid_argument("Bad user");//TODO(Jules): yeah how about you don't
 				break;
 		}
 		params.push_back(connection->client.nickName);
+		params.push_back("TOPIC");
 		server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
-		// throw std::invalid_argument("Not enough params");
+		throw std::invalid_argument("Not enough params");
 	}
 }
 

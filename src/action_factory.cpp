@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 11:53:08 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 16:29:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,11 @@ IServerAction* actionFactory::newAction(
     const int& fd, const std::string& prefix) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
         if (actionFormats[i].type == cmd) {
-            return (this->*actionFormats[i].action)(params, fd, prefix);
+			try {
+				return (this->*actionFormats[i].action)(params, fd, prefix);
+			} catch (const std::exception& e) {
+				break;
+			}
         }
     }
     throw ActionFactoryException("invalid action", false);
