@@ -6,14 +6,15 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 14:43:03 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 16:18:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME CHANGE_LOCALLY
+#define SERVERNAME "irc.icrdlsyrptblcht"
+#define SERVERTOKEN "4242"
 
 #include <string>
 #include <vector>
