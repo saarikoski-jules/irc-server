@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_user.cpp                            :+:    :+:             */
+/*   server_action_user.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:07:28 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 14:54:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 #include "server.h"
 #include "logger.h"
+#include "construct_reply.h"
 
 ServerActionUser::ServerActionUser(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -25,7 +26,7 @@ IServerAction(fd, 4, prefix),
 params(params) {}
 
 void ServerActionUser::execute() {
-    Logger::log(LogLevelInfo, "server action accept");
+    Logger::log(LogLevelInfo, "server action user");
     try {
         if (params.size() >= requiredParams) {
             Connection* connection = server->getConnectionByFd(fd);
@@ -41,6 +42,8 @@ void ServerActionUser::execute() {
                 client->realName = *newRealName;
                 if (client->nickName != "*") {
                     connection->connectionType = Connection::ClientType;
+                    std::string reply = constructNewNickBroadcast(*connection);
+                    server->sendMessageToAllServers(reply);
                 }
             } else {
                 std::vector<std::string> params;
@@ -55,7 +58,6 @@ void ServerActionUser::execute() {
             server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
         }
         // TODO(Jelle) Handle server error's
-        // TODO(Jelle) Handle server2server communication
     } catch (const std::out_of_range& e) {
         // TODO(Jelle) Handle non valid client fd
     }

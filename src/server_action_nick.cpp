@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 18:08:00 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 15:37:09 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "utils.h"
 #include "connection.h"
 #include "action_factory.h"
+#include "construct_reply.h"
 
 #define REQUIRED_SERVER_PARAMS 7
 
@@ -44,22 +45,44 @@ void ServerActionNick::execute() {
 }
 
 void ServerActionNick::handleServerNick() {
-    if (params.size() >= REQUIRED_SERVER_PARAMS) {
-        if (server->nicknameExists(params[0]) == false) {
-            Connection newConnection;
-            Client* client = &newConnection.client;
-            newConnection.fd = fd;
-            newConnection.connectionType = Connection::ClientType;
-            client->nickName = params[0];
-            client->userName = params[2];
-            client->hostName = params[3];
-            client->serverName = params[4];  // Currently servertoken here, change?
-            client->mode = params[5];  // TODO(Jelle) Validate mode?
-            client->realName = params[6];
-            connection->leafConnections.push_back(newConnection);
+    if (params.size() >= requiredParams) {
+        if (params.size() >= REQUIRED_SERVER_PARAMS) {
+            if (server->nicknameExists(params[0]) == false) {
+                Connection newConnection;
+                Client* client = &newConnection.client;
+                newConnection.fd = fd;
+                newConnection.connectionType = Connection::ClientType;
+                client->nickName = params[0];
+                client->userName = params[2];
+                client->hostName = params[3];
+                client->serverName = params[4];  // Currently servertoken here, change?
+                client->mode = params[5];  // TODO(Jelle) Validate mode?
+                client->realName = params[6];
+                connection->leafConnections.push_back(newConnection);
+                std::string reply = constructServerNickBroadcast(params);
+                server->sendMessageToAllServersButOne(reply, fd);
+            } else {
+                Logger::log(LogLevelError, "Nickname collision, need to kill colliding users");
+                handleNickNameCollision();
+            }
         } else {
-            Logger::log(LogLevelError, "Nickname collision, need to kill colliding users");
-            handleNickNameCollision();
+            try {
+                Connection* leafConnection = connection->getLeafConnection(prefix);
+                newNickName = &params[0];
+                if (server->nicknameExists(*newNickName) == false) {
+                    std::string oldNickName = leafConnection->client.nickName;
+                    leafConnection->client.nickName = *newNickName;
+                    std::string reply = constructNickChangeBroadcast(oldNickName, *newNickName);
+                    server->sendMessageToAllServersButOne(reply, fd);
+                } else {
+                    handleNickNameCollision();
+                    params[0] = prefix;
+                    handleNickNameCollision();
+                }
+            } catch (const std::out_of_range& e) {
+                Logger::log(LogLevelError, "Unknown nickname from server for NICK");
+                Logger::log(LogLevelError, e.what());
+            }
         }
     } else {
         Logger::log(LogLevelInfo, "Bad parameter count from server for NICK");
@@ -98,13 +121,19 @@ void ServerActionNick::handleClientNick() {
 }
 
 void ServerActionNick::handleNickNameChange() const {
-    // TODO(Jelle) Collision detection?
     if (server->nicknameExists(*newNickName) == false) {
         Client* client = &connection->client;
+        std::string oldNickName = client->nickName;
         client->nickName = *newNickName;
-        // TODO(Jelle) Broadcast nickname/connection to other servers.
         if (client->userName.empty() == false) {
-            connection->connectionType = Connection::ClientType;
+            if (connection->connectionType == Connection::ClientType) {
+                std::string reply = constructNickChangeBroadcast(oldNickName, *newNickName);
+                server->sendMessageToAllServers(reply);
+            } else {
+                connection->connectionType = Connection::ClientType;
+                std::string reply = constructNewNickBroadcast(*connection);
+                server->sendMessageToAllServers(reply);
+            }
         }
     } else {
         handleNickNameInUse();
