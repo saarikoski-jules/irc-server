@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                 :+:    :+:            */
+/*   action_factory.cpp                                :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 10:50:14 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 11:43:06 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,13 @@
 #include "server_action_ping.h"
 #include "server_action_pass.h"
 #include "server_action_server.h"
+#include "server_action_motd.h"
+#include "server_action_names.h"
 #include "server_action_kill.h"
 #include "server_action_quit.h"
 #include "server_action_names.h"
 
-const size_t actionFactory::actionFormatLen = 15;
+const size_t actionFactory::actionFormatLen = 16;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -45,6 +47,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::ping, "PING"},
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
+    {&actionFactory::motd, "MOTD"},
     {&actionFactory::kill, "KILL"},
     {&actionFactory::quit, "QUIT"},
     {&actionFactory::names, "NAMES"},
@@ -111,6 +114,11 @@ IServerAction* actionFactory::server(
     return (new ServerActionServer(params, fd, prefix));
 }
 
+IServerAction* actionFactory::motd(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionMotd(params, fd, prefix));
+}
+
 IServerAction* actionFactory::kill(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionKill(params, fd, prefix));
@@ -157,3 +165,4 @@ const bool& ActionFactoryException::isFatal() const {
 const char* ActionFactoryException::what() const throw() {
     return (fullMessage.c_str());
 }
+

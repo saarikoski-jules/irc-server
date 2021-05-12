@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.h                                            :+:    :+:            */
+/*   reply.h                                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 10:52:08 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 11:37:14 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,19 @@ enum ReplyCode {
     ERR_NOTEXTTOSEND = 412,
     ERR_NORECIPIENT = 411,
     ERR_CANNOTSENDTOCHAN = 404,
-    RPL_NOTOPIC = 331,
+	ERR_NOMOTD = 422, 
+	RPL_NOTOPIC = 331,
     RPL_TOPIC = 332,
     RPL_CHANNELMODEIS = 324,
     RPL_BANLIST = 367,
     RPL_ENDOFBANLIST = 368,
+	RPL_MOTDSTART = 375,
+	RPL_MOTD = 372,
+	RPL_ENDOFMOTD = 376,
+	RPL_WELCOME = 001,
+	RPL_YOURHOST = 002,
+	RPL_CREATED = 003,
+	RPL_MYINFO = 004,
     RPL_NAMREPLY = 353,
     RPL_ENDOFNAMES = 366
 };
