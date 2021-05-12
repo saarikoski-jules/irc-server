@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/07 14:52:36 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 10:50:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@
 #include "server_action_server.h"
 #include "server_action_kill.h"
 #include "server_action_quit.h"
+#include "server_action_names.h"
 
-const size_t actionFactory::actionFormatLen = 14;
+const size_t actionFactory::actionFormatLen = 15;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -46,6 +47,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::server, "SERVER"},
     {&actionFactory::kill, "KILL"},
     {&actionFactory::quit, "QUIT"},
+    {&actionFactory::names, "NAMES"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -117,6 +119,11 @@ IServerAction* actionFactory::kill(
 IServerAction* actionFactory::quit(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionQuit(params, fd, prefix));
+}
+
+IServerAction* actionFactory::names(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionNames(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(
