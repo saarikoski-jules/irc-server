@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/07 12:05:23 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/07 14:20:44 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:01:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ std::string constructNotRegisteredReply(const std::string& nick) {
     std::string reply = ReplyFactory::newReply(ERR_NOTREGISTERED, params);
     return (reply);
 }
-#include <iostream>
+
 void ServerActionMotd::execute() {
    Connection* connection = server->getConnectionByFd(fd);
    switch(connection->connectionType) {
