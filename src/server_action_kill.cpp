@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 14:22:20 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 18:06:20 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 10:47:04 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void ServerActionKill::execute() {
     case Connection::ClientType:
     case Connection::NoType:
         handleClientKill();
-        handleNoPrivileges();
         break;
     }
 }
