@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 11:01:09 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:06:53 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Server {
     void delayFirstAction();
 	time_t serverStart;
 protected:
+	std::map<std::string, Channel> getListOfChannels();
     std::map<const int, Connection> connections;
  private:
     Server();

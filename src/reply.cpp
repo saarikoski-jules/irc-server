@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/07 15:17:59 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:11:47 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,14 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
 		break;
 	case RPL_MYINFO:
 		ss << SERVERNAME << " 2.11  pstnolbk";
-	default:
+   		break;
+	case RPL_NAMREPLY:
+        ss << params[1] << " :" << params[2];
+        break;
+    case RPL_ENDOFNAMES:
+        ss << params[1] << " :End of /NAMES list";
+        break;
+    default:
         break;
     }
     return (ss.str());

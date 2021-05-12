@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/07 13:52:40 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:09:43 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@
 #include "server_action_pass.h"
 #include "server_action_server.h"
 #include "server_action_motd.h"
+#include "server_action_names.h"
 
-const size_t actionFactory::actionFormatLen = 13;
+const size_t actionFactory::actionFormatLen = 14;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -44,6 +45,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
     {&actionFactory::motd, "MOTD"},
+    {&actionFactory::names, "NAMES"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -110,6 +112,10 @@ IServerAction* actionFactory::server(
 IServerAction* actionFactory::motd(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionMotd(params, fd, prefix));
+
+IServerAction* actionFactory::names(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionNames(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

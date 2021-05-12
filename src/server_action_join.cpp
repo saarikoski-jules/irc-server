@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 13:24:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/05 15:46:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "server.h"
 #include "logger.h"
 #include "utils.h"
+#include "construct_reply.h"
 
 ServerActionJoin::ServerActionJoin(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -85,17 +86,11 @@ void ServerActionJoin::execute() {
             break;
         
         case Connection::NoType:
-            connectionNotRegistered();
+            server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
             //error
             break;
     }
 }
-
-void ServerActionJoin::connectionNotRegistered() const {
-    std::vector<std::string> params;
-    params.push_back(connection->client.nickName);//TODO(Jules): what nick should I use/where should I get it from
-    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
-} 
 
 void ServerActionJoin::joinChannels() {
     if (params.size() < 1) {    // TODO(Jules): handle need more params somewhere else

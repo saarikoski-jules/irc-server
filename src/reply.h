@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/07 14:49:51 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:11:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ enum ReplyCode {
 	RPL_YOURHOST = 002,
 	RPL_CREATED = 003,
 	RPL_MYINFO = 004
+    RPL_NAMREPLY = 353,
+    RPL_ENDOFNAMES = 366
 };
 
 class ReplyFactory {
