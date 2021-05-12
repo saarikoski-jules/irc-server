@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   message_parser.cpp                                :+:    :+:             */
+/*   message_parser.cpp                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/30 12:56:03 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/10 12:12:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ std::vector<std::string> MessageParser::genParams(
     if (len != std::string::npos) {
         std::string final;
         if (len == 0) {
-            final = std::string(str, len);
+            final = std::string(str, len + 1);
         } else {
             final = std::string(str, len + 2);
         }
