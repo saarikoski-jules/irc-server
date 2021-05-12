@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 14:22:20 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 10:47:04 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/12 14:03:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void ServerActionKill::handleClientDisconnect() {
 }
 
 void ServerActionKill::sendKillMessageToServer() {
-    std::string killMessage("KILL " + params[0] + " " + params[1]);
-    server->sendReplyToClient(fd, killMessage);
+    std::string killMessage("KILL " + params[0] + " :" + params[1]);
+    server->sendReplyToClient(connection->fd, killMessage);
 }
 
 void ServerActionKill::handleClientKill() {
