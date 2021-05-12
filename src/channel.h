@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 17:41:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/10 16:09:26 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ class Channel {
     std::string getBanMask(size_t index) const;
 	std::vector<Connection*> getConnections(const Connection& client) const;
    std::string getNames(Connection* connection) const;
+   bool isOper(Connection* connection) const;
 
  private:
-   bool isOper(Connection* connection) const;
     //std::vector<Client*> chanops;
     //std::vector<Client*> clients;
     std::vector<std::string> bans;
