@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 11:43:06 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 16:29:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@
 #include "server_action_kill.h"
 #include "server_action_quit.h"
 #include "server_action_names.h"
+#include "server_action_topic.h"
 
-const size_t actionFactory::actionFormatLen = 16;
+const size_t actionFactory::actionFormatLen = 17;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -51,6 +52,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::kill, "KILL"},
     {&actionFactory::quit, "QUIT"},
     {&actionFactory::names, "NAMES"},
+    {&actionFactory::topic, "TOPIC"}
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -134,12 +136,21 @@ IServerAction* actionFactory::names(
     return (new ServerActionNames(params, fd, prefix));
 }
 
+IServerAction* actionFactory::topic(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionTopic(params, fd, prefix));
+}
+
 IServerAction* actionFactory::newAction(
     std::string cmd, std::vector<std::string> params,
     const int& fd, const std::string& prefix) {
     for (unsigned int i = 0; i < actionFormatLen; i++) {
         if (actionFormats[i].type == cmd) {
-            return (this->*actionFormats[i].action)(params, fd, prefix);
+			try {
+				return (this->*actionFormats[i].action)(params, fd, prefix);
+			} catch (const std::exception& e) {
+				break;
+			}
         }
     }
     throw ActionFactoryException("invalid action", false);
