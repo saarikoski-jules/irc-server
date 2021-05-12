@@ -6,14 +6,14 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 12:00:31 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 14:44:16 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME CHANGE_LOCALLY
+#define SERVERNAME "CHANGE_LOCALLY"
 
 #include <string>
 #include <vector>

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                             :+:    :+:            */
+/*   server_action_join.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 15:46:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 16:39:44 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,36 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
     Channel* chan;
     std::vector<std::string> replyParams;
 
-    replyParams.push_back(connection->client.nickName);
+    replyParams.push_back(clientNick);
     replyParams.push_back(name);
     try {
         chan = getChannel(name, key);
+		std::vector<Connection*> sendTo = chan->getConnections(*connection);
+		std::string clientPrefix;
+		if (connection->connectionType == Connection::ServerType) {
+			clientPrefix = prefix;
+		} else if (connection->connectionType == Connection::ClientType) {
+			clientPrefix = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
+		}
+		for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
+			if (server->hasLocalConnection(**it)) {
+				server->sendReplyToClient((*it)->fd, std::string("JOIN :" + chan->name), clientPrefix);
+			}
+		}
+		if (chan->name == "#") {
+			if (connection->connectionType == Connection::ServerType) {
+				server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + "JOIN :" + chan->name), fd);
+			} else if (connection->connectionType == Connection::ClientType) {
+				server->sendMessageToAllServers(std::string(":" + clientPrefix + "JOIN :" + chan->name));
+			}
+		}
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);
             reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
         } else {
             reply = ReplyFactory::newReply(RPL_NOTOPIC, replyParams);
         }
-    } catch (const ChannelException& e) {
+	} catch (const ChannelException& e) {
         reply = e.what();
     }
     server->sendReplyToClient(fd, reply);
@@ -60,8 +79,7 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 
 void ServerActionJoin::handleNeedMoreParams() const {
     std::vector<std::string> errParams;
-    Connection* connection = server->getConnectionByFd(fd);
-    errParams.push_back(connection->client.nickName);
+    errParams.push_back(clientNick);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
     server->sendReplyToClient(fd, errReply);
@@ -77,11 +95,15 @@ void ServerActionJoin::execute() {
             //find correct leaf connection, pass that to ServerActionJoin::connection
             try {
                 //TODO(Jules): This is prefix stuff. Make sure prefixstuff works
-                connection = connection->getLeafConnection(prefix);
+                Connection* tmp = connection->getLeafConnection(prefix);
+				clientNick = tmp->client.nickName;
             } catch (const std::exception& e) {
                 // Connection not found. This should never happen?
             }
-        case Connection::ClientType:
+			joinChannels();	
+			break;
+		case Connection::ClientType:
+			clientNick = connection->client.nickName;
             joinChannels();
             break;
         
