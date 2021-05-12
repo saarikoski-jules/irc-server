@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.h                              :+:    :+:            */
+/*   server_action_topic.h                             :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:20:56 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/10 15:46:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 14:42:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ class ServerActionTopic: public IServerAction {
     std::vector<std::string> params;
     Connection* connection;
     Channel* chan;
-    void checkTopic() const;
-    void changeTopic();
+    void checkTopic(const std::string& clientNick) const;
+    void changeTopic(const std::string& clientNick);
 };
 
 #endif  // SERVER_ACTION_TOPIC_H_

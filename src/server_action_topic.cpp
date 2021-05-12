@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.cpp                            :+:    :+:            */
+/*   server_action_topic.cpp                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/10 16:26:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 14:42:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,48 +38,64 @@ params(params) {
 
 void ServerActionTopic::execute() {
 	connection = server->getConnectionByFd(fd);
+	std::string clientNick;
 	if (connection->connectionType == Connection::ServerType) {
-		connection = connection->getLeafConnection(prefix);
+		Connection* tmp = connection->getLeafConnection(prefix);
+		clientNick = tmp->client.nickName;
+	} else {
+		clientNick = connection->client.nickName;
 	}
 	try {
 		chan = server->findChannel(params[0]);
-	} catch (const channelException& e) {
+	} catch (const ChannelException& e) {
 		//TODO(Jules): send error no such channel
 	}
 	if (params.size() > 1) {
-		changeTopic();
+		changeTopic(clientNick);
 	} else {
-		checkTopic();
+		checkTopic(clientNick);
 	}
 }
-#include <iostream>
-void ServerActionTopic::changeTopic() {
-	// replyParams.push_back(chan->topic);
-	//TODO(Jules): Change channel topic if client has rights
+
+void ServerActionTopic::changeTopic(const std::string& clientNick) {
 	std::vector<std::string> replyParams;
-	replyParams.push_back(connection->client.nickName);
+	replyParams.push_back(clientNick);
 	replyParams.push_back(chan->name);
 	const std::string modes = chan->getModes();
 	const Connection const_con = *connection;
 	if (modes.find('t') != std::string::npos && !chan->isOper(connection)) {
 		server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams));
 	} else {
-		std::cout << "param 0 " << params[0] << std::endl;
-		std::cout << "param 1 " << params[1] << std::endl;
 		chan->topic = params[1];
+		chan->topicIsSet = true;
 		std::vector<Connection*> broadcastTo = chan->getConnections(const_con);
-		std::string sentFrom(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
+		
+		std::string sentFrom;
+		if (connection->connectionType == Connection::ClientType) {
+			sentFrom = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
+		} else if (connection->connectionType == Connection::ServerType) {
+			sentFrom = prefix;
+		}
 		replyParams.push_back(chan->topic);
 		for (std::vector<Connection*>::iterator it = broadcastTo.begin(); it != broadcastTo.end(); it++) {
-			server->sendReplyToClient((*it)->fd, std::string("TOPIC " + chan->name + " :" + chan->topic), sentFrom);
+			if (server->hasLocalConnection(**it)) {
+				server->sendReplyToClient((*it)->fd, std::string("TOPIC " + chan->name + " :" + chan->topic), sentFrom);
+			}
 		}
 		server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_TOPIC, replyParams));
+		if (chan->name[0] == '#') {
+			if (connection->connectionType == Connection::ClientType) {
+				server->sendMessageToAllServers(std::string(sentFrom + "TOPIC " + chan->name + " :" + chan->topic));
+			} else if (connection->connectionType == Connection::ServerType) {
+				server->sendMessageToAllServersButOne(std::string(sentFrom + "TOPIC " + chan->name + " :" + chan->topic), fd);
+			}
+		}
 	}
 }
 
-void ServerActionTopic::checkTopic() const {
+void ServerActionTopic::checkTopic(const std::string& clientNick) const {
 	std::vector<std::string> replyParams;
-	replyParams.push_back(connection->client.nickName);
+	replyParams.push_back(clientNick);
 	replyParams.push_back(chan->name);
 
 	if (chan->topic == "") {
