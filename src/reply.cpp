@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 11:14:41 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/12 11:45:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_NOPRIVILEGES:
         ss << " :Permission Denied- You're not an IRC operator";
     	break;
-	case ERR_CHANOPRIVSNEEDED:
+    case ERR_CHANOPRIVSNEEDED:
         ss << params[1] << " :You're not channel operator";
         break;
     case ERR_UNKNOWNMODE:
