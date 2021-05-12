@@ -1,37 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_disconnect.h                         :+:    :+:            */
+/*   server_action_quit.h                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:43:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/07 15:16:25 by jvisser       ########   odam.nl         */
+/*   Created: 2021/05/07 14:12:44 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/05/07 15:17:07 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_DISCONNECT_H_
-#define SERVER_ACTION_DISCONNECT_H_
+#ifndef SERVER_ACTION_QUIT
+#define SERVER_ACTION_QUIT
 
-#include <string>
 #include <vector>
+#include <string>
 
 #include "iserver_action.h"
 #include "connection.h"
 
-class ServerActionDisconnect: public IServerAction {
+class ServerActionQuit: public IServerAction {
  public:
-    ServerActionDisconnect(
+     ServerActionQuit(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     IServerAction* clone() const;
-    ~ServerActionDisconnect() {}
+    ~ServerActionQuit() {}
  private:
-    void disconnectClient();
-    void disconnectNoType();
     Connection* connection;
-    std::string disconnectMessage;
+    std::string quitMessage;
     std::vector<std::string> params;
+    void handleServerQuit();
+    void handleClientQuit();
 };
 
-#endif  // SERVER_ACTION_DISCONNECT_H_
+#endif  // SERVER_ACTION_QUIT

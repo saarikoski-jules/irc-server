@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/04 13:23:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/07 14:31:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ struct Connection {
     Connection(const int& fd);
     Connection(const std::string& serverConfiguration);
     Connection* getLeafConnection(const std::string& str);
+    void removeLeafConnectionByNick(const std::string& str);
     int fd;
     enum {
         ClientType,

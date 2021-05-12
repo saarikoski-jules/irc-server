@@ -6,7 +6,11 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
+<<<<<<< HEAD
 /*   Updated: 2021/05/12 11:09:43 by jules        ########   odam.nl          */
+=======
+/*   Updated: 2021/05/12 10:50:14 by jvisser       ########   odam.nl         */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +32,11 @@
 #include "server_action_server.h"
 #include "server_action_motd.h"
 #include "server_action_names.h"
+#include "server_action_kill.h"
+#include "server_action_quit.h"
+#include "server_action_names.h"
 
-const size_t actionFactory::actionFormatLen = 14;
+const size_t actionFactory::actionFormatLen = 16;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -45,6 +52,8 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::pass, "PASS"},
     {&actionFactory::server, "SERVER"},
     {&actionFactory::motd, "MOTD"},
+    {&actionFactory::kill, "KILL"},
+    {&actionFactory::quit, "QUIT"},
     {&actionFactory::names, "NAMES"},
 };
 
@@ -112,6 +121,16 @@ IServerAction* actionFactory::server(
 IServerAction* actionFactory::motd(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionMotd(params, fd, prefix));
+
+IServerAction* actionFactory::kill(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionKill(params, fd, prefix));
+}
+
+IServerAction* actionFactory::quit(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionQuit(params, fd, prefix));
+}
 
 IServerAction* actionFactory::names(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
