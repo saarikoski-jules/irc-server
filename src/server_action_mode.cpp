@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/04 13:54:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 15:33:48 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,20 @@ void ServerActionMode::execute() {
     connection = server->getConnectionByFd(fd);
     switch (connection->connectionType) {
         case Connection::ServerType:
-            connection = connection->getLeafConnection(prefix);
+		{
+            Connection* tmp = connection->getLeafConnection(prefix);
+			clientNick = tmp->client.nickName;
+			break;
+		}
         case Connection::ClientType:
+			clientNick = connection->client.nickName;
             break;
         case Connection::NoType:
             connectionNotRegistered();
             return;
     }
     if (params.size() < requiredParams) {
-        server->sendReplyToClient(fd, constructNeedMoreParamsReply(connection->client.nickName, "MODE"));
+        server->sendReplyToClient(fd, constructNeedMoreParamsReply(clientNick, "MODE"));
         return;
     }
     try {
@@ -52,7 +57,7 @@ void ServerActionMode::execute() {
         }
         execByMode(sign);
     } catch (const std::out_of_range& e) {
-        server->sendReplyToClient(fd, constructNoSuchChannelReply(connection->client.nickName, params[0]));
+        server->sendReplyToClient(fd, constructNoSuchChannelReply(clientNick, params[0]));
     } catch (const std::exception& e) {
         std::string errorMsg(e.what());
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
@@ -154,7 +159,7 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
     try {
         target = server->getClientByNick(user);
     } catch (const std::exception& e) {
-        std::string reply = constructNoSuchNickReply(connection->client.nickName, user);
+        std::string reply = constructNoSuchNickReply(clientNick, user);
         server->sendReplyToClient(fd, reply);
         return (false);
     }
@@ -212,7 +217,7 @@ bool ServerActionMode::setKey(char sign, const std::string& key) {
 bool ServerActionMode::listBanMasks() const {
     size_t i = 0;
     std::vector<std::string> replyParams;
-    replyParams.push_back(connection->client.nickName);
+    replyParams.push_back(clientNick);
     replyParams.push_back(chan->name);
     while (true) {
         try {
@@ -239,7 +244,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     std::string reply;
     std::vector<std::string> replyParams;
 
-    replyParams.push_back(connection->client.nickName);
+    replyParams.push_back(clientNick);
     replyParams.push_back(channelName);
     replyParams.push_back(modes);
     std::string replyString;
@@ -248,7 +253,25 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     }
     replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
-    server->sendReplyToClient(fd, reply);
+	std::vector<Connection*> sendTo = chan->getConnections(*connection);
+	std::string senderPrefix;
+	if (connection->connectionType == Connection::ServerType) {
+		senderPrefix = prefix;
+	} else if (connection->connectionType == Connection::ClientType) {
+		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
+	}
+	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
+		if ((*it)->connectionType == Connection::ClientType) {
+			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
+		}
+	}
+	if (channelName[0] == '#') {
+		if (connection->connectionType == Connection::ServerType) {
+			server->sendMessageToAllServersButOne(reply, fd);
+		} else {
+			server->sendMessageToAllServers(reply);
+		}
+	}
 }
 
 void ServerActionMode::sendUnknownModeReply(char c) const {
@@ -256,7 +279,7 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
     std::vector<std::string> params;
     std::string character(1, c);
 
-    params.push_back(connection->client.nickName);
+    params.push_back(clientNick);
     params.push_back(character);
     reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
     server->sendReplyToClient(fd, reply);
@@ -264,7 +287,7 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
 
 void ServerActionMode::connectionNotRegistered() const {
     std::vector<std::string> params;
-    params.push_back(connection->client.nickName);
+    params.push_back(clientNick);
     server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
 }
 
