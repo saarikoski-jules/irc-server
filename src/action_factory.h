@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.h                                   :+:    :+:            */
+/*   action_factory.h                                  :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 16:12:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 11:52:51 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,17 @@ class actionFactory {
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* server(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* names(
+    IServerAction* motd(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    static const actionFormat_t actionFormats[];
+	IServerAction* names(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* kill(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* quit(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+    IServerAction* topic(
+        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
+  static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;
 
  public:

@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 18:01:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 16:18:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME CHANGE_LOCALLY
+#define SERVERNAME "irc.icrdlsyrptblcht"
+#define SERVERTOKEN "4242"
 
 #include <string>
 #include <vector>
@@ -37,11 +38,15 @@ class Server {
     void sendAuthenticationTo(const int& fd, const std::string& password);
     void run();
     void sendMessage(const int& fd, const std::string& message);
+    void sendMessageToAllServers(const std::string& message);
+    void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
     void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
+    void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
     Connection* getConnectionByFd(const int& fd);
+    bool hasLocalConnection(const Connection& connection);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     bool serverTokenExists(const std::string& serverToken);
@@ -49,8 +54,9 @@ class Server {
     Channel* createNewChannel(const std::string& name, const int& clientFd);
     Channel* findChannel(const std::string& name);
     void delayFirstAction();
+	time_t serverStart;
 	std::map<std::string, Channel> getListOfChannels();
- protected:
+protected:
     std::map<const int, Connection> connections;
  private:
     Server();

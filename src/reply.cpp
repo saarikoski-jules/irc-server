@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.cpp                                          :+:    :+:            */
+/*   reply.cpp                                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/05 18:02:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 11:45:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 #include <string>
 #include <vector>
-#include <sstream>
+#include <sstream>  // TODO(Jules): Bad
+
+#include "server.h"
 
 std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::string> params) {
     std::stringstream ss;
@@ -46,6 +48,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_NOSUCHNICK:
         ss << params[1] << " :No such nick/channel";
         break;
+    case ERR_NOPRIVILEGES:
+        ss << " :Permission Denied- You're not an IRC operator";
+    	break;
     case ERR_CHANOPRIVSNEEDED:
         ss << params[1] << " :You're not channel operator";
         break;
@@ -79,7 +84,28 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case RPL_ENDOFBANLIST:
         ss << params[1] << " :End of channel ban list";
         break;
-    case RPL_NAMREPLY:
+	case RPL_MOTDSTART:
+		ss << ":- " << SERVERNAME << " Message of the day - ";
+		break;
+	case RPL_MOTD:
+		ss << ":- " << params[1];
+		break;
+	case RPL_ENDOFMOTD:
+		ss << ": End of /MOTD command";
+		break;
+	case RPL_WELCOME:
+		ss << ":Welcome to the Internet Relay Network " << params[1];
+		break;
+	case RPL_YOURHOST:
+		ss << ":Your host is " << SERVERNAME << ", running version 2.11";
+		break;
+	case RPL_CREATED:
+		ss << ":This server was created " << params[1];
+		break;
+	case RPL_MYINFO:
+		ss << SERVERNAME << " 2.11  pstnolbk";
+   		break;
+	case RPL_NAMREPLY:
         ss << params[1] << " :" << params[2];
         break;
     case RPL_ENDOFNAMES:

@@ -39,10 +39,15 @@ SRCLST = main \
 		server_action_ping \
 		server_action_pass \
 		server_action_server \
+		server_action_motd \
+		server_action_kill \
+		server_action_quit \
 		server_action_names \
+		server_action_topic \
 		action_factory \
 		channel \
 		construct_reply \
+		welcome_client \
 
 ################################################################################
 ################## Do not change anything from here downwards! #################

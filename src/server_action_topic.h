@@ -1,37 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_disconnect.h                         :+:    :+:            */
+/*   server_action_topic.h                             :+:    :+:             */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:43:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/07 15:16:25 by jvisser       ########   odam.nl         */
+/*   Created: 2021/05/07 15:20:56 by jules         #+#    #+#                 */
+/*   Updated: 2021/05/12 14:42:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_DISCONNECT_H_
-#define SERVER_ACTION_DISCONNECT_H_
+#ifndef SERVER_ACTION_TOPIC_H_
+#define SERVER_ACTION_TOPIC_H_
 
-#include <string>
 #include <vector>
+#include <string>
 
+#include "server.h"
 #include "iserver_action.h"
+#include "channel.h"
 #include "connection.h"
 
-class ServerActionDisconnect: public IServerAction {
+class ServerActionTopic: public IServerAction {
  public:
-    ServerActionDisconnect(
+    ServerActionTopic(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     IServerAction* clone() const;
-    ~ServerActionDisconnect() {}
+    ~ServerActionTopic() {}
  private:
-    void disconnectClient();
-    void disconnectNoType();
-    Connection* connection;
-    std::string disconnectMessage;
     std::vector<std::string> params;
+    Connection* connection;
+    Channel* chan;
+    void checkTopic(const std::string& clientNick) const;
+    void changeTopic(const std::string& clientNick);
 };
 
-#endif  // SERVER_ACTION_DISCONNECT_H_
+#endif  // SERVER_ACTION_TOPIC_H_

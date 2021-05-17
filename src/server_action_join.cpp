@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                             :+:    :+:            */
+/*   server_action_join.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 15:46:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/12 13:23:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 }
 
 void ServerActionJoin::handleNeedMoreParams() const {
-    std::vector<std::string> errParams;
+	std::vector<std::string> errParams;
     Connection* connection = server->getConnectionByFd(fd);
     errParams.push_back(connection->client.nickName);
     errParams.push_back("JOIN");

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 17:41:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/10 16:09:49 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,10 @@ void Channel::addMode(char c) {
     if (modes.find(c) == std::string::npos) {
         modes.push_back(c);
     }
+}
+
+std::string Channel::getModes() const {
+    return (modes);
 }
 
 // TODO(Jules): write a matching function for partial masks
@@ -190,7 +194,7 @@ bool Channel::isOper(Connection* connection) const {
     }
     return (false);
 }
-
+//TODO(Jules): change this so you do the error checking specifically per operation in actions
 std::vector<Connection*> Channel::getConnections(const Connection& client) const {
     //if client can access connections
     if (modes.find('n') != std::string::npos) {
