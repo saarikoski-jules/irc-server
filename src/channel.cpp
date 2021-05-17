@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/10 16:09:49 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/17 15:55:04 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ modes("") {
         std::string reply = ReplyFactory::newReply(ERR_NOSUCHCHANNEL, replyParams);
         throw ChannelException(reply, false);
     }
-    addOperator(chanop);
+    chanops.push_back(chanop);
 }
 
 void Channel::addOperator(Connection* newChanop) {
@@ -161,13 +161,12 @@ std::string Channel::getNames(Connection* connection) const {
     clientHasAccess(connection);
     for (std::vector<Connection*>::const_iterator user = chanops.begin(); user != chanops.end(); user++) {
         names = names + "@" + (*user)->client.nickName + " ";
+        Logger::log(LogLevelDebug, (*user)->client.nickName);
+        Logger::log(LogLevelDebug, names);
     }
     for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
         if (!isOper(*user)) {
-            if (names != "") {
-                names = names + "+";
-            }
-            names = names + (*user)->client.nickName + " ";
+            names = names + "+" + (*user)->client.nickName + " ";
         }
     }
     return (names);

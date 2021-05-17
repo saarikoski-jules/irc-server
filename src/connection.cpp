@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/17 13:51:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/17 15:40:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ bool matchPrefix(const std::string& prefix, const std::string& nick) {
 Connection* Connection::getLeafConnection(const std::string& str) {
 	for (std::vector<Connection>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
 		if (i->connectionType == ClientType && matchPrefix(str, i->client.nickName)) {
-			return (&*i);
+			return (&(*i));
 		}
 	}
 	throw std::out_of_range("Coundn't find matching connection in leaves");
