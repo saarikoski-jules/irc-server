@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                            :+:    :+:             */
+/*   server_action_join.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 16:45:39 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/17 13:28:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,38 @@ IServerAction(fd, 1, prefix),
 params(params) {}
 
 Channel* ServerActionJoin::getChannel(
-    const std::string& name, const std::string& key) {
+    const std::string& name, const std::string&) {
     Channel* chan;
     try {
         chan = server->findChannel(name);
     } catch (const std::exception &e) {
         chan = server->createNewChannel(name, fd);
     }
-    chan->addClient(server->getConnectionByFd(fd), key);
     return (chan);
+}
+
+void ServerActionJoin::broadcastJoin(Channel* chan) {
+    std::vector<Connection*> sendTo = chan->getConnections(*connection);
+    std::string clientPrefix;
+    if (connection->connectionType == Connection::ServerType) {
+        clientPrefix = prefix;
+    } else if (connection->connectionType == Connection::ClientType) {
+        clientPrefix = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
+    }
+    for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
+        if (server->hasLocalConnection(**it)) {
+            Logger::log(LogLevelDebug, "Send message to local client");
+            server->sendReplyToClient((*it)->fd, std::string("JOIN :" + chan->name), clientPrefix);
+        }
+    }
+    if (chan->name[0] == '#') {
+        Logger::log(LogLevelDebug, "Send message to server");
+        if (connection->connectionType == Connection::ServerType) {
+            server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + " JOIN :" + chan->name), fd);
+        } else if (connection->connectionType == Connection::ClientType) {
+            server->sendMessageToAllServers(std::string(":" + clientPrefix + " JOIN :" + chan->name));
+        }
+    }
 }
 
 void ServerActionJoin::addClientToChannel(const std::string& name, const std::string& key) {
@@ -45,26 +68,19 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
     replyParams.push_back(clientNick);
     replyParams.push_back(name);
     try {
+        // TODO: check if client is allowed to join channel
         chan = getChannel(name, key);
-		std::vector<Connection*> sendTo = chan->getConnections(*connection);
-		std::string clientPrefix;
-		if (connection->connectionType == Connection::ServerType) {
-			clientPrefix = prefix;
-		} else if (connection->connectionType == Connection::ClientType) {
-			clientPrefix = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
-		}
-		for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
-			if (server->hasLocalConnection(**it)) {
-				server->sendReplyToClient((*it)->fd, std::string("JOIN :" + chan->name), clientPrefix);
-			}
-		}
-		if (chan->name == "#") {
-			if (connection->connectionType == Connection::ServerType) {
-				server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + "JOIN :" + chan->name), fd);
-			} else if (connection->connectionType == Connection::ClientType) {
-				server->sendMessageToAllServers(std::string(":" + clientPrefix + "JOIN :" + chan->name));
-			}
-		}
+        if (connection->connectionType == Connection::ServerType) {
+            try {
+                Connection* leaf = connection->getLeafConnection(prefix);
+                chan->addClient(leaf, key);
+            } catch (const std::exception& e) {
+                Logger::log(LogLevelDebug, "Cannot find leaf connection in JOIN");
+            }
+        } else if (connection->connectionType == Connection::ClientType) {
+            chan->addClient(connection, key);
+        }
+        broadcastJoin(chan);
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);
             reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);

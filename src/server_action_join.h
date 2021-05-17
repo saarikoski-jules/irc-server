@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.h                              :+:    :+:             */
+/*   server_action_join.h                               :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 15:45:35 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/17 13:26:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class ServerActionJoin: public IServerAction {
     void addExternalClientToChannel();
     void connectionNotRegistered() const;
     void handleNeedMoreParams() const;
+    void broadcastJoin(Channel* chan);
     std::vector<std::string> params;
     Connection* connection;
 	std::string clientNick;
