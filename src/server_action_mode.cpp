@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                            :+:    :+:             */
+/*   server_action_mode.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 16:11:02 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/17 16:39:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,13 +253,21 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     }
     replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
+    server->sendReplyToClient(fd, reply);
+//broadcast
 	std::vector<Connection*> sendTo = chan->getConnections(*connection);
 	std::string senderPrefix;
 	if (connection->connectionType == Connection::ServerType) {
 		senderPrefix = prefix;
 	} else if (connection->connectionType == Connection::ClientType) {
 		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
-	}
+	} else {
+        Logger::log(LogLevelDebug, "MODE, connectionType NoType");
+        return;
+    }
+    //TODO: fix prefix
+    Logger::log(LogLevelDebug, "HERE YALL");
+    reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
 			server->sendReplyToClient((*it)->fd, reply, senderPrefix);

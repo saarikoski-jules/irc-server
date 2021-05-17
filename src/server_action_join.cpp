@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 14:45:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/17 16:54:33 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,13 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
         // TODO: check if client is allowed to join channel
         try {
             chan = server->findChannel(name);
-            chan->addClient(client, key);
+            chan->addClient(client, key); //if from server, make sure to always add client
+        } catch (const ChannelException& e) {
+            //if exception is no rights
+            if (connection->connectionType == Connection::ClientType) {
+                server->sendReplyToClient(fd, e.what());
+            }
+            return;
         } catch (const std::exception &e) {
             chan = server->createNewChannel(name, client);
         }
