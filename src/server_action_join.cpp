@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 13:28:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/17 14:45:44 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,9 @@ IServerAction(fd, 1, prefix),
 params(params) {}
 
 Channel* ServerActionJoin::getChannel(
-    const std::string& name, const std::string&) {
-    Channel* chan;
-    try {
-        chan = server->findChannel(name);
-    } catch (const std::exception &e) {
-        chan = server->createNewChannel(name, fd);
-    }
+    const std::string&, const std::string&) {
+    Channel* chan = NULL;
+
     return (chan);
 }
 
@@ -68,18 +64,29 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
     replyParams.push_back(clientNick);
     replyParams.push_back(name);
     try {
-        // TODO: check if client is allowed to join channel
-        chan = getChannel(name, key);
+        Connection* client;
+
         if (connection->connectionType == Connection::ServerType) {
             try {
-                Connection* leaf = connection->getLeafConnection(prefix);
-                chan->addClient(leaf, key);
+                client = connection->getLeafConnection(prefix);
             } catch (const std::exception& e) {
                 Logger::log(LogLevelDebug, "Cannot find leaf connection in JOIN");
+                return;
             }
         } else if (connection->connectionType == Connection::ClientType) {
-            chan->addClient(connection, key);
+            client = connection;
+        } else {
+            Logger::log(LogLevelDebug, "connection type NoType in JOIN");
+            return;
         }
+        // TODO: check if client is allowed to join channel
+        try {
+            chan = server->findChannel(name);
+            chan->addClient(client, key);
+        } catch (const std::exception &e) {
+            chan = server->createNewChannel(name, client);
+        }
+
         broadcastJoin(chan);
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 11:15:42 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/17 14:30:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,8 +278,8 @@ bool Server::serverTokenExists(const std::string& serverToken) {
     return (false);
 }
 
-Channel* Server::createNewChannel(const std::string& name, const int& fd) {
-    Connection* chanop = getConnectionByFd(fd);
+Channel* Server::createNewChannel(const std::string& name, Connection* chanop) {
+    // Connection* chanop = getConnectionByFd(fd);
     Channel newChannel(name, chanop);
     channels.insert(std::pair<std::string, Channel>(name, newChannel));
     std::map<std::string, Channel>::iterator it = channels.find(name);
