@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.h                              :+:    :+:             */
+/*   server_action_mode.h                               :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 15:04:47 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/18 11:46:00 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class ServerActionMode: public IServerAction {
     void execByMode(char sign);
     Channel* getChannel(const std::string& name, const std::string& key);
     std::vector<std::string> params;
+    void sendReplyToLocalClient(const std::string& message, const std::string& prefix = "") const;
     bool modeO(char sign, const std::string& user);
     bool editMode(char sign, char mode);
     bool setLimit(char sign, const std::string& limit);
