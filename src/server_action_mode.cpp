@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 12:17:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 15:12:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,11 @@ void ServerActionMode::execByMode(char sign) {
         case 'i':
         case 't':
         case 'n':
-        case 'm':
-            if (editMode(sign, *mode)) {
-                returnOptions.push_back(*mode);
-            }
-            break;
+        // case 'm':
+            // if (editMode(sign, *mode)) {
+                // returnOptions.push_back(*mode);
+            // }
+            // break;
         case 'o':
             if (modeO(sign, *param)) {
                 returnOptions.push_back(*mode);
