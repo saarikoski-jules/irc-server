@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 16:54:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:24:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 	} catch (const ChannelException& e) {
         reply = e.what();
     }
-    server->sendReplyToClient(fd, reply);
+    sendToLocalClient(reply);
 }
 
 void ServerActionJoin::handleNeedMoreParams() const {
@@ -111,7 +111,13 @@ void ServerActionJoin::handleNeedMoreParams() const {
     errParams.push_back(clientNick);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
-    server->sendReplyToClient(fd, errReply);
+    sendToLocalClient(errReply);
+}
+
+void ServerActionJoin::sendToLocalClient(const std::string& message, const std::string& prefix = "") const {
+    if (connection->connectionType == Conenction::ClientType) {
+        server->sendReplyToClient(fd, message, prefix);
+    }
 }
 
 void ServerActionJoin::execute() {
@@ -163,7 +169,7 @@ void ServerActionJoin::joinChannels() {
         try {
             addClientToChannel(chans[i], key);
         } catch (const ChannelException& e) {
-            server->sendReplyToClient(fd, e.what());
+            sendToLocalClient(e.what());
         }
     }
 }

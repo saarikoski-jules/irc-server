@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 13:26:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:22:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class ServerActionJoin: public IServerAction {
     void connectionNotRegistered() const;
     void handleNeedMoreParams() const;
     void broadcastJoin(Channel* chan);
+    void sendToLocalClient(const std::string& message, const std::string& prefix = "") const;
     std::vector<std::string> params;
     Connection* connection;
 	std::string clientNick;
