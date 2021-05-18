@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:12:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 15:16:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,7 +267,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
     sendReplyToLocalClient(reply);
 //broadcast
-	std::vector<Connection*> sendTo = chan->getConnections(*connection);
+	std::vector<Connection*> sendTo = chan->getConnections();
 	std::string senderPrefix;
 	if (connection->connectionType == Connection::ServerType) {
 		senderPrefix = prefix;

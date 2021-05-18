@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:14:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 15:21:11 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,20 +205,8 @@ bool Channel::connectionIsInChannel(Connection* connection) const {
     return (false);
 }
 
-//TODO(Jules): change this so you do the error checking specifically per operation in actions
 std::vector<Connection*> Channel::getConnections() const {
-    //if client can access connections
-    // if (modes.find('n') != std::string::npos) {
-        // for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
-            // if (*user == &client) {
-                // return (connections);//TODO(Jules): chanops?
-            // }
-        // }
-    // } else {
     return (connections);
-    // }
-    //TODO(Jules): private, secret, invite-only?? bans?? moderated??
-    // throw ChannelException("User is not allowed to access the users on this channel", false);
 }
 
 ChannelException::ChannelException(const std::string& what, const bool& fatal) :
