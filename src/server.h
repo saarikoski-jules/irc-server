@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/17 14:30:35 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 14:19:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Server {
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, Connection* chanop);
     Channel* findChannel(const std::string& name);
+   void removeClientFromChannels(Connection* con);
     void delayFirstAction();
 	time_t serverStart;
 	std::map<std::string, Channel> getListOfChannels();
