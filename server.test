@@ -19,3 +19,7 @@ I should never receive & channel broadcast from server
 I should never receive names command broadcast
 
 error checking should only occur for local connections. Server broadcast conenctions should just do the thing. Therefore error checking on accepting a server should be good
+
+
+delete connection from channel when user quits
+move error checking from channels to actions
