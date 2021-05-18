@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/10 11:06:58 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:33:03 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void ServerActionNames::execute() {
 	connection = server->getConnectionByFd(fd);
 	switch (connection->connectionType) {
 		case Connection::ServerType:
-			connection = connection->getLeafConnection(prefix);
+			return; // can't receive NAMES from server
 		case Connection::ClientType:
 			break;
 		case Connection::NoType:
