@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 16:39:05 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 11:27:00 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,13 @@ void ServerActionMode::execute() {
     }
     try {
         chan = server->findChannel(params[0]);
-        if (!chan->isOperator(connection)) {
+        Connection* tmp;
+        if (connection->connectionType == Connection::ServerType) {
+            tmp = connection->getLeafConnection(prefix);
+        } else {
+            tmp = connection;
+        }
+        if (!chan->isOperator(tmp)) {
             std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
             server->sendReplyToClient(fd, reply);
             return;
@@ -96,7 +102,7 @@ void ServerActionMode::execByMode(char sign) {
             break;
         case 'l':
             if (setLimit(sign, *param)) {
-                    returnOptions.push_back(*mode);
+                returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
                 }
@@ -267,6 +273,7 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     }
     //TODO: fix prefix
     Logger::log(LogLevelDebug, "HERE YALL");
+    Logger::log(LogLevelDebug, senderPrefix);
     reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
@@ -275,9 +282,9 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
 	}
 	if (channelName[0] == '#') {
 		if (connection->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(reply, fd);
+			server->sendMessageToAllServersButOne(std::string(senderPrefix + " " + reply), fd);
 		} else {
-			server->sendMessageToAllServers(reply);
+			server->sendMessageToAllServers(std::string(senderPrefix + " " + reply));
 		}
 	}
 }
