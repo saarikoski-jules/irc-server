@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 15:55:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:55:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,12 @@ modes("") {
         throw ChannelException(reply, false);
     }
     chanops.push_back(chanop);
+    connections.push_back(chanop);
 }
 
 void Channel::addOperator(Connection* newChanop) {
     chanops.push_back(newChanop);
+    //TODO: Do i need to make sure chanop is also already a connection in channel?
 }
 
 bool Channel::isOperator(Connection* cli) const {

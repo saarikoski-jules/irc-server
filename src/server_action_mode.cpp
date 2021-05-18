@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 11:46:31 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:17:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,8 +278,6 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
         return;
     }
     //TODO: fix prefix
-    Logger::log(LogLevelDebug, "HERE YALL");
-    Logger::log(LogLevelDebug, senderPrefix);
     reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
