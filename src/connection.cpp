@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/07 14:55:51 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/17 13:51:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,27 @@ connectionType(Connection::NoType),
 server(serverConfiguration) {
 }
 
+bool matchPrefix(const std::string& prefix, const std::string& nick) {
+	std::string::const_iterator endOfNick = prefix.begin();
+	for (; endOfNick != prefix.end(); endOfNick++) {
+		if ((*endOfNick > '9' || *endOfNick < '0')
+        && (*endOfNick > 'z' || *endOfNick < 'a')
+        && (*endOfNick > 'Z' || *endOfNick < 'A')) {
+			break;
+		}
+	}
+	std::string nickFromPrefix(prefix.begin(), endOfNick);
+	if (nickFromPrefix == nick) {
+		return (true);
+	}
+	return (false);
+}
+
 Connection* Connection::getLeafConnection(const std::string& str) {
 	for (std::vector<Connection>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
-		//TODO(Jules): Make a better matching function
-		if (i->connectionType == ClientType && i->client.nickName == str) {
+		if (i->connectionType == ClientType && matchPrefix(str, i->client.nickName)) {
 			return (&*i);
 		}
-		//TOOD(Jules): also check other server connections
 	}
 	throw std::out_of_range("Coundn't find matching connection in leaves");
 }
