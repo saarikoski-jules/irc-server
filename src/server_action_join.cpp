@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 12:24:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 12:31:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,8 @@ void ServerActionJoin::handleNeedMoreParams() const {
     sendToLocalClient(errReply);
 }
 
-void ServerActionJoin::sendToLocalClient(const std::string& message, const std::string& prefix = "") const {
-    if (connection->connectionType == Conenction::ClientType) {
+void ServerActionJoin::sendToLocalClient(const std::string& message, const std::string& prefix) const {
+    if (connection->connectionType == Connection::ClientType) {
         server->sendReplyToClient(fd, message, prefix);
     }
 }
