@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/18 13:29:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:08:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,7 @@ void ServerActionPrivmsg::execute() {
         case Connection::ClientType:
             break;
         case Connection::NoType:
-            if (sender->connectionType == Connection::ClientType) {
-                connectionNotRegistered();
-            }
+            connectionNotRegistered();
             return;
     }
     sendTo = findMatchingConnections();
