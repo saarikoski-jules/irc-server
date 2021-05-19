@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/18 14:33:43 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:33:53 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void ServerActionQuit::handleServerQuit() {
 }
 
 void ServerActionQuit::handleClientQuit() {
-    server->removeClientFromChannels(connection);
     try {
         actionFactory factory;
         server->addNewAction(factory.newAction("DISCONNECT", params, fd, prefix));
