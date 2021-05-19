@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 12:31:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:14:10 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,8 @@ ServerActionJoin::ServerActionJoin(
 IServerAction(fd, 1, prefix),
 params(params) {}
 
-Channel* ServerActionJoin::getChannel(
-    const std::string&, const std::string&) {
-    Channel* chan = NULL;
-
-    return (chan);
-}
-
 void ServerActionJoin::broadcastJoin(Channel* chan) {
-    std::vector<Connection*> sendTo = chan->getConnections(*connection);
+    std::vector<Connection*> sendTo = chan->getConnections();
     std::string clientPrefix;
     if (connection->connectionType == Connection::ServerType) {
         clientPrefix = prefix;
