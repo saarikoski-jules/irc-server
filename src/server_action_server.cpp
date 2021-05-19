@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 15:02:33 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 12:03:03 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 13:49:07 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void ServerActionServer::handleServerFromServer() const {
             serverConnection->info = params[3];
             std::string reply = constructNewServerBroadcast(*connection);
             server->sendMessageToAllServersButOne(reply, fd);
+            connection->leafConnections.push_back(newConnection);
         // } else {
         //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
         // }
@@ -82,6 +83,7 @@ void ServerActionServer::handleServerRegistration() const {
                 }
                 reply = constructNewServerBroadcast(*connection);
                 server->sendMessageToAllServersButOne(reply, fd);
+                server->burstServerInformationTo(fd);
             // } else {
             //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
             // }

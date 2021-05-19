@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 10:30:10 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 13:46:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Server {
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
     void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
     void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
+    void burstServerInformationTo(const int& fd);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
@@ -72,6 +73,9 @@ protected:
     void openSocket(const uint16_t& port);
     void listenOnSocket();
     void handleAction();
+    void burstConnections(const int& fd);
+    void burstLeafConnections(const Connection& connection);
+    void burstChannels(const int& fd);
 };
 
 class ServerException : public std::exception {
