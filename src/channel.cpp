@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:21:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 10:05:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,12 @@ void Channel::addClient(Connection* connection, const std::string& key) {
         throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
     }
 }
+
+void Channel::removeConnection(Connection* toRemove) {
+    connections.erase(std::remove(connections.begin(), connections.end(), toRemove), connections.end());
+    chanops.erase(std::remove(chanops.begin(), chanops.end(), toRemove), chanops.end());
+}
+
 void Channel::addBanMask(const std::string& mask) {
     bans.push_back(mask);
 }

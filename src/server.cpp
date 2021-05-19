@@ -307,6 +307,27 @@ Channel* Server::findChannel(const std::string& name) {
     throw std::out_of_range("Channel not found");
 }
 
+void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message) {
+    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+        if ((*i).second.connectionIsInChannel(connection)) {
+            std::vector<Connection*> sendTo = (*i).second.getConnections();
+            for (std::vector<Connection*>::iterator j = sendTo.begin(); j != sendTo.end(); j++) {
+                if (hasLocalConnection(**j) && connection != (*j)) {
+                    sendReplyToClient((*j)->fd, message);//TODO(Jules): prefix ?
+                }
+            }
+        }
+    }
+}
+
+void Server::removeClientFromChannels(Connection* con) {
+    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+        Logger::log(LogLevelDebug, i->second.name);
+        Channel *chan = &i->second;
+        chan->removeConnection(con);
+    }
+}
+
 std::map<std::string, Channel> Server::getListOfChannels() {
     return (channels);
 }

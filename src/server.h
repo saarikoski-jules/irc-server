@@ -54,6 +54,8 @@ class Server {
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, Connection* chanop);
     Channel* findChannel(const std::string& name);
+   void removeClientFromChannels(Connection* con);
+   void sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message);
     void delayFirstAction();
 	time_t serverStart;
 	std::map<std::string, Channel> getListOfChannels();

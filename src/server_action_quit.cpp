@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/07 15:22:31 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 09:33:53 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void ServerActionQuit::execute() {
 }
 
 void ServerActionQuit::handleServerQuit() {
+    Connection* leaf = connection->getLeafConnection(prefix);
+    server->removeClientFromChannels(leaf);
     try {
         connection->removeLeafConnectionByNick(prefix);
         if (params.size() >= 1) {

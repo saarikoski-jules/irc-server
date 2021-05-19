@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/07 15:18:22 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 09:55:28 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include "server.h"
 #include "connection.h"
+#include "logger.h"
 
 ServerActionDisconnect::ServerActionDisconnect(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -48,6 +49,8 @@ void ServerActionDisconnect::disconnectClient() {
     close(fd);
     std::string reply(":" + connection->client.nickName + " QUIT :" + disconnectMessage + "\r\n");
     server->sendMessageToAllServers(reply);
+    server->sendMessageToAllLocalUsersInClientChannels(connection, reply);
+    server->removeClientFromChannels(connection);
     server->deleteConnection(fd);
 }
 

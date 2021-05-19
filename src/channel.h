@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:24:07 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:43:17 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Channel {
 	std::vector<Connection*> getConnections() const;
    std::string getNames(Connection* connection) const;
    bool isOper(Connection* connection) const;
+   void removeConnection(Connection* toRemove);
    bool connectionIsInChannel(Connection* connection) const;
 
  private:
