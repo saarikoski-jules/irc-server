@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 13:52:18 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 12:04:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,30 @@ std::string constructServerNickBroadcast(const std::vector<std::string> params) 
         + params[4] + " "
         + params[5] + " "
         + ":" + params[6] + "\r\n");
+    return (reply);
+}
+
+std::string constructNewServerBroadcast(const Connection& connection) {
+    std::string reply(":" SERVERNAME " "
+        "SERVER "
+        + connection.server.name + " "
+        + "1 "
+        + connection.server.token + " "
+        + ":" + connection.server.info + "\r\n");
+    return (reply);
+}
+
+std::string constructServerValidation() {
+    std::string reply(
+        "PASS "
+        SERVER_CONNECTION_PASSWORD " "
+        "0211 "
+        "IRC|\r\n"
+
+        "SERVER "
+        SERVERNAME " "
+        "1 "
+        SERVERTOKEN " "
+        ":Codam development irc\r\n");
     return (reply);
 }

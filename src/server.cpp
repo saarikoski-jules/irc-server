@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/17 14:30:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 11:12:42 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ serverSocket(&actions) {
         openSocket(port);
         startingServer->server.connectToServer(&startingServer->fd);
         sendAuthenticationTo(startingServer->fd, startingServer->server.password);
+        startingServer->isStartingServer = true;
         connections.insert(std::pair<const int, Connection>(startingServer->fd, *startingServer));
     } catch (const ServerException& e) {
         if (e.isFatal()) {
@@ -144,6 +145,17 @@ void Server::sendMessage(const int& fd, const std::string& message) {
     } catch (const SocketException& e) {
         Logger::log(LogLevelDebug, e.what());
         throw ServerException("Could not send message", false);
+    }
+}
+
+void Server::sendMessageToServer(const int& fd, const std::string& message) {
+    try {
+        actionFactory factory;
+        std::vector<std::string> replyVector;
+        replyVector.push_back(message);
+        addNewAction(factory.newAction("SEND", replyVector, fd));
+    } catch (const std::exception& e) {
+        Logger::log(LogLevelError, e.what());
     }
 }
 

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 15:02:33 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 16:45:12 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 12:03:03 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #include "logger.h"
 #include "server.h"
+#include "construct_reply.h"
 
 ServerActionServer::ServerActionServer(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -29,33 +30,63 @@ void ServerActionServer::execute() {
     switch (connection->connectionType)
     {
     case Connection::ServerType:
-        // TODO(Jelle) Register new server to list.
+        handleServerFromServer();
         break;
     case Connection::ClientType:
         handleAlreadyRegistered();
         break;
     case Connection::NoType:
-        handleServer();
+        handleServerRegistration();
+        break;
     default:
         break;
     }
 }
 
-void ServerActionServer::handleServer() const {
+void ServerActionServer::handleServerFromServer() const {
+    Logger::log(LogLevelDebug, "Attempting SERVER registration.");
     if (params.size() >= requiredParams) {
-        if (connection->password == SERVER_CONNECTION_PASSWORD) {
-            ServerConnection* serverConnection = &connection->server;
+        // TODO(Jelle) Is server collision a thing?
+        // if (server->serverTokenExists(params[2]) == false) {
+            Connection newConnection;
+            ServerConnection* serverConnection = &newConnection.server;
+            newConnection.fd = fd;
+            newConnection.connectionType = Connection::ServerType;
             serverConnection->name = params[0];
             serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
-            if (server->serverTokenExists(params[2]) == false) {
-                serverConnection->token = params[2];
-            } else {
-                // TODO(Jelle) Send error reply.
-            }
+            serverConnection->token = params[2];
             serverConnection->info = params[3];
-            connection->connectionType = Connection::ServerType;
+            std::string reply = constructNewServerBroadcast(*connection);
+            server->sendMessageToAllServersButOne(reply, fd);
+        // } else {
+        //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
+        // }
+    }
+}
+
+void ServerActionServer::handleServerRegistration() const {
+    Logger::log(LogLevelDebug, "Attempting new SERVER registration.");
+    if (params.size() >= requiredParams) {
+        if (connection->password == SERVER_CONNECTION_PASSWORD) {
+            // if (server->serverTokenExists(params[2]) == false) {
+                ServerConnection* serverConnection = &connection->server;
+                serverConnection->name = params[0];
+                serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
+                serverConnection->token = params[2];
+                serverConnection->info = params[3];
+                connection->connectionType = Connection::ServerType;
+                std::string reply;
+                if (connection->isStartingServer == false) {
+                    reply = constructServerValidation();
+                    server->sendMessageToServer(fd, reply);
+                }
+                reply = constructNewServerBroadcast(*connection);
+                server->sendMessageToAllServersButOne(reply, fd);
+            // } else {
+            //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
+            // }
         } else {
-            // TODO(Jelle) handle no password error.
+            server->sendErrorToConnectionBypassingQueue(fd, "Unable to authorize");
         }
     } else {
         handleNeedMoreParams();
