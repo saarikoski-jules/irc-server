@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.cpp                           :+:    :+:             */
+/*   server_action_topic.cpp                            :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/12 16:32:21 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/18 12:29:49 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ params(params) {
 			case Connection::ClientType:
 				break;
 			case Connection::NoType:
-				server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
+				sendReplyToLocalClient(constructNotRegisteredReply(connection->client.nickName));
 				throw std::invalid_argument("Bad user");//TODO(Jules): yeah how about you don't
 				break;
 		}
@@ -65,7 +65,7 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 	const std::string modes = chan->getModes();
 	const Connection const_con = *connection;
 	if (modes.find('t') != std::string::npos && !chan->isOper(connection)) {
-		server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams));
+		sendReplyToLocalClient(ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams));
 	} else {
 		chan->topic = params[1];
 		chan->topicIsSet = true;
@@ -83,7 +83,7 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 				server->sendReplyToClient((*it)->fd, std::string("TOPIC " + chan->name + " :" + chan->topic), sentFrom);
 			}
 		}
-		server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_TOPIC, replyParams));
+		sendReplyToLocalClient(ReplyFactory::newReply(RPL_TOPIC, replyParams));
 		if (chan->name[0] == '#') {
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendMessageToAllServers(std::string(sentFrom + "TOPIC " + chan->name + " :" + chan->topic));
@@ -100,13 +100,18 @@ void ServerActionTopic::checkTopic(const std::string& clientNick) const {
 	replyParams.push_back(chan->name);
 
 	if (chan->topic == "") {
-		server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_NOTOPIC, replyParams));
+		sendReplyToLocalClient(ReplyFactory::newReply(RPL_NOTOPIC, replyParams));
 	} else {
 		replyParams.push_back(chan->topic);
-		server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_TOPIC, replyParams));
+		sendReplyToLocalClient(ReplyFactory::newReply(RPL_TOPIC, replyParams));
 	}
 }
 
+void ServerActionTopic::sendReplyToLocalClient(const std::string& message, const std::string& prefix) const {
+	if (connection->connectionType == Connection::ClientType) {
+		server->sendReplyToClient(fd, message, prefix);
+	}
+}
 
 IServerAction* ServerActionTopic::clone() const {
 	return (new ServerActionTopic(*this));

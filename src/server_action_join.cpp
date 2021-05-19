@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/17 13:28:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 08:03:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,6 @@ ServerActionJoin::ServerActionJoin(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 1, prefix),
 params(params) {}
-
-Channel* ServerActionJoin::getChannel(
-    const std::string& name, const std::string&) {
-    Channel* chan;
-    try {
-        chan = server->findChannel(name);
-    } catch (const std::exception &e) {
-        chan = server->createNewChannel(name, fd);
-    }
-    return (chan);
-}
 
 void ServerActionJoin::broadcastJoin(Channel* chan) {
     std::vector<Connection*> sendTo = chan->getConnections(*connection);
@@ -68,18 +57,35 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
     replyParams.push_back(clientNick);
     replyParams.push_back(name);
     try {
-        // TODO: check if client is allowed to join channel
-        chan = getChannel(name, key);
+        Connection* client;
+
         if (connection->connectionType == Connection::ServerType) {
             try {
-                Connection* leaf = connection->getLeafConnection(prefix);
-                chan->addClient(leaf, key);
+                client = connection->getLeafConnection(prefix);
             } catch (const std::exception& e) {
                 Logger::log(LogLevelDebug, "Cannot find leaf connection in JOIN");
+                return;
             }
         } else if (connection->connectionType == Connection::ClientType) {
-            chan->addClient(connection, key);
+            client = connection;
+        } else {
+            Logger::log(LogLevelDebug, "connection type NoType in JOIN");
+            return;
         }
+        // TODO: check if client is allowed to join channel
+        try {
+            chan = server->findChannel(name);
+            chan->addClient(client, key); //if from server, make sure to always add client
+        } catch (const ChannelException& e) {
+            //if exception is no rights
+            if (connection->connectionType == Connection::ClientType) {
+                server->sendReplyToClient(fd, e.what());
+            }
+            return;
+        } catch (const std::exception &e) {
+            chan = server->createNewChannel(name, client);
+        }
+
         broadcastJoin(chan);
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);
@@ -90,7 +96,7 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 	} catch (const ChannelException& e) {
         reply = e.what();
     }
-    server->sendReplyToClient(fd, reply);
+    sendToLocalClient(reply);
 }
 
 void ServerActionJoin::handleNeedMoreParams() const {
@@ -98,7 +104,13 @@ void ServerActionJoin::handleNeedMoreParams() const {
     errParams.push_back(clientNick);
     errParams.push_back("JOIN");
     std::string errReply = ReplyFactory::newReply(ERR_NEEDMOREPARAMS, errParams);
-    server->sendReplyToClient(fd, errReply);
+    sendToLocalClient(errReply);
+}
+
+void ServerActionJoin::sendToLocalClient(const std::string& message, const std::string& prefix) const {
+    if (connection->connectionType == Connection::ClientType) {
+        server->sendReplyToClient(fd, message, prefix);
+    }
 }
 
 void ServerActionJoin::execute() {
@@ -150,7 +162,7 @@ void ServerActionJoin::joinChannels() {
         try {
             addClientToChannel(chans[i], key);
         } catch (const ChannelException& e) {
-            server->sendReplyToClient(fd, e.what());
+            sendToLocalClient(e.what());
         }
     }
 }

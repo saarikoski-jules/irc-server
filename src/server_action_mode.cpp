@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                            :+:    :+:             */
+/*   server_action_mode.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/12 16:11:02 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/18 12:17:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,20 @@ void ServerActionMode::execute() {
             return;
     }
     if (params.size() < requiredParams) {
-        server->sendReplyToClient(fd, constructNeedMoreParamsReply(clientNick, "MODE"));
+        sendReplyToLocalClient(constructNeedMoreParamsReply(clientNick, "MODE"));
         return;
     }
     try {
         chan = server->findChannel(params[0]);
-        if (!chan->isOperator(connection)) {
+        Connection* tmp;
+        if (connection->connectionType == Connection::ServerType) {
+            tmp = connection->getLeafConnection(prefix);
+        } else {
+            tmp = connection;
+        }
+        if (!chan->isOperator(tmp)) {
             std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
-            server->sendReplyToClient(fd, reply);
+            sendReplyToLocalClient(reply);
             return;
         }
         if (params[1][0] == '-') {
@@ -57,7 +63,7 @@ void ServerActionMode::execute() {
         }
         execByMode(sign);
     } catch (const std::out_of_range& e) {
-        server->sendReplyToClient(fd, constructNoSuchChannelReply(clientNick, params[0]));
+        sendReplyToLocalClient(constructNoSuchChannelReply(clientNick, params[0]));
     } catch (const std::exception& e) {
         std::string errorMsg(e.what());
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
@@ -96,7 +102,7 @@ void ServerActionMode::execByMode(char sign) {
             break;
         case 'l':
             if (setLimit(sign, *param)) {
-                    returnOptions.push_back(*mode);
+                returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
                 }
@@ -160,7 +166,7 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
         target = server->getClientByNick(user);
     } catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(clientNick, user);
-        server->sendReplyToClient(fd, reply);
+        sendReplyToLocalClient(reply);
         return (false);
     }
     if (sign == '-') {
@@ -228,15 +234,21 @@ bool ServerActionMode::listBanMasks() const {
             }
             replyParams.push_back(m);
             std::string reply = ReplyFactory::newReply(RPL_BANLIST, replyParams);
-            server->sendReplyToClient(fd, reply);
+            sendReplyToLocalClient(reply);
         } catch (const std::exception& e) {
             if (replyParams.size() == 3) {
                 replyParams.pop_back();
             }
             std::string reply = ReplyFactory::newReply(RPL_ENDOFBANLIST, replyParams);
-            server->sendReplyToClient(fd, reply);
+            sendReplyToLocalClient(reply);
             return (false);//??
         }
+    }
+}
+
+void ServerActionMode::sendReplyToLocalClient(const std::string& message, const std::string& prefix) const {
+    if (connection->connectionType == Connection::ClientType) {
+        server->sendReplyToClient(fd, message, prefix);
     }
 }
 
@@ -253,13 +265,20 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     }
     replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
+    sendReplyToLocalClient(reply);
+//broadcast
 	std::vector<Connection*> sendTo = chan->getConnections(*connection);
 	std::string senderPrefix;
 	if (connection->connectionType == Connection::ServerType) {
 		senderPrefix = prefix;
 	} else if (connection->connectionType == Connection::ClientType) {
 		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
-	}
+	} else {
+        Logger::log(LogLevelDebug, "MODE, connectionType NoType");
+        return;
+    }
+    //TODO: fix prefix
+    reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
 			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
@@ -267,9 +286,9 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
 	}
 	if (channelName[0] == '#') {
 		if (connection->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(reply, fd);
+			server->sendMessageToAllServersButOne(std::string(senderPrefix + " " + reply), fd);
 		} else {
-			server->sendMessageToAllServers(reply);
+			server->sendMessageToAllServers(std::string(senderPrefix + " " + reply));
 		}
 	}
 }
@@ -282,13 +301,13 @@ void ServerActionMode::sendUnknownModeReply(char c) const {
     params.push_back(clientNick);
     params.push_back(character);
     reply = ReplyFactory::newReply(ERR_UNKNOWNMODE, params);
-    server->sendReplyToClient(fd, reply);
+    sendReplyToLocalClient(reply);
 }
 
 void ServerActionMode::connectionNotRegistered() const {
     std::vector<std::string> params;
     params.push_back(clientNick);
-    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
+    sendReplyToLocalClient(ReplyFactory::newReply(ERR_NOTREGISTERED, params));
 }
 
 IServerAction* ServerActionMode::clone() const {

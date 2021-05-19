@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/05 12:53:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:08:01 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ ServerActionPrivmsg::ServerActionPrivmsg(
 }
 
 void ServerActionPrivmsg::execute() {
+    Logger::log(LogLevelDebug, "execute PRIVMSG");
     std::vector<std::pair<Connection*, std::string> > sendTo;
     sender = server->getConnectionByFd(fd);
     switch (sender->connectionType) {
@@ -71,9 +72,13 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
                 sendTo.push_back(make_pair(cli, cli->client.nickName));
             }
         } catch (const ChannelException& e) {
-            server->sendReplyToClient(fd, constructCannotSendToChanReply(sender->client.nickName, *i));
+            if (sender->connectionType == Connection::ClientType) {
+                server->sendReplyToClient(fd, constructCannotSendToChanReply(sender->client.nickName, *i));
+            }
         } catch (const std::exception& e) {
-            server->sendReplyToClient(fd, constructNoSuchNickReply(sender->client.nickName, *i));
+            if (sender->connectionType == Connection::ClientType) {
+                server->sendReplyToClient(fd, constructNoSuchNickReply(sender->client.nickName, *i));
+            }
             // no such client
         }
     }
@@ -91,7 +96,9 @@ void ServerActionPrivmsg::sendMessages(const std::vector<std::pair<Connection*, 
 void ServerActionPrivmsg::connectionNotRegistered() const {
     std::vector<std::string> params;
     params.push_back(sender->client.nickName);
-    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
+    if (sender->connectionType == Connection::ClientType) {
+        server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOTREGISTERED, params));
+    }
 }
 
 IServerAction* ServerActionPrivmsg::clone() const {
