@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/19 09:08:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 09:13:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,25 +61,27 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
             if (std::string("$&#").find((*i)[0]) != std::string::npos) {
                 Channel* chan = server->findChannel(*i);
                 //TODO(Jules): also look through host/server masks
-                std::vector<Connection*> channelClients = chan->getConnections(*sender);
-                for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
-                    if (*cli != sender) {
-                        sendTo.push_back(make_pair(*cli, *i));
+                std::string channelModes = chan->getModes();
+                if (channelModes.find('n') == std::string::npos || chan->connectionIsInChannel(sender)) {
+                    std::vector<Connection*> channelClients = chan->getConnections();
+                    for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
+                        if (*cli != sender) {
+                            sendTo.push_back(make_pair(*cli, *i));
+                        }
+                    }
+                } else {
+                    if (sender->connectionType == Connection::ClientType) {
+                        server->sendReplyToClient(fd, constructCannotSendToChanReply(sender->client.nickName, *i));
                     }
                 }
             } else {
                 Connection* cli = server->getClientByNick(*i);
                 sendTo.push_back(make_pair(cli, cli->client.nickName));
             }
-        } catch (const ChannelException& e) {
-            if (sender->connectionType == Connection::ClientType) {
-                server->sendReplyToClient(fd, constructCannotSendToChanReply(sender->client.nickName, *i));
-            }
         } catch (const std::exception& e) {
             if (sender->connectionType == Connection::ClientType) {
                 server->sendReplyToClient(fd, constructNoSuchNickReply(sender->client.nickName, *i));
             }
-            // no such client
         }
     }
     return (sendTo);

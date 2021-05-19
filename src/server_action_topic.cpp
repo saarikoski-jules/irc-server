@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/18 12:29:49 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 15:25:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,12 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 	replyParams.push_back(clientNick);
 	replyParams.push_back(chan->name);
 	const std::string modes = chan->getModes();
-	const Connection const_con = *connection;
 	if (modes.find('t') != std::string::npos && !chan->isOper(connection)) {
 		sendReplyToLocalClient(ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams));
 	} else {
 		chan->topic = params[1];
 		chan->topicIsSet = true;
-		std::vector<Connection*> broadcastTo = chan->getConnections(const_con);
+		std::vector<Connection*> broadcastTo = chan->getConnections();
 		
 		std::string sentFrom;
 		if (connection->connectionType == Connection::ClientType) {

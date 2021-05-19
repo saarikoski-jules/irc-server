@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/10 16:09:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/18 15:24:07 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,10 @@ class Channel {
     void removeBanMask(const std::string& mask);
     void addBanMask(const std::string& mask);
     std::string getBanMask(size_t index) const;
-	std::vector<Connection*> getConnections(const Connection& client) const;
+	std::vector<Connection*> getConnections() const;
    std::string getNames(Connection* connection) const;
    bool isOper(Connection* connection) const;
+   bool connectionIsInChannel(Connection* connection) const;
 
  private:
     //std::vector<Client*> chanops;
