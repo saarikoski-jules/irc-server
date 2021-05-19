@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:04:36 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 12:19:22 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include "socket.h"
 #include "connection.h"
 #include "action_factory.h"
+#include "construct_reply.h"
 
 Server::Server(const uint16_t& port, const std::string& password) :
 channels(),
@@ -202,6 +203,50 @@ void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::strin
     }
 }
 
+void Server::burstServerInformationTo(const int& fd) {
+    Logger::log(LogLevelDebug, "Starting to burst to new server.");
+    burstConnections(fd);
+    burstChannels(fd);
+}
+
+void Server::burstConnections(const int& fd) {
+    std::string reply;
+    actionFactory factory;
+    std::map<const int, Connection>::iterator it = connections.begin();
+    for (; it != connections.end(); it++) {
+        const Connection& connection = it->second;
+        if (connection.connectionType == Connection::ServerType && connection.fd != fd) {
+            reply = constructNewServerBroadcast(connection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            std::vector<std::string> replyVector;
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+            burstLeafConnections(connection);
+        } else if (connection.connectionType == Connection::ClientType) {
+            reply = constructNewNickBroadcast(connection);
+            std::vector<std::string> replyVector;
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+        }
+    }
+}
+
+void Server::burstLeafConnections(const Connection& connection) {
+    std::vector<const Connection>::iterator it = connection.leafConnections.begin();
+    for (; it != connection.leafConnections.end(); it++) {
+        // TODO(Jelle) Send appropriate messages.
+    }
+}
+
+void Server::burstChannels(const int& fd) {
+    (void)fd;
+    // std::string reply;
+    // actionFactory factory;
+    std::map<std::string, Channel>::iterator it = channels.begin();
+    for (; it != channels.end(); it++) {
+        const Channel& channel = it->second;
+        // TODO(Jelle) Send appropriate JOIN messages.
+    }
+}
 
 void Server::acceptNewConnection(const int& fd) {
     connections.insert(std::pair<const int, Connection*>(fd, new Connection(fd)));
