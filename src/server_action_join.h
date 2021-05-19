@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:18:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 14:08:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 08:04:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ class ServerActionJoin: public IServerAction {
     IServerAction* clone() const;
     ~ServerActionJoin() {}
  private:
-    Channel* getChannel(const std::string& name, const std::string& key);
     void joinChannels();
     void addClientToChannel(const std::string& name, const std::string& key);
     void addExternalClientToChannel();
