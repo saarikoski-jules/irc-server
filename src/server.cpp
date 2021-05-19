@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/17 14:30:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 10:04:45 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,27 @@ Channel* Server::findChannel(const std::string& name) {
         return (&(*it).second);
     }
     throw std::out_of_range("Channel not found");
+}
+
+void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message) {
+    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+        if ((*i).second.connectionIsInChannel(connection)) {
+            std::vector<Connection*> sendTo = (*i).second.getConnections();
+            for (std::vector<Connection*>::iterator j = sendTo.begin(); j != sendTo.end(); j++) {
+                if (hasLocalConnection(**j) && connection != (*j)) {
+                    sendReplyToClient((*j)->fd, message);//TODO(Jules): prefix ?
+                }
+            }
+        }
+    }
+}
+
+void Server::removeClientFromChannels(Connection* con) {
+    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+        Logger::log(LogLevelDebug, i->second.name);
+        Channel *chan = &i->second;
+        chan->removeConnection(con);
+    }
 }
 
 std::map<std::string, Channel> Server::getListOfChannels() {
