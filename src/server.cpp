@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 10:04:45 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/19 13:51:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void Server::sendMessageToAllServersButOne(const std::string& message, const int
         actionFactory factory;
         std::vector<std::string> replyVector;
         replyVector.push_back(message);
-        std::map<const int, Connection>::iterator it = connections.begin();
+        std::map<const int, Connection*>::iterator it = connections.begin();
         for (; it != connections.end(); it++) {
             const Connection& connection = it->second;
             if (connection.connectionType == Connection::ServerType && connection.fd != exceptionFd) {
@@ -192,12 +192,13 @@ void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::strin
 
 
 void Server::acceptNewConnection(const int& fd) {
-    connections.insert(std::pair<const int, Connection>(fd, Connection(fd)));
+    connections.insert(std::pair<const int, Connection>(fd, new Connection(fd)));
 }
 
 void Server::deleteConnection(const int& fd) {
-    std::map<const int, Connection>::iterator toDelete = connections.find(fd);
+    std::map<const int, Connection*>::iterator toDelete = connections.find(fd);
     if (toDelete != connections.end()) {
+        delete toDelete;
         connections.erase(toDelete);
     } else {
         Logger::log(LogLevelError, "Tried to delete non-existing connection");
@@ -205,16 +206,16 @@ void Server::deleteConnection(const int& fd) {
 }
 
 Connection* Server::getConnectionByFd(const int& fd) {
-    return (&connections[fd]);
+    return (connections[fd]);
 }
 
 Connection* Server::getClientByNick(const std::string& nick) {
-    std::map<const int, Connection>::iterator it = connections.begin();
+    std::map<const int, Connection*>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
 	    Connection* connection = &it->second;
         if (connection->connectionType == Connection::ClientType) {
             if (connection->client.nickName == nick) {
-                return &(it->second);
+                return (it->second);
             }
         } else if (connection->connectionType == Connection::ServerType) {
             try {
@@ -255,9 +256,9 @@ bool Server::nicknameExists(const std::string& nickName) {
 }
 
 bool Server::usernameExists(const std::string& userName) {
-    std::map<const int, Connection>::iterator it;
+    std::map<const int, Connection*>::iterator it;
     for (it = connections.begin(); it != connections.end(); it++) {
-        const Connection& connection = it->second;
+        const Connection& connection = *(it->second);
         if (connection.connectionType == Connection::ClientType
         && connection.client.nickName == userName) {
             return (true);
@@ -267,9 +268,9 @@ bool Server::usernameExists(const std::string& userName) {
 }
 
 bool Server::serverTokenExists(const std::string& serverToken) {
-    std::map<const int, Connection>::iterator it;
+    std::map<const int, Connection*>::iterator it;
     for (it = connections.begin(); it != connections.end(); it++) {
-        const Connection& connection = it->second;
+        const Connection& connection = *(it->second);
         if (connection.connectionType == Connection::ServerType
         && connection.server.token == serverToken) {
             return (true);
@@ -280,25 +281,26 @@ bool Server::serverTokenExists(const std::string& serverToken) {
 
 Channel* Server::createNewChannel(const std::string& name, Connection* chanop) {
     // Connection* chanop = getConnectionByFd(fd);
-    Channel newChannel(name, chanop);
-    channels.insert(std::pair<std::string, Channel>(name, newChannel));
-    std::map<std::string, Channel>::iterator it = channels.find(name);
-    return (&(*it).second);
+    Channel *newChannel = new Channel(name, chanop);
+    channels.insert(std::pair<std::string, Channel*>(name, newChannel));
+    // std::map<std::string, Channel*>::iterator it = channels.find(name);
+    return (channels[name]);
+    // return (&(*it).second);
 }
 
 Channel* Server::findChannel(const std::string& name) {
-    std::map<std::string, Channel>::iterator it = channels.find(name);
+    std::map<std::string, Channel*>::iterator it = channels.find(name);
 
     if (it != channels.end()) {
-        return (&(*it).second);
+        return ((*it).second);
     }
     throw std::out_of_range("Channel not found");
 }
 
 void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message) {
-    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
-        if ((*i).second.connectionIsInChannel(connection)) {
-            std::vector<Connection*> sendTo = (*i).second.getConnections();
+    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
+        if ((*i).second->connectionIsInChannel(connection)) {
+            std::vector<Connection*> sendTo = (*i).second->getConnections();
             for (std::vector<Connection*>::iterator j = sendTo.begin(); j != sendTo.end(); j++) {
                 if (hasLocalConnection(**j) && connection != (*j)) {
                     sendReplyToClient((*j)->fd, message);//TODO(Jules): prefix ?
@@ -309,14 +311,14 @@ void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, 
 }
 
 void Server::removeClientFromChannels(Connection* con) {
-    for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
-        Logger::log(LogLevelDebug, i->second.name);
-        Channel *chan = &i->second;
+    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
+        Logger::log(LogLevelDebug, i->second->name);
+        Channel *chan = i->second;
         chan->removeConnection(con);
     }
 }
 
-std::map<std::string, Channel> Server::getListOfChannels() {
+std::map<std::string, Channel*> Server::getListOfChannels() {
     return (channels);
 }
 
