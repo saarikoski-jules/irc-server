@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/20 14:08:05 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/20 14:12:59 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ ServerActionPrivmsg::ServerActionPrivmsg(
         Connection* connect = server->getConnectionByFd(fd);
         Client cli = connect->client;
         Logger::log(LogLevelDebug, "too few params");
-        if (params.size() == 1) {
-            server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
-        } else {
-            server->sendReplyToClient(fd, constructNoRecipientReply(cli.nickName, "PRIVMSG"));
-        }
-        throw std::length_error("Bad amount of params for PRIVMSG");
+		if (connect->connectionType == Connection::ClientType) {
+			if (params.size() == 1) {
+				server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
+			} else {
+				server->sendReplyToClient(fd, constructNoRecipientReply(cli.nickName, "PRIVMSG"));
+			}
+		}
+		throw std::length_error("Bad amount of params for PRIVMSG");
     }
 }
 
@@ -42,18 +44,16 @@ void ServerActionPrivmsg::execute() {
     sender = server->getConnectionByFd(fd);
     switch (sender->connectionType) {
         case Connection::ServerType:
-            //sender = sender->getLeafConnection(prefix);
         case Connection::ClientType:
             break;
         case Connection::NoType:
             connectionNotRegistered();
             return;
     }
-    sendTo = findMatchingConnections();
-    /* sendMessages(sendTo); */
+    findMatchingConnections();
 }
 
-std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatchingConnections() {
+void ServerActionPrivmsg::findMatchingConnections() {
     std::vector<std::string> recipients = Utils::String::tokenize(params[0], params[0].length(), ",");
     std::vector<std::pair<Connection*, std::string> > sendTo;
 	std::string broadcastTo;
@@ -78,7 +78,7 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
                     for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
                         if (*cli != sender) {
 							if (server->hasLocalConnection(**cli)) {
-                            	sendTo.push_back(make_pair(*cli, *i));
+                       			sendTo.push_back(make_pair(*cli, *i));
 							}
                         }
                     }
@@ -98,7 +98,6 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
         }
     }
 	sendMessages(sendTo, broadcast, broadcastTo);
-    return (sendTo);
 }
 
 void ServerActionPrivmsg::sendMessages(const std::vector<std::pair<Connection*, std::string> >& recipients, bool broadcast, std::string targets) const {
