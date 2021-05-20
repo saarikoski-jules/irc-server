@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 15:30:47 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/20 15:52:14 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,14 @@ void ServerActionMode::execute() {
     connection = server->getConnectionByFd(fd);
     switch (connection->connectionType) {
         case Connection::ServerType:
-		{
-            Connection* tmp = connection->getLeafConnection(prefix);
-			clientNick = tmp->client.nickName;
+			try {
+				Connection* tmp = connection->getLeafConnection(prefix);
+				clientNick = tmp->client.nickName;
+			} catch (const std::exception& e) {
+				Logger::log(LogLevelDebug, "Invalid prefix");
+				return;
+			}
 			break;
-		}
         case Connection::ClientType:
 			clientNick = connection->client.nickName;
             break;
