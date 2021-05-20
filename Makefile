@@ -45,6 +45,7 @@ SRCLST = main \
 		server_action_quit \
 		server_action_names \
 		server_action_topic \
+		server_action_part \
 		action_factory \
 		channel \
 		construct_reply \
