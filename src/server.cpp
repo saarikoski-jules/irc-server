@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 13:51:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 09:46:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ serverSocket(&actions) {
         openSocket(port);
         startingServer->server.connectToServer(&startingServer->fd);
         sendAuthenticationTo(startingServer->fd, startingServer->server.password);
-        connections.insert(std::pair<const int, Connection>(startingServer->fd, *startingServer));
+        connections.insert(std::pair<const int, Connection*>(startingServer->fd, startingServer));
     } catch (const ServerException& e) {
         if (e.isFatal()) {
             Logger::log(LogLevelFatal, e.what());
@@ -158,9 +158,9 @@ void Server::sendMessageToAllServersButOne(const std::string& message, const int
         replyVector.push_back(message);
         std::map<const int, Connection*>::iterator it = connections.begin();
         for (; it != connections.end(); it++) {
-            const Connection& connection = it->second;
-            if (connection.connectionType == Connection::ServerType && connection.fd != exceptionFd) {
-                addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+            const Connection* connection = it->second;
+            if (connection->connectionType == Connection::ServerType && connection->fd != exceptionFd) {
+                addNewAction(factory.newAction("SEND", replyVector, connection->fd));
             }
         }
     } catch (const std::exception& e) {
@@ -192,13 +192,13 @@ void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::strin
 
 
 void Server::acceptNewConnection(const int& fd) {
-    connections.insert(std::pair<const int, Connection>(fd, new Connection(fd)));
+    connections.insert(std::pair<const int, Connection*>(fd, new Connection(fd)));
 }
 
 void Server::deleteConnection(const int& fd) {
     std::map<const int, Connection*>::iterator toDelete = connections.find(fd);
     if (toDelete != connections.end()) {
-        delete toDelete;
+        delete toDelete->second;
         connections.erase(toDelete);
     } else {
         Logger::log(LogLevelError, "Tried to delete non-existing connection");
@@ -212,7 +212,7 @@ Connection* Server::getConnectionByFd(const int& fd) {
 Connection* Server::getClientByNick(const std::string& nick) {
     std::map<const int, Connection*>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
-	    Connection* connection = &it->second;
+	    Connection* connection = it->second;
         if (connection->connectionType == Connection::ClientType) {
             if (connection->client.nickName == nick) {
                 return (it->second);

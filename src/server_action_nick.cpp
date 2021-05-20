@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                             :+:    :+:            */
+/*   server_action_nick.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 16:12:33 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/20 10:24:19 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,10 @@ void ServerActionNick::handleServerNick() {
     if (params.size() >= requiredParams) {
         if (params.size() >= REQUIRED_SERVER_PARAMS) {
             if (server->nicknameExists(params[0]) == false) {
-                Connection newConnection;
-                Client* client = &newConnection.client;
-                newConnection.fd = fd;
-                newConnection.connectionType = Connection::ClientType;
+                Connection* newConnection = new Connection;
+                Client* client = &newConnection->client;
+                newConnection->fd = fd;
+                newConnection->connectionType = Connection::ClientType;
                 client->nickName = params[0];
                 client->userName = params[2];
                 client->hostName = params[3];
