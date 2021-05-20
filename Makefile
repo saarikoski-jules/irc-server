@@ -26,6 +26,7 @@ SRCLST = main \
 		logger \
 		reply \
 		string_conversions \
+		int_conversions \
 		message_parser \
 		iserver_action \
 		server_action_user \

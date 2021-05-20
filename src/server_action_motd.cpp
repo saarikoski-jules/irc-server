@@ -1,19 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       ::::::::             */
-/*   server_action_motd.cpp                            :+:    :+:             */
-/*                                                    +:+                     */
-/*   By: jules <jsaariko@student.codam.nl>           +#+                      */
-/*                                                  +#+                       */
-/*   Created: 2021/05/07 12:05:23 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/12 11:35:41 by jules        ########   odam.nl          */
+/*                                                        ::::::::            */
+/*   server_action_motd.cpp                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jules <jsaariko@student.codam.nl>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/05/07 12:05:23 by jules         #+#    #+#                 */
+/*   Updated: 2021/05/19 11:49:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_action_motd.h"
-
-#include <fcntl.h>
-#include <unistd.h>
 
 #include "server.h"
 #include "construct_reply.h"
@@ -23,6 +20,42 @@ ServerActionMotd::ServerActionMotd(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 0, prefix),
 params(params) {}
+
+static std::string const motd[] = {
+"===========================================================",
+" ",
+"This server is provided by the blood, sweat and tears of",
+"jvisser and jsaariko",
+" ",
+"Server administrator: ANARCHY",
+" ",
+" ",
+"          @@@    @@@@@@   @@@  @@@@@@@    @@@@@@@  ",
+"         @@@@   @@@@@@@@  @@@  @@@@@@@@  @@@@@@@@  ",
+"        @@!@!        @@@  @@!  @@!  @@@  !@@       ",
+"       !@!!@!       @!@   !@!  !@!  @!@  !@!       ",
+"      @!! @!!      !!@    !!@  @!@!!@!   !@!       ",
+"     !!!  !@!     !!:     !!!  !!@!@!    !!!       ",
+"     :!!:!:!!:   !:!      !!:  !!: :!!   :!!       ",
+"     !:::!!:::  :!:       :!:  :!:  !:!  :!:       ",
+"          :::   :: :::::   ::  ::   :::   ::: :::  ",
+"          :::   :: : :::  :     :   : :   :: :: :  ",
+" ",
+"===========================================================",
+" ",
+"Welcome to Incredulously Reputable Chat. The chat that",
+"definitely doesn't have a hardcoded password as a define",
+"in the code.",
+" ",
+"To prevent abuse we do some error checking, but you can",
+"probably steal a nick if you try hard enough.",
+" ",
+"----------------------------------------------------------",
+"          IRC is a privilege, not a right!",
+"    Respect others and enjoy your stay on IRCnet.",
+"        ..or don't, we are ruled by anarchy!",
+"----------------------------------------------------------"
+};
 
 void ServerActionMotd::execute() {
    Connection* connection = server->getConnectionByFd(fd);
@@ -41,22 +74,13 @@ void ServerActionMotd::execute() {
     reply = ReplyFactory::newReply(RPL_MOTDSTART, params);
     server->sendReplyToClient(fd, reply);
 
-    char readBuf[10000];
-    int motdFile = open("conf/irc.motd", O_RDONLY);
-    int amtRead = read(motdFile, readBuf, 10000);
-    if (amtRead > 0) {
-        std::vector<std::string> lines = Utils::String::tokenize(std::string(readBuf), 1000, "\n");
-        params.push_back("aa");
-        for (std::vector<std::string>::iterator i = lines.begin(); i != lines.end(); i++) {
-            params.pop_back();
-            params.push_back(*i);
-            reply = ReplyFactory::newReply(RPL_MOTD, params);
-            server->sendReplyToClient(fd, reply);
-        }
-    } else {
-        server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NOMOTD, params));
+    params.push_back("aa");
+    for (size_t i = 0; i < 33; i++) {
+        params.pop_back();
+        params.push_back(motd[i]);
+        reply = ReplyFactory::newReply(RPL_MOTD, params);
+        server->sendReplyToClient(fd, reply);
     }
-    close(motdFile);
     server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_ENDOFMOTD, params));
 }
 
