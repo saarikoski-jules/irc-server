@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:16:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 11:28:09 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,10 @@ void ServerActionMode::execByMode(char sign) {
         case 't':
         case 'n':
         // case 'm':
-            // if (editMode(sign, *mode)) {
-                // returnOptions.push_back(*mode);
-            // }
-            // break;
+           if (editMode(sign, *mode)) {
+                returnOptions.push_back(*mode);
+            }
+            break;
         case 'o':
             if (modeO(sign, *param)) {
                 returnOptions.push_back(*mode);
@@ -142,6 +142,8 @@ void ServerActionMode::execByMode(char sign) {
         sendChannelModeIsReply(returnOptions, chan->name, returnParams);
     }
 }
+
+//TODO(Jules): MODE without params will list modes, except b and o, with params for k and l. If no modes present, print only +
 
 bool ServerActionMode::setBanMask(char sign, const std::string& mask) {
     if (mask == "" && sign == '+') {
@@ -286,9 +288,9 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
 	}
 	if (channelName[0] == '#') {
 		if (connection->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(std::string(senderPrefix + " " + reply), fd);
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " " + reply), fd);
 		} else {
-			server->sendMessageToAllServers(std::string(senderPrefix + " " + reply));
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply));
 		}
 	}
 }
