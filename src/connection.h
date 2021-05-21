@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/20 10:17:32 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 12:05:10 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ struct Connection {
     Client client;
     ServerConnection server;
     std::vector<Connection*> leafConnections;
+    bool isStartingServer;
 };
 
 #endif  // CONNECTION_H_

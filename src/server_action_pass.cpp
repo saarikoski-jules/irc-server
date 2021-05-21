@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 11:54:07 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 16:36:13 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 10:13:14 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "server.h"
 #include "reply.h"
+#include "logger.h"
 
 #define MAXIMUM_TAKEN_PARAMS 4
 
@@ -27,6 +28,7 @@ IServerAction(fd, 1, prefix),
 params(params) {}
 
 void ServerActionPass::execute() {
+    Logger::log(LogLevelDebug, "Executing PASS action.");
     connection = server->getConnectionByFd(fd);
     switch (connection->connectionType)
     {

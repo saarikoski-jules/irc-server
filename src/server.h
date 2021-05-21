@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 13:41:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/21 12:04:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Server {
     void sendAuthenticationTo(const int& fd, const std::string& password);
     void run();
     void sendMessage(const int& fd, const std::string& message);
+    void sendMessageToServer(const int& fd, const std::string& message);
     void sendMessageToAllServers(const std::string& message);
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
     void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
