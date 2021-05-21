@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:04:36 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 17:56:30 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,10 +324,23 @@ void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, 
 
 void Server::removeClientFromChannels(Connection* con) {
     for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
-        Logger::log(LogLevelDebug, i->second->name);
         Channel *chan = i->second;
-        chan->removeConnection(con);
+        try {
+			chan->removeConnection(con);
+			// TODO(Jules): This will crash when you try to get to the next iterator in the for loop. Find another way to delete all channels that are empty.
+			if (chan->getAmtUsers() == 0) {
+				deleteChannel(chan);
+			}
+		} catch (const std::exception& e) {
+			//fall through
+		}
     }
+}
+
+void Server::deleteChannel(Channel* chan) {
+	std::map<std::string, Channel*>::iterator chanPos = channels.find(chan->name);
+	channels.erase(chanPos);
+	delete chan;
 }
 
 std::map<std::string, Channel*> Server::getListOfChannels() {

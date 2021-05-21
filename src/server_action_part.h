@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:11:02 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/20 16:17:09 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 15:54:26 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ class ServerActionPart: public IServerAction {
 	~ServerActionPart() {}
  private:
  	std::vector<std::string> params;
+	Channel* chan;
+	void broadcastPart() const;
+	Connection* connection;
 };
 
 #endif  // SERVER_ACTION_PART_H_

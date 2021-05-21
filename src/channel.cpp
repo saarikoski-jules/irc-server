@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 15:24:18 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 17:42:50 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ chanops(),
 connections(),
 key(""),
 modes("") {
-    if ((name[0] != '&' && name[0] != '#') || name.length() > 200) {
+    if ((name[0] != '&' && name[0] != '#') || name.length() > 200 || name.find(' ') != std::string::npos) {
         std::vector<std::string> replyParams;
         replyParams.push_back(chanop->client.nickName);
         replyParams.push_back(name);
@@ -97,6 +97,10 @@ std::string Channel::getModes() const {
     return (modes);
 }
 
+size_t Channel::getAmtUsers() const {
+	return (connections.size());
+}
+
 // TODO(Jules): write a matching function for partial masks
 bool Channel::isBanned(Client* client) const {
     for (std::vector<std::string>::const_iterator i = bans.begin(); i != bans.end(); i++) {
@@ -148,8 +152,15 @@ void Channel::addClient(Connection* connection, const std::string& key) {
 }
 
 void Channel::removeConnection(Connection* toRemove) {
-    connections.erase(std::remove(connections.begin(), connections.end(), toRemove), connections.end());
-    chanops.erase(std::remove(chanops.begin(), chanops.end(), toRemove), chanops.end());
+	std::vector<Connection*>::iterator pos = std::find(connections.begin(), connections.end(), toRemove);
+	if (pos == connections.end()) {
+		throw ChannelException("Client not in channel", false);
+	}
+	connections.erase(pos);
+	pos = std::find(chanops.begin(), chanops.end(), toRemove);
+	if (pos != chanops.end()) {
+		chanops.erase(pos);
+	}
 }
 
 void Channel::addBanMask(const std::string& mask) {

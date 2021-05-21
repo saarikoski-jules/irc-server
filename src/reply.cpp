@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.cpp                                          :+:    :+:            */
+/*   reply.cpp                                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 11:40:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/21 16:04:47 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_CANNOTSENDTOCHAN:
         res = std::string(init + params[1] + " :Cannot send to chan");
         break;
+	case ERR_NOTONCHANNEL:
+		res = std::string(init + params[1] + ":You're not on that channel");
+		break;
     case RPL_TOPIC:
         res = std::string(init + params[1] +  " :" + params[2]);
         break;
@@ -111,7 +114,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case RPL_ENDOFNAMES:
         res = std::string(init +  params[1] + " :End of /NAMES list");
         break;
-    default:
+	default:
         res = init;
         break;
     }
