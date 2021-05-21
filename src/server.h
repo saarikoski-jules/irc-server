@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:20:22 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 16:47:10 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Server {
     bool hasLocalConnection(const Connection& connection);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
+    bool servernameExists(const std::string& serverName);
     bool serverTokenExists(const std::string& serverToken);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, Connection* chanop);
@@ -74,7 +75,7 @@ protected:
     void listenOnSocket();
     void handleAction();
     void burstConnections(const int& fd);
-    void burstLeafConnections(const Connection& connection);
+    void burstLeafConnections(Connection& connection, const int& fd);
     void burstChannels(const int& fd);
 };
 

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                            :+:    :+:             */
+/*   server_action_mode.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 15:52:14 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 17:20:36 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,10 @@ void ServerActionMode::execute() {
 				Connection* tmp = connection->getLeafConnection(prefix);
 				clientNick = tmp->client.nickName;
 			} catch (const std::exception& e) {
-				Logger::log(LogLevelDebug, "Invalid prefix");
-				return;
+				if (server->servernameExists(prefix) == false) {
+				    Logger::log(LogLevelDebug, "Invalid prefix");
+				    return;
+                }
 			}
 			break;
         case Connection::ClientType:

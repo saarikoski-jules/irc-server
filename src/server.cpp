@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:20:18 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 16:54:17 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,39 +212,67 @@ void Server::burstServerInformationTo(const int& fd) {
 void Server::burstConnections(const int& fd) {
     std::string reply;
     actionFactory factory;
-    std::map<const int, Connection>::iterator it = connections.begin();
+    std::map<const int, Connection*>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
-        const Connection& connection = it->second;
+        Connection& connection = *it->second;
         if (connection.connectionType == Connection::ServerType && connection.fd != fd) {
             reply = constructNewServerBroadcast(connection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
-            addNewAction(factory.newAction("SEND", replyVector, connection.fd));
-            burstLeafConnections(connection);
+            addNewAction(factory.newAction("SEND", replyVector, fd));
+            burstLeafConnections(connection, fd);
         } else if (connection.connectionType == Connection::ClientType) {
             reply = constructNewNickBroadcast(connection);
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
-            addNewAction(factory.newAction("SEND", replyVector, connection.fd));
+            addNewAction(factory.newAction("SEND", replyVector, fd));
         }
     }
 }
 
-void Server::burstLeafConnections(const Connection& connection) {
-    std::vector<const Connection>::iterator it = connection.leafConnections.begin();
+void Server::burstLeafConnections(Connection& connection, const int& fd) {
+    std::string reply;
+    actionFactory factory;
+    std::vector<Connection*>::iterator it = connection.leafConnections.begin();
     for (; it != connection.leafConnections.end(); it++) {
-        // TODO(Jelle) Send appropriate messages.
+        const Connection* leafConnection = *it;
+        if (leafConnection->connectionType == Connection::ServerType) {
+            reply = constructNewServerBroadcast(*leafConnection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            std::vector<std::string> replyVector;
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, fd));
+        } else if (leafConnection->connectionType == Connection::ClientType) {
+            reply = constructNewNickBroadcast(*leafConnection);
+            std::vector<std::string> replyVector;
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, fd));
+        }
     }
 }
 
 void Server::burstChannels(const int& fd) {
-    (void)fd;
-    // std::string reply;
-    // actionFactory factory;
-    std::map<std::string, Channel>::iterator it = channels.begin();
+    std::string reply;
+    actionFactory factory;
+    std::map<std::string, Channel*>::iterator it = channels.begin();
     for (; it != channels.end(); it++) {
-        const Channel& channel = it->second;
-        // TODO(Jelle) Send appropriate JOIN messages.
+        const Channel& channel = *it->second;
+        std::vector<Connection*> connections = channel.getConnections();
+        for (std::vector<Connection*>::iterator connectionIt = connections.begin(); connectionIt != connections.end(); connectionIt++) {
+            const Connection* connection = *connectionIt;
+            reply = constructJoinBroadcast(connection->client.nickName, channel.name);
+            std::vector<std::string> replyVector;
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, fd));
+            replyVector.pop_back();
+            if (channel.isOper(connection)) {
+                reply = constructOperModeBroadcast(connection->client.nickName, channel.name);
+            } else {
+                reply = constructNoOperModeBroadcast(connection->client.nickName, channel.name);
+            }
+            replyVector.push_back(reply);
+            addNewAction(factory.newAction("SEND", replyVector, fd));
+            replyVector.pop_back();
+        }
     }
 }
 
@@ -319,6 +347,28 @@ bool Server::usernameExists(const std::string& userName) {
         if (connection.connectionType == Connection::ClientType
         && connection.client.nickName == userName) {
             return (true);
+        }
+    }
+    return (false);
+}
+
+bool Server::servernameExists(const std::string& serverName) {
+    std::map<const int, Connection*>::iterator it = connections.begin();
+    for (; it != connections.end(); it++) {
+	    Connection* connection = it->second;
+        if (connection->connectionType == Connection::ServerType) {
+            if (connection->server.name == serverName) {
+                return (true);
+            } else {
+                std::vector<Connection*>::iterator leafIt = connection->leafConnections.begin();
+                for (; leafIt != connection->leafConnections.end(); leafIt++) {
+	                Connection* leafConnection = *leafIt;
+                    if (leafConnection->connectionType == Connection::ServerType
+                    && leafConnection->server.name == serverName) {
+                        return (true);
+                    }
+                }
+            }
         }
     }
     return (false);

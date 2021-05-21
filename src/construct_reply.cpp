@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/19 12:04:14 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 16:28:56 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,5 +155,33 @@ std::string constructServerValidation() {
         "1 "
         SERVERTOKEN " "
         ":Codam development irc\r\n");
+    return (reply);
+}
+
+std::string constructJoinBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" + nickName + " "
+        "JOIN "
+        ":" + channelName + "\r\n");
+    return (reply);
+}
+
+std::string constructOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" SERVERNAME " "
+        "MODE "
+        + channelName + " "
+        "+o "
+        ":" + nickName + "\r\n");
+    return (reply);
+}
+
+std::string constructNoOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" SERVERNAME " "
+        "MODE "
+        + channelName + " "
+        "-o "
+        ":" + nickName + "\r\n");
     return (reply);
 }
