@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.cpp                                     :+:    :+:            */
+/*   connection.cpp                                    :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/17 15:40:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 10:23:19 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,19 @@ bool matchPrefix(const std::string& prefix, const std::string& nick) {
 }
 
 Connection* Connection::getLeafConnection(const std::string& str) {
-	for (std::vector<Connection>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
-		if (i->connectionType == ClientType && matchPrefix(str, i->client.nickName)) {
-			return (&(*i));
+	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
+		if ((*i)->connectionType == ClientType && matchPrefix(str, (*i)->client.nickName)) {
+			return (*i);
 		}
 	}
 	throw std::out_of_range("Coundn't find matching connection in leaves");
 }
 
 void Connection::removeLeafConnectionByNick(const std::string& nickname) {
-	for (std::vector<Connection>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
+	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
 		//TODO(Jules): Make a better matching function
-		if (i->connectionType == ClientType && i->client.nickName == nickname) {
+		if ((*i)->connectionType == ClientType && (*i)->client.nickName == nickname) {
+			delete *i;
 			leafConnections.erase(i);
             return ;
 		}

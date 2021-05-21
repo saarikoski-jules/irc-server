@@ -1,17 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.cpp                            :+:    :+:            */
+/*   server_action_topic.cpp                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/18 15:25:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:50:08 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server_action_topic.h"
+
 #include "construct_reply.h"
+#include "logger.h"
 
 ServerActionTopic::ServerActionTopic(
 	std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -22,7 +24,11 @@ params(params) {
 		std::vector<std::string> params;
 		switch(connection->connectionType) {
 			case Connection::ServerType:
-				connection = connection->getLeafConnection(prefix);
+				try {
+					connection = connection->getLeafConnection(prefix);
+				} catch (const std::exception& e) {
+					throw std::invalid_argument("Invalid prefix");
+				}
 			case Connection::ClientType:
 				break;
 			case Connection::NoType:
@@ -40,16 +46,19 @@ params(params) {
 void ServerActionTopic::execute() {
 	connection = server->getConnectionByFd(fd);
 	std::string clientNick;
-	if (connection->connectionType == Connection::ServerType) {
-		Connection* tmp = connection->getLeafConnection(prefix);
-		clientNick = tmp->client.nickName;
-	} else {
-		clientNick = connection->client.nickName;
-	}
 	try {
+		if (connection->connectionType == Connection::ServerType) {
+			Connection* tmp = connection->getLeafConnection(prefix);
+			clientNick = tmp->client.nickName;
+		} else {
+			clientNick = connection->client.nickName;
+		}
 		chan = server->findChannel(params[0]);
 	} catch (const ChannelException& e) {
 		//TODO(Jules): send error no such channel
+	} catch (const std::exception& e) {
+		Logger::log(LogLevelDebug, "Invalid prefix");
+		return;
 	}
 	if (params.size() > 1) {
 		changeTopic(clientNick);

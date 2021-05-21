@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.cpp                                        :+:    :+:            */
+/*   channel.cpp                                       :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/19 10:05:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:24:18 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,16 @@ void Channel::setLimit(unsigned int lim) {
     addMode('l');
 }
 
+unsigned int Channel::getLimit() const {
+	return (limit);
+}
+
 void Channel::changeKey(const std::string& key) {
     this->key = key;
+}
+
+std::string Channel::getKey() const {
+	return (key);
 }
 
 // TODO(Jules): secret can't display anything, and you can't tell someone is in the channel

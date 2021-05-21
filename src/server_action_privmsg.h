@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_privmsg.h                            :+:    :+:            */
+/*   server_action_privmsg.h                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:36:58 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/04 14:36:30 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 14:09:15 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ class ServerActionPrivmsg : public IServerAction {
 	IServerAction* clone() const;
 	~ServerActionPrivmsg() {}
  private:
-	void sendMessages(const std::vector<std::pair<Connection*, std::string> >& recipients) const;
-	std::vector<std::pair<Connection*, std::string> > findMatchingConnections();
+	void sendMessages(const std::vector<std::pair<Connection*, std::string> >& recipients, bool broadcast, std::string broadcastTo) const;
+	void findMatchingConnections();
 	void connectionNotRegistered() const;
  	std::vector<std::string> params;
 	Connection* sender;

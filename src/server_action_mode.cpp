@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 15:16:47 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:52:14 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,38 +15,18 @@
 #include "iserver_action.h"
 #include "server.h"
 #include "string_conversions.h"
+#include "int_conversions.h"
 #include "construct_reply.h"
 #include "logger.h"
 
 ServerActionMode::ServerActionMode(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
-IServerAction(fd, 2, prefix),
+IServerAction(fd, 1, prefix),
 params(params) {}
 
-void ServerActionMode::execute() {
-    Logger::log(LogLevelInfo, "Executing server action MODE");
-        char sign = '+';
-    connection = server->getConnectionByFd(fd);
-    switch (connection->connectionType) {
-        case Connection::ServerType:
-		{
-            Connection* tmp = connection->getLeafConnection(prefix);
-			clientNick = tmp->client.nickName;
-			break;
-		}
-        case Connection::ClientType:
-			clientNick = connection->client.nickName;
-            break;
-        case Connection::NoType:
-            connectionNotRegistered();
-            return;
-    }
-    if (params.size() < requiredParams) {
-        sendReplyToLocalClient(constructNeedMoreParamsReply(clientNick, "MODE"));
-        return;
-    }
+void ServerActionMode::changeMode() {
+	char sign = '+';
     try {
-        chan = server->findChannel(params[0]);
         Connection* tmp;
         if (connection->connectionType == Connection::ServerType) {
             tmp = connection->getLeafConnection(prefix);
@@ -62,12 +42,62 @@ void ServerActionMode::execute() {
             sign = '-';
         }
         execByMode(sign);
-    } catch (const std::out_of_range& e) {
-        sendReplyToLocalClient(constructNoSuchChannelReply(clientNick, params[0]));
-    } catch (const std::exception& e) {
+        } catch (const std::exception& e) {
         std::string errorMsg(e.what());
         Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
     }
+}
+
+void ServerActionMode::displayModes() const {
+	std::string modeStr = std::string("+" + chan->getModes());
+	std::vector<std::string> modeParams;
+
+
+	for (std::string::iterator it = modeStr.begin(); it != modeStr.end(); it++) {
+		if (*it == 'l') {
+			modeParams.push_back(IntConversion::intToString(chan->getLimit()));
+		}
+		if (*it == 'k') {
+			modeParams.push_back(chan->getKey());
+		}
+	}
+	sendChannelModeIsReply(modeStr, chan->name, modeParams);
+}
+
+void ServerActionMode::execute() {
+    Logger::log(LogLevelInfo, "Executing server action MODE");
+    connection = server->getConnectionByFd(fd);
+    switch (connection->connectionType) {
+        case Connection::ServerType:
+			try {
+				Connection* tmp = connection->getLeafConnection(prefix);
+				clientNick = tmp->client.nickName;
+			} catch (const std::exception& e) {
+				Logger::log(LogLevelDebug, "Invalid prefix");
+				return;
+			}
+			break;
+        case Connection::ClientType:
+			clientNick = connection->client.nickName;
+            break;
+        case Connection::NoType:
+            connectionNotRegistered();
+            return;
+    }
+    if (params.size() < requiredParams) {
+        sendReplyToLocalClient(constructNeedMoreParamsReply(clientNick, "MODE"));
+    	return;
+	}
+	try {
+        chan = server->findChannel(params[0]);
+		if (params.size() == 1) {
+			displayModes();
+		} else {
+			changeMode();
+		}
+	} catch (const std::out_of_range& e) {
+        sendReplyToLocalClient(constructNoSuchChannelReply(clientNick, params[0]));
+	}
 }
 
 void ServerActionMode::execByMode(char sign) {
@@ -87,10 +117,10 @@ void ServerActionMode::execByMode(char sign) {
         case 't':
         case 'n':
         // case 'm':
-            // if (editMode(sign, *mode)) {
-                // returnOptions.push_back(*mode);
-            // }
-            // break;
+           if (editMode(sign, *mode)) {
+                returnOptions.push_back(*mode);
+            }
+            break;
         case 'o':
             if (modeO(sign, *param)) {
                 returnOptions.push_back(*mode);
@@ -140,8 +170,11 @@ void ServerActionMode::execByMode(char sign) {
     if (returnOptions.length() > 0) {
         returnOptions.insert(returnOptions.begin(), sign);
         sendChannelModeIsReply(returnOptions, chan->name, returnParams);
-    }
+    	broadcastChannelModeIs(returnOptions, chan->name, returnParams);
+	}
 }
+
+//TODO(Jules): MODE without params will list modes, except b and o, with params for k and l. If no modes present, print only +
 
 bool ServerActionMode::setBanMask(char sign, const std::string& mask) {
     if (mask == "" && sign == '+') {
@@ -252,6 +285,38 @@ void ServerActionMode::sendReplyToLocalClient(const std::string& message, const 
     }
 }
 
+void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const {
+	std::vector<Connection*> sendTo = chan->getConnections();
+	std::string senderPrefix;
+	std::string reply;
+	std::string replyString;
+	for (std::vector<std::string>::const_iterator i = params.begin(); i != params.end(); i++) {
+        replyString = std::string(replyString + *i + " ");
+    }
+	if (connection->connectionType == Connection::ServerType) {
+		senderPrefix = prefix;
+	} else if (connection->connectionType == Connection::ClientType) {
+		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
+	} else {
+        Logger::log(LogLevelDebug, "MODE, connectionType NoType");
+        return;
+    }
+    //TODO: fix prefix
+    reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
+	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
+		if (server->hasLocalConnection(**it) && *it != connection) {
+			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
+		}
+	}
+	if (channelName[0] == '#') {
+		if (connection->connectionType == Connection::ServerType) {
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " " + reply), fd);
+		} else {
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply));
+		}
+	}
+}
+
 void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const {
     std::string reply;
     std::vector<std::string> replyParams;
@@ -266,31 +331,6 @@ void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const st
     replyParams.push_back(replyString);
     reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
     sendReplyToLocalClient(reply);
-//broadcast
-	std::vector<Connection*> sendTo = chan->getConnections();
-	std::string senderPrefix;
-	if (connection->connectionType == Connection::ServerType) {
-		senderPrefix = prefix;
-	} else if (connection->connectionType == Connection::ClientType) {
-		senderPrefix = std::string(clientNick + "!" + connection->client.userName + "@" + connection->client.hostName);
-	} else {
-        Logger::log(LogLevelDebug, "MODE, connectionType NoType");
-        return;
-    }
-    //TODO: fix prefix
-    reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
-	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
-		if (server->hasLocalConnection(**it)) {
-			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
-		}
-	}
-	if (channelName[0] == '#') {
-		if (connection->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(std::string(senderPrefix + " " + reply), fd);
-		} else {
-			server->sendMessageToAllServers(std::string(senderPrefix + " " + reply));
-		}
-	}
 }
 
 void ServerActionMode::sendUnknownModeReply(char c) const {

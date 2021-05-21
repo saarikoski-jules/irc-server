@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                             :+:    :+:            */
+/*   server_action_join.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/19 09:14:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 10:13:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,22 @@ void ServerActionJoin::broadcastJoin(Channel* chan) {
     }
 }
 
+Connection* ServerActionJoin::getActualClient() {
+	if (connection->connectionType == Connection::ServerType) {
+		try {
+			return (connection->getLeafConnection(prefix));
+		} catch (const std::exception& e) {
+			Logger::log(LogLevelDebug, "Cannot find leaf connection in JOIN");
+			return (NULL);
+		}
+	} else if (connection->connectionType == Connection::ClientType) {
+		return (connection);
+	} else {
+		Logger::log(LogLevelDebug, "connection type NoType in JOIN");
+		return (NULL);
+	}
+}
+
 void ServerActionJoin::addClientToChannel(const std::string& name, const std::string& key) {
     std::string reply;
     Channel* chan;
@@ -56,26 +72,20 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 
     replyParams.push_back(clientNick);
     replyParams.push_back(name);
-    try {
+	Logger::log(LogLevelDebug, "addClientToChannel");
+	try {
         Connection* client;
-
-        if (connection->connectionType == Connection::ServerType) {
-            try {
-                client = connection->getLeafConnection(prefix);
-            } catch (const std::exception& e) {
-                Logger::log(LogLevelDebug, "Cannot find leaf connection in JOIN");
-                return;
-            }
-        } else if (connection->connectionType == Connection::ClientType) {
-            client = connection;
-        } else {
-            Logger::log(LogLevelDebug, "connection type NoType in JOIN");
-            return;
-        }
-        // TODO: check if client is allowed to join channel
-        try {
+		client = getActualClient();
+        if (client == NULL) {
+			return;
+		}
+		// TODO: check if client is allowed to join channel
+		Logger::log(LogLevelDebug, client->client.nickName);
+		try {
             chan = server->findChannel(name);
+			Logger::log(LogLevelDebug, std::string("channel name to add client to: " + chan->name));
             chan->addClient(client, key); //if from server, make sure to always add client
+			Logger::log(LogLevelDebug, "success");
         } catch (const ChannelException& e) {
             //if exception is no rights
             if (connection->connectionType == Connection::ClientType) {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_quit.cpp                             :+:    :+:            */
+/*   server_action_quit.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 09:33:53 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:44:46 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ void ServerActionQuit::execute() {
 }
 
 void ServerActionQuit::handleServerQuit() {
-    Connection* leaf = connection->getLeafConnection(prefix);
-    server->removeClientFromChannels(leaf);
     try {
-        connection->removeLeafConnectionByNick(prefix);
+		Connection* leaf = connection->getLeafConnection(prefix);
+		server->removeClientFromChannels(leaf);
+		connection->removeLeafConnectionByNick(prefix);
         if (params.size() >= 1) {
             quitMessage = params[0];
         } else {

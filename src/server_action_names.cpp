@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_names.cpp                            :+:    :+:            */
+/*   server_action_names.cpp                           :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/18 12:33:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 09:48:02 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ void ServerActionNames::execute() {
 		
 	}
 	if (params.size() == 0) {
-		std::map<std::string, Channel> channels = server->getListOfChannels();
-		for (std::map<std::string, Channel>::iterator i = channels.begin(); i != channels.end(); i++) {
+		std::map<std::string, Channel*> channels = server->getListOfChannels();
+		for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
 			try {
-				std::string names = (*i).second.getNames(connection);
-				namesReply((*i).second.name, names);
+				std::string names = (*i).second->getNames(connection);
+				namesReply((*i).second->name, names);
 			} catch (const ChannelException& e) {
 				//do non
 			}

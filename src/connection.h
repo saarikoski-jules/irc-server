@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.h                                       :+:    :+:            */
+/*   connection.h                                      :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 11:12:30 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 12:05:10 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ struct Connection {
     std::string password;
     Client client;
     ServerConnection server;
-    std::vector<Connection> leafConnections;
+    std::vector<Connection*> leafConnections;
     bool isStartingServer;
 };
 

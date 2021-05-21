@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 10:30:10 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 12:04:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,14 @@ class Server {
    void sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message);
     void delayFirstAction();
 	time_t serverStart;
-	std::map<std::string, Channel> getListOfChannels();
+	std::map<std::string, Channel*> getListOfChannels();
 protected:
-    std::map<const int, Connection> connections;
+    std::map<const int, Connection*> connections;
  private:
     Server();
     std::queue<IServerAction*> actions;
     std::queue<IServerAction*> delayedActions;
-    std::map<std::string, Channel> channels;
+    std::map<std::string, Channel*> channels;
     Socket serverSocket;
     MessageParser parser;
     void validatePassword(std::string const& password) const;

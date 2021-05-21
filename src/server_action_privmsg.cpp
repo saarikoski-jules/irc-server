@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_privmsg.cpp                          :+:    :+:            */
+/*   server_action_privmsg.cpp                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/19 09:13:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 14:12:59 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ ServerActionPrivmsg::ServerActionPrivmsg(
         Connection* connect = server->getConnectionByFd(fd);
         Client cli = connect->client;
         Logger::log(LogLevelDebug, "too few params");
-        if (params.size() == 1) {
-            server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
-        } else {
-            server->sendReplyToClient(fd, constructNoRecipientReply(cli.nickName, "PRIVMSG"));
-        }
-        throw std::length_error("Bad amount of params for PRIVMSG");
+		if (connect->connectionType == Connection::ClientType) {
+			if (params.size() == 1) {
+				server->sendReplyToClient(fd, constructNoTextToSendReply(cli.nickName));
+			} else {
+				server->sendReplyToClient(fd, constructNoRecipientReply(cli.nickName, "PRIVMSG"));
+			}
+		}
+		throw std::length_error("Bad amount of params for PRIVMSG");
     }
 }
 
@@ -42,23 +44,32 @@ void ServerActionPrivmsg::execute() {
     sender = server->getConnectionByFd(fd);
     switch (sender->connectionType) {
         case Connection::ServerType:
-            //sender = sender->getLeafConnection(prefix);
         case Connection::ClientType:
             break;
         case Connection::NoType:
             connectionNotRegistered();
             return;
     }
-    sendTo = findMatchingConnections();
-    sendMessages(sendTo);
+    findMatchingConnections();
 }
 
-std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatchingConnections() {
+void ServerActionPrivmsg::findMatchingConnections() {
     std::vector<std::string> recipients = Utils::String::tokenize(params[0], params[0].length(), ",");
     std::vector<std::pair<Connection*, std::string> > sendTo;
+	std::string broadcastTo;
+	bool broadcast = false;
+
     for (std::vector<std::string>::iterator i = recipients.begin(); i != recipients.end(); i++) {
         try {
             if (std::string("$&#").find((*i)[0]) != std::string::npos) {
+				if ((*i).find("#") != std::string::npos) {
+					if (broadcastTo == "") {
+						broadcastTo = std::string(*i);
+					} else {
+						broadcastTo = std::string(broadcastTo + "," + *i);
+					}
+					broadcast = true;
+				}
                 Channel* chan = server->findChannel(*i);
                 //TODO(Jules): also look through host/server masks
                 std::string channelModes = chan->getModes();
@@ -66,7 +77,9 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
                     std::vector<Connection*> channelClients = chan->getConnections();
                     for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
                         if (*cli != sender) {
-                            sendTo.push_back(make_pair(*cli, *i));
+							if (server->hasLocalConnection(**cli)) {
+                       			sendTo.push_back(make_pair(*cli, *i));
+							}
                         }
                     }
                 } else {
@@ -84,15 +97,27 @@ std::vector<std::pair<Connection*, std::string> > ServerActionPrivmsg::findMatch
             }
         }
     }
-    return (sendTo);
+	sendMessages(sendTo, broadcast, broadcastTo);
 }
 
-void ServerActionPrivmsg::sendMessages(const std::vector<std::pair<Connection*, std::string> >& recipients) const {
-    std::string prefix = sender->client.nickName; //TODO(Jules): This also needs to work with server? Should also append user's server/name/etc?
+void ServerActionPrivmsg::sendMessages(const std::vector<std::pair<Connection*, std::string> >& recipients, bool broadcast, std::string targets) const {
+    std::string senderPrefix;
+	if (sender->connectionType == Connection::ServerType) {
+		senderPrefix = prefix;
+	} else {
+		senderPrefix = sender->client.nickName;
+	}
     for (std::vector<std::pair<Connection*, std::string> >::const_iterator cli = recipients.begin(); cli != recipients.end(); cli++) {
-        std::string msg("PRIVMSG " + cli->second + " :" + params[1]);
-        server->sendReplyToClient(cli->first->fd, msg, prefix);
-    }
+		std::string msg("PRIVMSG " + cli->second + " :" + params[1]);
+		server->sendReplyToClient(cli->first->fd, msg, senderPrefix);
+	}
+	if (broadcast) {
+		if (sender->connectionType == Connection::ClientType) {
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1]));
+		} else if (sender->connectionType == Connection::ServerType) {
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1]), fd);
+		}
+	}
 }
 
 void ServerActionPrivmsg::connectionNotRegistered() const {
@@ -106,3 +131,4 @@ void ServerActionPrivmsg::connectionNotRegistered() const {
 IServerAction* ServerActionPrivmsg::clone() const {
     return (new ServerActionPrivmsg(*this));
 }
+

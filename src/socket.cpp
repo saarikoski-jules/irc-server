@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   socket.cpp                                         :+:    :+:            */
+/*   socket.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/23 17:52:13 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/20 09:40:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void Socket::checkNewConnections() {
     }
 }
 
-void Socket::checkConnectionAndNewData(std::map<const int, Connection>* connections) {
+void Socket::checkConnectionAndNewData(std::map<const int, Connection*>* connections) {
     struct timeval waitFor;
 
     waitFor.tv_sec = 0;
@@ -90,16 +90,16 @@ void Socket::checkConnectionAndNewData(std::map<const int, Connection>* connecti
     }
 }
 
-int Socket::createFdSet(std::map<const int, Connection>* connections) {
+int Socket::createFdSet(std::map<const int, Connection*>* connections) {
     fd_set fdSet;
     FD_ZERO(&fdSet);
     int maxFd = 0;
 
     // TODO(Jelle) Maybe initialize once and add to it?
-    std::map<const int, Connection>::iterator it;
+    std::map<const int, Connection*>::iterator it;
     for (it = connections->begin(); it != connections->end(); it++) {
-        const Connection& connection = it->second;
-        const int& fd = connection.fd;
+        const Connection* connection = it->second;
+        const int& fd = connection->fd;
         FD_SET(fd, &fdSet);
         if (fd > maxFd) {
             maxFd = fd;

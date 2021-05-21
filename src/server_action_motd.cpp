@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_motd.cpp                             :+:    :+:            */
+/*   server_action_motd.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 12:05:23 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/19 11:49:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:53:58 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ void ServerActionMotd::execute() {
    Connection* connection = server->getConnectionByFd(fd);
    switch(connection->connectionType) {
         case Connection::ServerType:
-            connection = connection->getLeafConnection(prefix);
-        case Connection::ClientType:
+   			return;
+		case Connection::ClientType:
             break;
         case Connection::NoType:
             server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
