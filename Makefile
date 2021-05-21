@@ -4,7 +4,7 @@
 
 # Compiler settings - Customizable
 CC = clang++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98 -fsanitize=address
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98
 LDFLAGS =
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 

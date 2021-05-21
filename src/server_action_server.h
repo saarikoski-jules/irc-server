@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 14:58:16 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 15:56:36 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/19 11:42:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ class ServerActionServer : public IServerAction {
  private:
     Connection* connection;
     std::vector<std::string> params;
-    void handleServer() const;
+    void handleServerFromServer() const;
+    void handleServerRegistration() const;
     void handleAlreadyRegistered() const;
     void handleNeedMoreParams() const;
 };
