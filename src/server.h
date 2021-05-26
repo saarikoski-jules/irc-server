@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                          :+:    :+:             */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:04:00 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 16:47:10 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Server {
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
     void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
     void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
+    void burstServerInformationTo(const int& fd);
     Connection* getClientByNick(const std::string& nick);
     void acceptNewConnection(const int& fd);
     void deleteConnection(const int& fd);
@@ -50,6 +51,7 @@ class Server {
     bool hasLocalConnection(const Connection& connection);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
+    bool servernameExists(const std::string& serverName);
     bool serverTokenExists(const std::string& serverToken);
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, Connection* chanop);
@@ -72,6 +74,9 @@ protected:
     void openSocket(const uint16_t& port);
     void listenOnSocket();
     void handleAction();
+    void burstConnections(const int& fd);
+    void burstLeafConnections(Connection& connection, const int& fd);
+    void burstChannels(const int& fd);
 };
 
 class ServerException : public std::exception {
