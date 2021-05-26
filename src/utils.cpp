@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   utils.cpp                                          :+:    :+:            */
+/*   utils.cpp                                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/03 13:29:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/25 16:25:07 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ std::vector<std::string> Utils::String::tokenize(
 
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
-    // while (pos != std::string::npos) {
     while (pos < end) {
         pos = orig.find(delim, prev);
         std::string sub;
@@ -45,7 +44,14 @@ std::vector<std::string> Utils::String::tokenize(
         vec.push_back(sub);
         prev = pos + delim.length();
     }
-    return (vec);
+	for (std::vector<std::string>::iterator i = vec.begin(); i != vec.end();) {
+		if (i->length() == 0) {
+			i = vec.erase(i);
+		} else {
+			i++;
+		}
+	}
+	return (vec);
 }
 
 bool Utils::String::isAlnum(const std::string& str) {
