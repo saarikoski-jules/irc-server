@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 16:20:02 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 11:12:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,3 +167,30 @@ std::string constructNotOnChannelReply(const std::string& nickName, const std::s
 	return (reply);
 }
 
+std::string constructJoinBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" + nickName + " "
+        "JOIN "
+        ":" + channelName + "\r\n");
+    return (reply);
+}
+
+std::string constructOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" SERVERNAME " "
+        "MODE "
+        + channelName + " "
+        "+o "
+        ":" + nickName + "\r\n");
+    return (reply);
+}
+
+std::string constructNoOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
+    std::string reply(
+        ":" SERVERNAME " "
+        "MODE "
+        + channelName + " "
+        "-o "
+        ":" + nickName + "\r\n");
+    return (reply);
+}

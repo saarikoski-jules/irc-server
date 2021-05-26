@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 17:42:50 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 11:12:53 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ void Channel::clientHasAccess(Connection* connection) const {
     }
 }
 
-bool Channel::isOper(Connection* connection) const {
+bool Channel::isOper(const Connection* connection) const {
     for (std::vector<Connection*>::const_iterator oper = chanops.begin(); oper != chanops.end(); oper++) {
         if (connection->client.nickName == (*oper)->client.nickName) {
             return (true);

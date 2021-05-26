@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/21 17:46:43 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 11:13:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "utils.h"
 #include "server.h"
 #include "logger.h"
-#include <iostream>
+
 ServerActionPart::ServerActionPart(
 	std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 1, prefix),

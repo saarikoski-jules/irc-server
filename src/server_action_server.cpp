@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 15:02:33 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 12:03:03 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/21 12:40:27 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,17 @@ void ServerActionServer::handleServerFromServer() const {
     if (params.size() >= requiredParams) {
         // TODO(Jelle) Is server collision a thing?
         // if (server->serverTokenExists(params[2]) == false) {
-            Connection newConnection;
-            ServerConnection* serverConnection = &newConnection.server;
-            newConnection.fd = fd;
-            newConnection.connectionType = Connection::ServerType;
+            Connection* newConnection = new Connection();
+            ServerConnection* serverConnection = &newConnection->server;
+            newConnection->fd = fd;
+            newConnection->connectionType = Connection::ServerType;
             serverConnection->name = params[0];
             serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
             serverConnection->token = params[2];
             serverConnection->info = params[3];
             std::string reply = constructNewServerBroadcast(*connection);
             server->sendMessageToAllServersButOne(reply, fd);
+            connection->leafConnections.push_back(newConnection);
         // } else {
         //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
         // }
@@ -82,6 +83,7 @@ void ServerActionServer::handleServerRegistration() const {
                 }
                 reply = constructNewServerBroadcast(*connection);
                 server->sendMessageToAllServersButOne(reply, fd);
+                server->burstServerInformationTo(fd);
             // } else {
             //     server->sendErrorToConnectionBypassingQueue(fd, "Server token already exists, not registering");
             // }
