@@ -6,14 +6,13 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 11:11:19 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 13:29:18 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME "irc.icrdlsyrptblcht"
 #define SERVERTOKEN "4242"
 
 #include <string>
@@ -32,6 +31,7 @@
 
 class Server {
  public:
+ 	static std::string serverName;
     Server(const uint16_t& port, const std::string& password);
     Server(Connection* startingServer, const uint16_t& port, const std::string& password);
     ~Server();
@@ -41,7 +41,7 @@ class Server {
     void sendMessageToServer(const int& fd, const std::string& message);
     void sendMessageToAllServers(const std::string& message);
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
-    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
+    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = serverName);
     void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
     void burstServerInformationTo(const int& fd);
     Connection* getClientByNick(const std::string& nick);
