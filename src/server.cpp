@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 16:54:17 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/26 11:10:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -418,11 +418,26 @@ void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, 
 }
 
 void Server::removeClientFromChannels(Connection* con) {
-    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
-        Logger::log(LogLevelDebug, i->second->name);
+    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end();) {
         Channel *chan = i->second;
-        chan->removeConnection(con);
+        try {
+			chan->removeConnection(con);
+			if (chan->getAmtUsers() == 0) {
+				delete chan;
+				i = channels.erase(i);
+			} else {
+				i++;
+			}
+		} catch (const std::exception& e) {
+			i++;
+		}
     }
+}
+
+void Server::deleteChannel(Channel* chan) {
+	std::map<std::string, Channel*>::iterator chanPos = channels.find(chan->name);
+	channels.erase(chanPos);
+	delete chan;
 }
 
 std::map<std::string, Channel*> Server::getListOfChannels() {

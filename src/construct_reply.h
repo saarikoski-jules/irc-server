@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   construct_reply.h                                  :+:    :+:            */
+/*   construct_reply.h                                 :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:28 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 16:29:13 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/26 11:11:40 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ std::string constructNickChangeBroadcast(const std::string& oldNickName, const s
 std::string constructServerNickBroadcast(const std::vector<std::string> params);
 std::string constructNewServerBroadcast(const Connection& connection);
 std::string constructServerValidation();
+std::string constructNotOnChannelReply(const std::string& nick, const std::string& chanName);
 std::string constructJoinBroadcast(const std::string& nickName, const std::string& channelName);
 std::string constructOperModeBroadcast(const std::string& nickName, const std::string& channelName);
 std::string constructNoOperModeBroadcast(const std::string& nickName, const std::string& channelName);

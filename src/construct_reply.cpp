@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   construct_reply.cpp                                :+:    :+:            */
+/*   construct_reply.cpp                               :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 16:28:56 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/26 11:12:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,15 @@ std::string constructServerValidation() {
         SERVERTOKEN " "
         ":Codam development irc\r\n");
     return (reply);
+}
+
+std::string constructNotOnChannelReply(const std::string& nickName, const std::string& chanName) {
+	std::string reply;
+	std::vector<std::string> params;
+	params.push_back(nickName);
+	params.push_back(chanName);
+	reply = ReplyFactory::newReply(ERR_NOTONCHANNEL, params);
+	return (reply);
 }
 
 std::string constructJoinBroadcast(const std::string& nickName, const std::string& channelName) {

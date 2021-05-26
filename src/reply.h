@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 11:37:14 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/21 16:05:54 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ enum ReplyCode {
     ERR_NORECIPIENT = 411,
     ERR_CANNOTSENDTOCHAN = 404,
 	ERR_NOMOTD = 422, 
+	ERR_NOTONCHANNEL = 442,
 	RPL_NOTOPIC = 331,
     RPL_TOPIC = 332,
     RPL_CHANNELMODEIS = 324,
