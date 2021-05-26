@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.cpp                                    :+:    :+:             */
+/*   connection.cpp                                     :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/20 10:23:19 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 13:57:18 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,13 @@ Connection::Connection(const std::string& serverConfiguration) :
 fd(-1),
 connectionType(Connection::NoType),
 server(serverConfiguration) {
+}
+
+Connection::~Connection() {
+    while (leafConnections.size() > 0) {
+        delete leafConnections.at(0);
+        leafConnections.erase(leafConnections.begin());
+    }
 }
 
 bool matchPrefix(const std::string& prefix, const std::string& nick) {
