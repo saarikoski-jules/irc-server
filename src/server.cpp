@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 16:03:59 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 12:02:15 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <thread>
 #include <cinttypes>
 #include <exception>
+#include <stdexcept>  // For predetermined exception types
 #include <ctime>
 
 #include "logger.h"
@@ -408,7 +409,7 @@ Channel* Server::findChannel(const std::string& name) {
     throw std::out_of_range("Channel not found");
 }
 
-void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message) {
+void Server::sendMessageToAllLocalUsersInClientChannels(const Connection* connection, const std::string& message) {
     for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
         if ((*i).second->connectionIsInChannel(connection)) {
             std::vector<Connection*> sendTo = (*i).second->getConnections();
@@ -421,7 +422,7 @@ void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, 
     }
 }
 
-void Server::removeClientFromChannels(Connection* con) {
+void Server::removeClientFromChannels(const Connection* con) {
     for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end();) {
         Channel *chan = i->second;
         try {

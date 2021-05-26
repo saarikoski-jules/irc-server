@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/19 09:55:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/26 15:30:01 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void ServerActionDisconnect::execute() {
     switch (connection->connectionType)
     {
     case Connection::ServerType:
-        // TODO(Jelle) Do thing, coming from SQUIT.
+        disconnectServer();
         break;
     case Connection::ClientType:
         disconnectClient();
@@ -37,6 +37,44 @@ void ServerActionDisconnect::execute() {
         disconnectNoType();
         break;
     }
+}
+
+void ServerActionDisconnect::disconnectServer() {
+    Logger::log(LogLevelDebug, "Executing DISCONNECT action from server");
+    if (params.size() >= 1) {
+        disconnectMessage = params[0];
+    } else {
+        disconnectMessage = "Server split";
+    }
+    server->sendErrorToConnectionBypassingQueue(fd, disconnectMessage);
+    close(fd);
+    handleSplitClients();
+    handleSplitServer();
+    server->deleteConnection(fd);
+}
+
+void ServerActionDisconnect::handleSplitClients() {
+    for (std::vector<Connection*>::iterator i = connection->leafConnections.begin(); i != connection->leafConnections.end(); i++) {
+        const Connection* leafConnection = *i;
+        if (leafConnection->connectionType == Connection::ClientType) {
+            std::string reply(":" + leafConnection->client.nickName + " QUIT :" + disconnectMessage + "\r\n");
+            server->sendMessageToAllServersButOne(reply, fd);
+            server->sendMessageToAllLocalUsersInClientChannels(leafConnection, reply);
+            server->removeClientFromChannels(leafConnection);
+        }
+    }
+}
+
+void ServerActionDisconnect::handleSplitServer() {
+    for (std::vector<Connection*>::iterator i = connection->leafConnections.begin(); i != connection->leafConnections.end(); i++) {
+        const Connection* leafConnection = *i;
+        if (leafConnection->connectionType == Connection::ServerType) {
+            std::string reply(":" SERVERNAME " SQUIT " + connection->server.name + " :" + disconnectMessage + "\r\n");
+            server->sendMessageToAllServersButOne(reply, fd);
+        }
+    }
+    std::string reply(":" SERVERNAME " SQUIT " + connection->server.name + " :" + disconnectMessage + "\r\n");
+    server->sendMessageToAllServersButOne(reply, fd);
 }
 
 void ServerActionDisconnect::disconnectClient() {

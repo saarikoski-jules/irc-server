@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.h                                      :+:    :+:             */
+/*   connection.h                                       :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:05:10 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 13:52:02 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ struct Connection {
     Connection();
     Connection(const int& fd);
     Connection(const std::string& serverConfiguration);
+    ~Connection();
     Connection* getLeafConnection(const std::string& str);
     void removeLeafConnectionByNick(const std::string& str);
     int fd;
