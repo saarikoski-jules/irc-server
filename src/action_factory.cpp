@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   action_factory.cpp                                :+:    :+:             */
+/*   action_factory.cpp                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 16:20:05 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 15:52:00 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,9 @@
 #include "server_action_names.h"
 #include "server_action_topic.h"
 #include "server_action_part.h"
+#include "server_action_squit.h"
 
-const size_t actionFactory::actionFormatLen = 18;
+const size_t actionFactory::actionFormatLen = 19;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -54,7 +55,8 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::quit, "QUIT"},
     {&actionFactory::names, "NAMES"},
     {&actionFactory::topic, "TOPIC"},
-    {&actionFactory::part, "PART"}
+    {&actionFactory::part, "PART"},
+    {&actionFactory::squit, "SQUIT"},
 };
 
 // TODO(Jules): send numeric reply when needed
@@ -146,6 +148,11 @@ IServerAction* actionFactory::topic(
 IServerAction* actionFactory::part(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionPart(params, fd, prefix));
+}
+
+IServerAction* actionFactory::squit(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionSquit(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(
