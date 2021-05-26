@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                          :+:    :+:             */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 13:29:18 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 16:02:08 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Server {
     void sendMessageToServer(const int& fd, const std::string& message);
     void sendMessageToAllServers(const std::string& message);
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
-    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = serverName);
+    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = Server::serverName);
     void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
     void burstServerInformationTo(const int& fd);
     Connection* getClientByNick(const std::string& nick);

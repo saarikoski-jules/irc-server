@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 13:21:16 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 16:03:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ std::string Server::serverName = "lol";
 Server::Server(const uint16_t& port, const std::string& password) :
 channels(),
 serverSocket(&actions) {
-	Server::serverName = std::string("irc." + IntConversion::intToString(port));
-	Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
+    Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
+    Server::serverName = std::string("irc." + IntConversion::intToString(port));
 	time(&serverStart);
 	IServerAction::server = this;
     try {
@@ -52,7 +52,7 @@ serverSocket(&actions) {
 Server::Server(Connection* startingServer, const uint16_t& port, const std::string& password) :
 channels(),
 serverSocket(&actions) {
-	Server::serverName = std::string("irc." + IntConversion::intToString(port));
+    Server::serverName = std::string("irc." + IntConversion::intToString(port));
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
     IServerAction::server = this;
     try {
@@ -104,7 +104,7 @@ void Server::sendAuthenticationTo(const int& fd, const std::string& password) {
         actionFactory factory;
         std::vector<std::string> params;
         params.push_back("PASS " + password + " 0211 IRC|\r\n"
-            "SERVER " + this->serverName + " 1 4242 :Codam development irc\r\n");
+            "SERVER " + Server::serverName + " 1 4242 :Codam development irc\r\n");
         actions.push(factory.newAction("SEND", params, fd));
     } catch (const ActionFactoryException& e) {
         Logger::log(LogLevelError, e.what());
@@ -146,7 +146,7 @@ void Server::handleAction() {
 }
 
 void Server::sendMessage(const int& fd, const std::string& message) {
-	try {
+    try {
         serverSocket.sendData(fd, message);
     } catch (const SocketException& e) {
         Logger::log(LogLevelDebug, e.what());
@@ -187,12 +187,10 @@ void Server::sendMessageToAllServersButOne(const std::string& message, const int
 }
 
 void Server::sendReplyToClient(const int& clientFd, const std::string& message, const std::string& prefix) {
-    // TODO(Jelle) Append the correct servername when it's available.
     Logger::log(LogLevelDebug, "Messages going to be send to client.");
     Logger::log(LogLevelDebug, message);
 
     actionFactory factory;
-	
 	std::string replyString(":" + prefix + " " + message + "\r\n");
     std::vector<std::string> replyVector;
     replyVector.push_back(replyString);
@@ -202,7 +200,7 @@ void Server::sendReplyToClient(const int& clientFd, const std::string& message, 
 
 void Server::sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message) {
     try {
-        std::string fullMessage("ERROR :" + this->serverName + " " + message + "\r\n");
+        std::string fullMessage("ERROR :" + Server::serverName + " " + message + "\r\n");
         sendMessage(fd, fullMessage);
     } catch (const ServerException& e) {
         // Could not send message immediately. This is okay here.
