@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   message_parser.cpp                                 :+:    :+:            */
+/*   message_parser.cpp                                :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/10 12:12:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/26 11:15:32 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,7 @@
 #include "iserver_action.h"
 #include "logger.h"
 
-// TODO(Jules): remove from final version
-#ifndef DEBUG
-#define LINEBREAK "\n"
-#elif
 #define LINEBREAK "\r\n"
-#endif
 
 struct MessageParser::isNotAlpha {
     bool operator()(char c) {
