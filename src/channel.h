@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:13:13 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 14:43:29 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ class Channel {
     std::string topic;
     void addOperator(Connection* newChanop);
     void removeOperator(Connection* newChanop);
-    bool isOperator(Connection* cli) const;
     void removeMode(char c);
     void addMode(char c);
     std::string getModes() const;

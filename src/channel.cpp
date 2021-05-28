@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/28 10:59:51 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 14:45:08 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,10 @@ modes("") {
 }
 
 void Channel::addOperator(Connection* newChanop) {
-    chanops.push_back(newChanop);
+	if (!isOper(newChanop)) {
+		chanops.push_back(newChanop);
+	}
     //TODO: Do i need to make sure chanop is also already a connection in channel?
-}
-
-bool Channel::isOperator(Connection* cli) const {
-    if (std::find(chanops.begin(), chanops.end(), cli) == chanops.end()) {
-        return (false);
-    }
-    return (true);
 }
 
 void Channel::removeOperator(Connection* target) {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 17:20:36 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 14:43:56 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void ServerActionMode::changeMode() {
         } else {
             tmp = connection;
         }
-        if (!chan->isOperator(tmp)) {
+        if (!chan->isOper(tmp)) {
             std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
             sendReplyToLocalClient(reply);
             return;
