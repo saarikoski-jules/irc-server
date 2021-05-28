@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/21 17:20:36 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 14:24:04 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@ params(params) {}
 
 void ServerActionMode::changeMode() {
 	char sign = '+';
+    if (params[1][0] == '-') {
+        sign = '-';
+    }
     try {
         Connection* tmp;
         if (connection->connectionType == Connection::ServerType) {
@@ -38,13 +41,14 @@ void ServerActionMode::changeMode() {
             sendReplyToLocalClient(reply);
             return;
         }
-        if (params[1][0] == '-') {
-            sign = '-';
-        }
         execByMode(sign);
-        } catch (const std::exception& e) {
-        std::string errorMsg(e.what());
-        Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
+    } catch (const std::exception& e) {
+        if (connection->connectionType == Connection::ServerType) {
+            execByMode(sign);
+        } else {
+            std::string errorMsg(e.what());
+            Logger::log(LogLevelDebug, std::string("Unexpected exception caught in ServerActionMode: " + errorMsg));
+        }
     }
 }
 
