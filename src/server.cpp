@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 11:10:49 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 13:47:22 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -404,13 +404,14 @@ Channel* Server::findChannel(const std::string& name) {
     throw std::out_of_range("Channel not found");
 }
 
-void Server::sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message) {
-    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
-        if ((*i).second->connectionIsInChannel(connection)) {
+void Server::sendMessageToAllLocalUsersInClientChannels(
+	Connection* connection, const std::string& message, const std::string& prefix) {
+	for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
+		if ((*i).second->connectionIsInChannel(connection)) {
             std::vector<Connection*> sendTo = (*i).second->getConnections();
             for (std::vector<Connection*>::iterator j = sendTo.begin(); j != sendTo.end(); j++) {
-                if (hasLocalConnection(**j) && connection != (*j)) {
-                    sendReplyToClient((*j)->fd, message);//TODO(Jules): prefix ?
+				if (hasLocalConnection(**j) && connection != (*j)) {
+                    sendReplyToClient((*j)->fd, message, prefix);
                 }
             }
         }

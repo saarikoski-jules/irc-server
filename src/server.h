@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 11:11:19 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 12:13:33 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class Server {
     Channel* createNewChannel(const std::string& name, Connection* chanop);
     Channel* findChannel(const std::string& name);
    void removeClientFromChannels(Connection* con);
-   void sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message);
+   void sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message, const std::string& prefix);
 	void deleteChannel(Channel* chan);
     void delayFirstAction();
 	time_t serverStart;

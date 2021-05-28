@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/28 11:27:16 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 13:27:02 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,12 @@ void ServerActionPart::broadcastPart() const {
 		senderPrefix = prefix;
 	}
 
-	std::string msg(":" + senderPrefix + " PART " + chan->name);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
-			server->sendReplyToClient((*it)->fd, msg);
+			server->sendReplyToClient((*it)->fd, std::string("PART " + chan->name), senderPrefix);
 		}
 	}
+	std::string msg(":" + senderPrefix + " PART " + chan->name);
 	if (chan->name[0] == '#') {
 		if (connection->connectionType == Connection::ClientType) {
 			server->sendMessageToAllServers(msg);

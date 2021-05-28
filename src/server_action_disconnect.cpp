@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_disconnect.cpp                       :+:    :+:            */
+/*   server_action_disconnect.cpp                      :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/19 09:55:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/05/28 13:48:07 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,9 @@ void ServerActionDisconnect::disconnectClient() {
     close(fd);
     std::string reply(":" + connection->client.nickName + " QUIT :" + disconnectMessage + "\r\n");
     server->sendMessageToAllServers(reply);
-    server->sendMessageToAllLocalUsersInClientChannels(connection, reply);
+	reply = std::string("QUIT :" + disconnectMessage);
+	std::string userPrefix(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
+    server->sendMessageToAllLocalUsersInClientChannels(connection, reply, userPrefix);
     server->removeClientFromChannels(connection);
     server->deleteConnection(fd);
 }
