@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 13:57:18 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 11:57:30 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,18 @@ void Connection::removeLeafConnectionByNick(const std::string& nickname) {
 	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
 		//TODO(Jules): Make a better matching function
 		if ((*i)->connectionType == ClientType && (*i)->client.nickName == nickname) {
+			delete *i;
+			leafConnections.erase(i);
+            return ;
+		}
+	}
+	throw std::out_of_range("Coundn't find matching connection in leaves");
+}
+
+void Connection::removeLeafServerByName(const std::string& serverName) {
+	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
+		//TODO(Jules): Make a better matching function
+		if ((*i)->connectionType == Connection::ServerType && (*i)->server.name == serverName) {
 			delete *i;
 			leafConnections.erase(i);
             return ;

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 12:02:52 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 13:07:57 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ channels(),
 serverSocket(&actions) {
     Server::serverName = std::string("irc." + IntConversion::intToString(port));
     Logger::log(LogLevelInfo, "Attempting to create a server from port and password");
+	time(&serverStart);
     IServerAction::server = this;
     try {
         validatePassword(password);

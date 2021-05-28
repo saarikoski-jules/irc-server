@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:37:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 12:33:14 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 12:50:03 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ static void startNewIrcServerFromArguments(char* const* argv) {
 
 static void startConnectingIrcServerFromArguments(char* const* argv) {
     try {
-        Connection startingServer(argv[1]);
-        Server server(&startingServer, StringConversion::toUint16(argv[2]), argv[3]);
+        Connection* startingServer = new Connection(argv[1]);
+        Server server(startingServer, StringConversion::toUint16(argv[2]), argv[3]);
         server.run();
     } catch (const ServerConnectionException& e) {
         Logger::log(LogLevelFatal, e.what());

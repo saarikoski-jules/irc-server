@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/26 15:40:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 15:52:36 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 12:13:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ class ServerActionSquit: public IServerAction {
  private:
     std::vector<std::string> params;
     Connection* connection;
+    std::string quitMessage;
+    void handleServerSquit();
 };
 
 #endif  // SERVER_ACTION_SQUIT_H_

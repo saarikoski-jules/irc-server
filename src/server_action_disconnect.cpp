@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 15:30:01 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 12:25:44 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,11 @@ void ServerActionDisconnect::handleSplitServer() {
     for (std::vector<Connection*>::iterator i = connection->leafConnections.begin(); i != connection->leafConnections.end(); i++) {
         const Connection* leafConnection = *i;
         if (leafConnection->connectionType == Connection::ServerType) {
-            std::string reply(":" SERVERNAME " SQUIT " + connection->server.name + " :" + disconnectMessage + "\r\n");
+            std::string reply(":" + Server::serverName + " SQUIT " + leafConnection->server.name + " :" + disconnectMessage + "\r\n");
             server->sendMessageToAllServersButOne(reply, fd);
         }
     }
-    std::string reply(":" SERVERNAME " SQUIT " + connection->server.name + " :" + disconnectMessage + "\r\n");
+    std::string reply(":" + Server::serverName + " SQUIT " + connection->server.name + " :" + disconnectMessage + "\r\n");
     server->sendMessageToAllServersButOne(reply, fd);
 }
 
