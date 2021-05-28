@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:12:53 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 10:59:51 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,15 +152,15 @@ void Channel::addClient(Connection* connection, const std::string& key) {
 }
 
 void Channel::removeConnection(Connection* toRemove) {
-	std::vector<Connection*>::iterator pos = std::find(connections.begin(), connections.end(), toRemove);
+	std::vector<Connection*>::iterator pos = std::find(chanops.begin(), chanops.end(), toRemove);
+	if (pos != chanops.end()) {
+		chanops.erase(pos);
+	}
+	pos = std::find(connections.begin(), connections.end(), toRemove);
 	if (pos == connections.end()) {
 		throw ChannelException("Client not in channel", false);
 	}
 	connections.erase(pos);
-	pos = std::find(chanops.begin(), chanops.end(), toRemove);
-	if (pos != chanops.end()) {
-		chanops.erase(pos);
-	}
 }
 
 void Channel::addBanMask(const std::string& mask) {
