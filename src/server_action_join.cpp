@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 10:13:28 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 19:12:41 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,14 @@ void ServerActionJoin::broadcastJoin(Channel* chan) {
     }
     for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
         if (server->hasLocalConnection(**it)) {
-            Logger::log(LogLevelDebug, "Send message to local client");
             server->sendReplyToClient((*it)->fd, std::string("JOIN :" + chan->name), clientPrefix);
         }
     }
     if (chan->name[0] == '#') {
-        Logger::log(LogLevelDebug, "Send message to server");
         if (connection->connectionType == Connection::ServerType) {
-            server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + " JOIN :" + chan->name), fd);
+            server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey()), fd);
         } else if (connection->connectionType == Connection::ClientType) {
-            server->sendMessageToAllServers(std::string(":" + clientPrefix + " JOIN :" + chan->name));
+            server->sendMessageToAllServers(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey()));
         }
     }
 }
@@ -72,7 +70,6 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 
     replyParams.push_back(clientNick);
     replyParams.push_back(name);
-	Logger::log(LogLevelDebug, "addClientToChannel");
 	try {
         Connection* client;
 		client = getActualClient();
@@ -83,19 +80,15 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 		Logger::log(LogLevelDebug, client->client.nickName);
 		try {
             chan = server->findChannel(name);
-			Logger::log(LogLevelDebug, std::string("channel name to add client to: " + chan->name));
             chan->addClient(client, key); //if from server, make sure to always add client
-			Logger::log(LogLevelDebug, "success");
         } catch (const ChannelException& e) {
-            //if exception is no rights
             if (connection->connectionType == Connection::ClientType) {
                 server->sendReplyToClient(fd, e.what());
             }
             return;
         } catch (const std::exception &e) {
-            chan = server->createNewChannel(name, client);
+			chan = server->createNewChannel(name, client);
         }
-
         broadcastJoin(chan);
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);
