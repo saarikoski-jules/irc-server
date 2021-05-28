@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/28 11:10:35 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 11:27:16 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ params(params) {
 void ServerActionPart::broadcastPart() const {
 	std::vector<Connection*> sendTo = chan->getConnections();
 	std::string senderPrefix;
-	Logger::log(LogLevelDebug, "broadcastPart");
 	if (connection->connectionType == Connection::ClientType) {
 		senderPrefix = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
 	} else {
@@ -53,9 +52,7 @@ void ServerActionPart::broadcastPart() const {
 			server->sendReplyToClient((*it)->fd, msg);
 		}
 	}
-	Logger::log(LogLevelDebug, "PART about to get broadcast");
 	if (chan->name[0] == '#') {
-		Logger::log(LogLevelDebug, "PART will get broadcast");
 		if (connection->connectionType == Connection::ClientType) {
 			server->sendMessageToAllServers(msg);
 		} else {
@@ -71,23 +68,26 @@ void ServerActionPart::execute() {
 		Logger::log(LogLevelDebug, std::string("parting " + *it));
 		try {
 			chan = server->findChannel(*it);
-			chan->removeConnection(connection);
+			Connection* tmp;
+			if (connection->connectionType == Connection::ServerType) {
+				tmp = connection->getLeafConnection(prefix);
+			} else {
+				tmp = connection;
+			}
+			chan->removeConnection(tmp);//TODO: if server, should pass leaf connection here
 			broadcastPart();
 			if (chan->getAmtUsers() == 0) {
 				server->deleteChannel(chan);
 			} 
 		} catch (const ChannelException& e) {
-			Logger::log(LogLevelDebug, "Failed to part chan");
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendReplyToClient(fd, constructNotOnChannelReply(connection->client.nickName, *it));
-			} else {
-				broadcastPart();
 			}
 		} catch (const std::exception& e) {
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendReplyToClient(fd, constructNoSuchChannelReply(connection->client.nickName, *it));
 			}
-			//TODO: should i still broadcast to other servers?
+			// TODO: should i still broadcast to other servers?
 		}
 	}
 }
