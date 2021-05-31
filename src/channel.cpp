@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 09:51:50 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 10:45:56 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,22 @@ modes("") {
 }
 
 void Channel::addOperator(Connection* newChanop) {
+	if (!userIsAlreadyInChannel(newChanop)) {
+		throw ChannelException("user not in channel", false);
+	}
 	if (!isOper(newChanop)) {
 		chanops.push_back(newChanop);
 	}
     //TODO: Do i need to make sure chanop is also already a connection in channel?
+}
+
+bool Channel::userIsAlreadyInChannel(const Connection* con) const {
+	for (std::vector<Connection *>::const_iterator i = connections.begin(); i != connections.end(); i++) {
+		if (con == *i) {
+			return (true);
+		}
+	}
+	return (false);
 }
 
 void Channel::removeOperator(Connection* target) {

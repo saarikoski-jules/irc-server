@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 09:35:43 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 10:41:24 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,17 +203,19 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
     Connection* target;
     try {
         target = server->getClientByNick(user);
-    } catch (const std::exception& e) {
+		if (sign == '-') {
+			chan->removeOperator(target);
+		} else {
+			chan->addOperator(target);
+		}
+	} catch (const ChannelException& e) {
+		sendReplyToLocalClient(constructNotOnChannelReply(connection->client.nickName, chan->name));
+	} catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(clientNick, user);
         sendReplyToLocalClient(reply);
         return (false);
     }
-    if (sign == '-') {
-        chan->removeOperator(target);
-    } else {
-        chan->addOperator(target);
-    }
-    return (true);
+	return (true);
 }
 
 bool ServerActionMode::editMode(char sign, char mode) {
