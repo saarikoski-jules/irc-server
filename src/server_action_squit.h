@@ -1,40 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.h                              :+:    :+:            */
+/*   server_action_squit.h                              :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jules <jsaariko@student.codam.nl>            +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/05/07 15:20:56 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/26 16:02:40 by jvisser       ########   odam.nl         */
+/*   Created: 2021/05/26 15:40:57 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/05/28 12:13:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_TOPIC_H_
-#define SERVER_ACTION_TOPIC_H_
+#ifndef SERVER_ACTION_SQUIT_H_
+#define SERVER_ACTION_SQUIT_H_
 
 #include <vector>
 #include <string>
 
-#include "server.h"
 #include "iserver_action.h"
-#include "channel.h"
 #include "connection.h"
 
-class ServerActionTopic: public IServerAction {
+class ServerActionSquit: public IServerAction {
  public:
-    ServerActionTopic(
+     ServerActionSquit(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     IServerAction* clone() const;
-    ~ServerActionTopic() {}
+    ~ServerActionSquit() {}
  private:
     std::vector<std::string> params;
     Connection* connection;
-    Channel* chan;
-    void checkTopic(const std::string& clientNick) const;
-    void changeTopic(const std::string& clientNick);
-    void sendReplyToLocalClient(const std::string& message, const std::string& prefix = Server::serverName) const; //TODO: this is not good, has to have servername as prefix
+    std::string quitMessage;
+    void handleServerSquit();
 };
 
-#endif  // SERVER_ACTION_TOPIC_H_
+#endif  // SERVER_ACTION_SQUIT_H_

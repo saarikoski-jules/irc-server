@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:12:13 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 13:01:18 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ std::string constructNotRegisteredReply(const std::string& name) {
 
 std::string constructNewNickBroadcast(const Connection& connection) {
     const Client& client = connection.client;
-    std::string reply(":" SERVERNAME " "
+    std::string reply(":" + Server::serverName + " "
         "NICK "
         + client.nickName
         + " 1 "
@@ -121,7 +121,7 @@ std::string constructNickChangeBroadcast(const std::string& oldNickName, const s
 }
 
 std::string constructServerNickBroadcast(const std::vector<std::string> params) {
-    std::string reply(":" SERVERNAME " "
+    std::string reply(":" + Server::serverName + " "
         "NICK "
         + params[0]
         + " 1 "
@@ -134,7 +134,7 @@ std::string constructServerNickBroadcast(const std::vector<std::string> params) 
 }
 
 std::string constructNewServerBroadcast(const Connection& connection) {
-    std::string reply(":" SERVERNAME " "
+    std::string reply(":" + Server::serverName + " "
         "SERVER "
         + connection.server.name + " "
         + "1 "
@@ -151,7 +151,7 @@ std::string constructServerValidation() {
         "IRC|\r\n"
 
         "SERVER "
-        SERVERNAME " "
+        + Server::serverName + " "
         "1 "
         SERVERTOKEN " "
         ":Codam development irc\r\n");
@@ -177,7 +177,7 @@ std::string constructJoinBroadcast(const std::string& nickName, const std::strin
 
 std::string constructOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
     std::string reply(
-        ":" SERVERNAME " "
+        ":" + Server::serverName + " "
         "MODE "
         + channelName + " "
         "+o "
@@ -187,7 +187,7 @@ std::string constructOperModeBroadcast(const std::string& nickName, const std::s
 
 std::string constructNoOperModeBroadcast(const std::string& nickName, const std::string& channelName) {
     std::string reply(
-        ":" SERVERNAME " "
+        ":" + Server::serverName + " "
         "MODE "
         + channelName + " "
         "-o "

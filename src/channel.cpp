@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/28 14:45:08 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 09:51:50 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,8 @@ void Channel::addClient(Connection* connection, const std::string& key) {
     }
 }
 
-void Channel::removeConnection(Connection* toRemove) {
-	std::vector<Connection*>::iterator pos = std::find(chanops.begin(), chanops.end(), toRemove);
+void Channel::removeConnection(const Connection* toRemove) {
+	std::vector<Connection*>::iterator pos = std::find(connections.begin(), connections.end(), toRemove);
 	if (pos != chanops.end()) {
 		chanops.erase(pos);
 	}
@@ -216,7 +216,7 @@ bool Channel::isOper(const Connection* connection) const {
     return (false);
 }
 
-bool Channel::connectionIsInChannel(Connection* connection) const {
+bool Channel::connectionIsInChannel(const Connection* connection) const {
     for (std::vector<Connection*>::const_iterator oper = connections.begin(); oper != connections.end(); oper++) {
         if (connection->client.nickName == (*oper)->client.nickName) {
             return (true);

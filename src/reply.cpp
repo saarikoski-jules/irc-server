@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 16:04:47 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 12:58:36 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         res = std::string(init + params[1] + " :End of channel ban list");
         break;
 	case RPL_MOTDSTART:
-		res = std::string(init +  ":- " + SERVERNAME + " Message of the day - ");
+		res = std::string(init +  ":- " + Server::serverName + " Message of the day - ");
 		break;
 	case RPL_MOTD:
 		res = std::string(init +  ":- " + params[1]);
@@ -100,13 +100,13 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
 		res = std::string(init +  ":Welcome to the Internet Relay Network " + params[1]);
 		break;
 	case RPL_YOURHOST:
-		res = std::string(init +  ":Your host is " + SERVERNAME + ", running version 2.11");
+		res = std::string(init +  ":Your host is " + Server::serverName + ", running version 2.11");
 		break;
 	case RPL_CREATED:
 		res = std::string(init +  ":This server was created " + params[1]);
 		break;
 	case RPL_MYINFO:
-		res = std::string(init +  SERVERNAME + " 2.11  pstnolbk");
+		res = std::string(init +  Server::serverName + " 2.11  pstnolbk");
    		break;
 	case RPL_NAMREPLY:
         res = std::string(init +  params[1] + " :" + params[2]);

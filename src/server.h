@@ -6,14 +6,13 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 12:13:33 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 09:44:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#define SERVERNAME "irc.icrdlsyrptblcht"
 #define SERVERTOKEN "4242"
 
 #include <string>
@@ -32,6 +31,7 @@
 
 class Server {
  public:
+ 	static std::string serverName;
     Server(const uint16_t& port, const std::string& password);
     Server(Connection* startingServer, const uint16_t& port, const std::string& password);
     ~Server();
@@ -41,7 +41,7 @@ class Server {
     void sendMessageToServer(const int& fd, const std::string& message);
     void sendMessageToAllServers(const std::string& message);
     void sendMessageToAllServersButOne(const std::string& message, const int& exceptionFd);
-    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = SERVERNAME);
+    void sendReplyToClient(const int& clientFd,const std::string& message, const std::string &prefix = Server::serverName);
     void sendErrorToConnectionBypassingQueue(const int& fd, const std::string& message);
     void burstServerInformationTo(const int& fd);
     Connection* getClientByNick(const std::string& nick);
@@ -56,13 +56,13 @@ class Server {
     void addNewAction(IServerAction* action);
     Channel* createNewChannel(const std::string& name, Connection* chanop);
     Channel* findChannel(const std::string& name);
-   void removeClientFromChannels(Connection* con);
-   void sendMessageToAllLocalUsersInClientChannels(Connection* connection, const std::string& message, const std::string& prefix);
+    void removeClientFromChannels(const Connection* con);
+    void sendMessageToAllLocalUsersInClientChannels(const Connection* connection, const std::string& message, const std::string& prefix);
 	void deleteChannel(Channel* chan);
     void delayFirstAction();
 	time_t serverStart;
 	std::map<std::string, Channel*> getListOfChannels();
-protected:
+ protected:
     std::map<const int, Connection*> connections;
  private:
     Server();

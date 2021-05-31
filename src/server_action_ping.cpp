@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_ping.cpp                             :+:    :+:            */
+/*   server_action_ping.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 17:03:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/28 18:00:56 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/26 13:00:26 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ void ServerActionPing::execute() {
 
 void ServerActionPing::handlePingClient() const {
     if (params.size() >= requiredParams) {
-        if (params.size() == 1 || params[1] == SERVERNAME) {
-            std::string reply("PONG " SERVERNAME " :" + params[0]);
+        if (params.size() == 1 || params[1] == Server::serverName) {
+            std::string reply("PONG " + Server::serverName + " :" + params[0]);
             server->sendReplyToClient(fd, reply);
         } else {
             // FORMAT :sender to-send-to
@@ -65,8 +65,8 @@ void ServerActionPing::handleNotEnoughParams() const {
 
 void ServerActionPing::handlePingServer() const {
     if (params.size() >= requiredParams) {
-        if (params.size() == 1 || params[1] == SERVERNAME) {
-            std::string reply("PONG " SERVERNAME " :" + params[0]);
+        if (params.size() == 1 || params[1] == Server::serverName) {
+            std::string reply("PONG " + Server::serverName + " :" + params[0]);
             server->sendReplyToClient(fd, reply);
         } else {
             // FORMAT :sender to-send-to

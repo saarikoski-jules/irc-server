@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 15:07:04 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 12:59:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class ServerActionMode: public IServerAction {
     void execByMode(char sign);
     Channel* getChannel(const std::string& name, const std::string& key);
     std::vector<std::string> params;
-    void sendReplyToLocalClient(const std::string& message, const std::string& prefix = SERVERNAME) const;
+    void sendReplyToLocalClient(const std::string& message, const std::string& prefix = Server::serverName) const;
     bool modeO(char sign, const std::string& user);
     bool editMode(char sign, char mode);
     bool setLimit(char sign, const std::string& limit);
