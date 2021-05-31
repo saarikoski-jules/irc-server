@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 10:45:56 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 12:36:04 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,13 @@ modes("") {
 }
 
 void Channel::addOperator(Connection* newChanop) {
-	if (!userIsAlreadyInChannel(newChanop)) {
+	if (!connectionIsInChannel(newChanop)) {
 		throw ChannelException("user not in channel", false);
 	}
 	if (!isOper(newChanop)) {
 		chanops.push_back(newChanop);
 	}
     //TODO: Do i need to make sure chanop is also already a connection in channel?
-}
-
-bool Channel::userIsAlreadyInChannel(const Connection* con) const {
-	for (std::vector<Connection *>::const_iterator i = connections.begin(); i != connections.end(); i++) {
-		if (con == *i) {
-			return (true);
-		}
-	}
-	return (false);
 }
 
 void Channel::removeOperator(Connection* target) {
@@ -159,7 +150,7 @@ void Channel::addClient(Connection* connection, const std::string& key) {
 }
 
 void Channel::removeConnection(const Connection* toRemove) {
-	std::vector<Connection*>::iterator pos = std::find(connections.begin(), connections.end(), toRemove);
+	std::vector<Connection*>::iterator pos = std::find(chanops.begin(), chanops.end(), toRemove);
 	if (pos != chanops.end()) {
 		chanops.erase(pos);
 	}
@@ -229,12 +220,11 @@ bool Channel::isOper(const Connection* connection) const {
 }
 
 bool Channel::connectionIsInChannel(const Connection* connection) const {
-    for (std::vector<Connection*>::const_iterator oper = connections.begin(); oper != connections.end(); oper++) {
-        if (connection->client.nickName == (*oper)->client.nickName) {
-            return (true);
-        }
-    }
-    return (false);
+	std::vector<Connection*>::const_iterator it = std::find(connections.begin(), connections.end(), connection);
+	if (it == connections.end()) {
+		return (false);
+	}
+	return (true);
 }
 
 std::vector<Connection*> Channel::getConnections() const {

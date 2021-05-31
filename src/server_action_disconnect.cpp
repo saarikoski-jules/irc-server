@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 09:55:31 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 13:56:15 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void ServerActionDisconnect::handleSplitClients() {
         if (leafConnection->connectionType == Connection::ClientType) {
             std::string reply(":" + leafConnection->client.nickName + " QUIT :" + disconnectMessage + "\r\n");
             server->sendMessageToAllServersButOne(reply, fd);
-            server->sendMessageToAllLocalUsersInClientChannels(leafConnection, reply, prefix);
+			reply = std::string("QUIT :" + disconnectMessage + "\r\n");
+            server->sendMessageToAllLocalUsersInClientChannels(leafConnection, reply, leafConnection->client.nickName);
             server->removeClientFromChannels(leafConnection);
         }
     }
