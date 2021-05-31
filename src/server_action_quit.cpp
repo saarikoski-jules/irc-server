@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_quit.cpp                            :+:    :+:             */
+/*   server_action_quit.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/20 15:44:46 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 15:34:31 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,16 @@ void ServerActionQuit::execute() {
 void ServerActionQuit::handleServerQuit() {
     try {
 		Connection* leaf = connection->getLeafConnection(prefix);
-		server->removeClientFromChannels(leaf);
-		connection->removeLeafConnectionByNick(prefix);
         if (params.size() >= 1) {
             quitMessage = params[0];
         } else {
             quitMessage = "EOF from client";
         }
         std::string reply(":" + prefix + " QUIT :" + quitMessage + "\r\n");
+        server->sendMessageToAllLocalUsersInClientChannels(leaf, reply);
         server->sendMessageToAllServersButOne(reply, fd);
+		server->removeClientFromChannels(leaf);
+		connection->removeLeafConnectionByNick(prefix);
     } catch (const std::exception& e) {
         Logger::log(LogLevelError, e.what());
     }

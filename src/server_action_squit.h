@@ -1,40 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_disconnect.h                         :+:    :+:            */
+/*   server_action_squit.h                              :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2021/04/20 11:43:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 13:23:47 by jvisser       ########   odam.nl         */
+/*   Created: 2021/05/26 15:40:57 by jvisser       #+#    #+#                 */
+/*   Updated: 2021/05/28 12:13:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_ACTION_DISCONNECT_H_
-#define SERVER_ACTION_DISCONNECT_H_
+#ifndef SERVER_ACTION_SQUIT_H_
+#define SERVER_ACTION_SQUIT_H_
 
-#include <string>
 #include <vector>
+#include <string>
 
 #include "iserver_action.h"
 #include "connection.h"
 
-class ServerActionDisconnect: public IServerAction {
+class ServerActionSquit: public IServerAction {
  public:
-    ServerActionDisconnect(
+     ServerActionSquit(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     void execute();
     IServerAction* clone() const;
-    ~ServerActionDisconnect() {}
+    ~ServerActionSquit() {}
  private:
-    void disconnectServer();
-    void handleSplitClients();
-    void handleSplitServer();
-    void disconnectClient();
-    void disconnectNoType();
-    Connection* connection;
-    std::string disconnectMessage;
     std::vector<std::string> params;
+    Connection* connection;
+    std::string quitMessage;
+    void handleServerSquit();
 };
 
-#endif  // SERVER_ACTION_DISCONNECT_H_
+#endif  // SERVER_ACTION_SQUIT_H_

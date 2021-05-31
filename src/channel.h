@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.h                                         :+:    :+:             */
+/*   channel.h                                          :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:13:13 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/26 12:30:50 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ class Channel {
 	std::vector<Connection*> getConnections() const;
    std::string getNames(Connection* connection) const;
    bool isOper(const Connection* connection) const;
-   void removeConnection(Connection* toRemove);
-   bool connectionIsInChannel(Connection* connection) const;
+   void removeConnection(const Connection* toRemove);
+   bool connectionIsInChannel(const Connection* connection) const;
 	size_t getAmtUsers() const;
 
  private:

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 15:02:33 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/21 12:40:27 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/28 12:58:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void ServerActionServer::handleServerFromServer() const {
             serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
             serverConnection->token = params[2];
             serverConnection->info = params[3];
-            std::string reply = constructNewServerBroadcast(*connection);
+            std::string reply = constructNewServerBroadcast(*newConnection);
             server->sendMessageToAllServersButOne(reply, fd);
             connection->leafConnections.push_back(newConnection);
         // } else {
