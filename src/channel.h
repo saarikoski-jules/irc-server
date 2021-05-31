@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 12:32:00 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 16:36:38 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Channel {
    void removeConnection(const Connection* toRemove);
    bool connectionIsInChannel(const Connection* connection) const;
 	size_t getAmtUsers() const;
+	std::string getChannelModes() const;
 
  private:
     //std::vector<Client*> chanops;

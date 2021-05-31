@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 12:58:36 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 17:16:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         res = std::string(init + params[1] + " :No topic is set");
         break;
     case RPL_CHANNELMODEIS:
-        res = std::string(init + params[1] + " " + params[2] + " " + params[3]);
+        res = std::string(init + params[1]);
         break;
     case RPL_BANLIST:
         res = std::string(init + params[1] + " " + params[2]);

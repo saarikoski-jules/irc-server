@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 12:36:04 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 16:56:31 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include "client.h"
 #include "reply.h"
 #include "logger.h"
+#include "int_conversions.h"
+#include "construct_reply.h"
 
 Channel::Channel(const std::string& name, Connection* chanop) :
 name(name),
@@ -195,6 +197,23 @@ std::string Channel::getNames(Connection* connection) const {
         }
     }
     return (names);
+}
+
+std::string Channel::getChannelModes() const {
+	std::string modeStr = std::string("+" + getModes());
+	std::vector<std::string> modeParams;
+
+	for (std::string::iterator it = modeStr.begin(); it != modeStr.end(); it++) {
+		if (*it == 'l') {
+			modeParams.push_back(IntConversion::intToString(limit));
+		}
+		if (*it == 'k') {
+			modeParams.push_back(key);
+		}
+	}
+
+	std::string reply = constructChannelModeIs(name, modeStr, modeParams);
+	return (reply);
 }
 
 void Channel::clientHasAccess(Connection* connection) const {

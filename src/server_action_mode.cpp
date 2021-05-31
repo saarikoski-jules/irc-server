@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 10:41:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 17:24:49 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,12 @@ void ServerActionMode::changeMode() {
 }
 
 void ServerActionMode::displayModes() const {
-	std::string modeStr = std::string("+" + chan->getModes());
-	std::vector<std::string> modeParams;
+	std::vector<std::string> replyParams;
 
-
-	for (std::string::iterator it = modeStr.begin(); it != modeStr.end(); it++) {
-		if (*it == 'l') {
-			modeParams.push_back(IntConversion::intToString(chan->getLimit()));
-		}
-		if (*it == 'k') {
-			modeParams.push_back(chan->getKey());
-		}
-	}
-	sendChannelModeIsReply(modeStr, chan->name, modeParams);
+	replyParams.push_back(clientNick);
+	replyParams.push_back(chan->getChannelModes());
+	std::string reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
+	sendReplyToLocalClient(reply);
 }
 
 void ServerActionMode::execute() {
@@ -175,8 +168,9 @@ void ServerActionMode::execByMode(char sign) {
     }
     if (returnOptions.length() > 0) {
         returnOptions.insert(returnOptions.begin(), sign);
-        sendChannelModeIsReply(returnOptions, chan->name, returnParams);
-    	broadcastChannelModeIs(returnOptions, chan->name, returnParams);
+		std::string reply = constructChannelModeIs(chan->name, returnOptions, returnParams);
+		server->sendReplyToClient(fd, reply);
+		broadcastChannelModeIs(returnOptions, chan->name, returnParams);
 	}
 }
 
@@ -209,7 +203,7 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
 			chan->addOperator(target);
 		}
 	} catch (const ChannelException& e) {
-		sendReplyToLocalClient(constructNotOnChannelReply(connection->client.nickName, chan->name));
+		sendReplyToLocalClient(constructNotOnChannelReply(clientNick, chan->name));
 	} catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(clientNick, user);
         sendReplyToLocalClient(reply);
@@ -323,22 +317,6 @@ void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const st
 			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply));
 		}
 	}
-}
-
-void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const {
-    std::string reply;
-    std::vector<std::string> replyParams;
-
-    replyParams.push_back(clientNick);
-    replyParams.push_back(channelName);
-    replyParams.push_back(modes);
-    std::string replyString;
-    for (std::vector<std::string>::const_iterator i = params.begin(); i != params.end(); i++) {
-        replyString = std::string(replyString + *i + " ");
-    }
-    replyParams.push_back(replyString);
-    reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
-    sendReplyToLocalClient(reply);
 }
 
 void ServerActionMode::sendUnknownModeReply(char c) const {

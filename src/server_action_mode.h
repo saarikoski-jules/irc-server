@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 12:59:49 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 17:25:00 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ class ServerActionMode: public IServerAction {
     bool setKey(char sign, const std::string& key);
     bool setBanMask(char sign, const std::string& mask);
     bool listBanMasks() const;
-	void sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const;
     void broadcastChannelModeIs(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const;
     void sendUnknownModeReply(char c) const;
     void connectionNotRegistered() const;

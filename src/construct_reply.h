@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:28 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:11:40 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 16:28:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,6 @@ std::string constructNotOnChannelReply(const std::string& nick, const std::strin
 std::string constructJoinBroadcast(const std::string& nickName, const std::string& channelName);
 std::string constructOperModeBroadcast(const std::string& nickName, const std::string& channelName);
 std::string constructNoOperModeBroadcast(const std::string& nickName, const std::string& channelName);
+std::string constructChannelModeIs(const std::string& channelName, const std::string& mode, std::vector<std::string> params);
 
 #endif  // CONSTRUCT_REPLY_H_
