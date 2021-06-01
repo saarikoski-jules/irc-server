@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/28 19:12:41 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 09:31:30 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "utils.h"
 #include "construct_reply.h"
+#include "action_factory.h"
 
 ServerActionJoin::ServerActionJoin(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -63,6 +64,16 @@ Connection* ServerActionJoin::getActualClient() {
 	}
 }
 
+void ServerActionJoin::sendNames(Channel* chan) {
+	actionFactory factory;
+	std::vector<std::string> namesParams;
+
+	namesParams.push_back(chan->name);
+	IServerAction* action = factory.newAction("NAMES", namesParams, fd, prefix);
+	server->addNewAction(action);
+
+}
+
 void ServerActionJoin::addClientToChannel(const std::string& name, const std::string& key) {
     std::string reply;
     Channel* chan;
@@ -90,6 +101,7 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
 			chan = server->createNewChannel(name, client);
         }
         broadcastJoin(chan);
+		sendNames(chan);
         if (chan->topicIsSet) {
             replyParams.push_back(chan->topic);
             reply = ReplyFactory::newReply(RPL_TOPIC, replyParams);
