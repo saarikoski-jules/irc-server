@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 08:58:33 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 10:07:38 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,8 +188,6 @@ std::string Channel::getNames(Connection* connection) const {
     clientHasAccess(connection);
     for (std::vector<Connection*>::const_iterator user = chanops.begin(); user != chanops.end(); user++) {
         names = names + "@" + (*user)->client.nickName + " ";
-        Logger::log(LogLevelDebug, (*user)->client.nickName);
-        Logger::log(LogLevelDebug, names);
     }
     for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
         if (!isOper(*user)) {
@@ -218,14 +216,12 @@ std::string Channel::getChannelModes() const {
 
 void Channel::clientHasAccess(Connection* connection) const {
     if (modes.find('s') != std::string::npos || modes.find('p') != std::string::npos) {
-        for (std::vector<Connection*>::const_iterator i = connections.begin(); i != connections.end(); i++) {
-            if (i + 1 == connections.end()) {
-                throw ChannelException("Channel not visible to user", false);
-            }
-            if ((*i)->client.nickName == connection->client.nickName) {
-                return;
-            }
-        }
+		std::vector<Connection *>::const_iterator pos = std::find(connections.begin(), connections.end(), connection);
+		if (pos == connections.end()) {
+			throw ChannelException("Channel not visible to user", false);
+		} else {
+			return;
+		}
     }
 }
 
