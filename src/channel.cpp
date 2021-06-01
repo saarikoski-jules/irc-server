@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 16:56:31 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 08:58:33 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ message(what) {
     if (isFatal()) {
         fullMessage = std::string("Fatal channel exception: " + message);
     } else {
-        fullMessage = std::string("Channel exception: " + message);
+        fullMessage = std::string(message);
     }
 }
 
