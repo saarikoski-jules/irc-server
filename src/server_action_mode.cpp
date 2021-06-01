@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 17:24:49 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 13:55:01 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,13 @@ void ServerActionMode::execByMode(char sign) {
         mode++;
     }
     for (; mode != params[1].end(); mode++) {
-        switch (*mode) {
+		std::string paramString;
+		if (std::distance(params.begin(), param) >= 0 && std::distance(param, params.end()) > 0) {
+			paramString = *param;
+		} else {
+			paramString = "";
+		}
+		switch (*mode) {
         case 'p':
         case 's':
         case 'i':
@@ -121,7 +127,7 @@ void ServerActionMode::execByMode(char sign) {
             }
             break;
         case 'o':
-            if (modeO(sign, *param)) {
+            if (modeO(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -130,7 +136,7 @@ void ServerActionMode::execByMode(char sign) {
             param++;
             break;
         case 'l':
-            if (setLimit(sign, *param)) {
+            if (setLimit(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -141,7 +147,7 @@ void ServerActionMode::execByMode(char sign) {
             }
             break;
         case 'b':
-            if (setBanMask(sign, *param)) {
+			if (setBanMask(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -150,7 +156,7 @@ void ServerActionMode::execByMode(char sign) {
             param++;
             break;
         case 'k':
-            if (setKey(sign, *param)) {
+            if (setKey(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
