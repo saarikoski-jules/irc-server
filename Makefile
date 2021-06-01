@@ -4,7 +4,7 @@
 
 # Compiler settings - Customizable
 CC = clang++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++98 -fsanitize=address
 LDFLAGS =
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
@@ -45,6 +45,7 @@ SRCLST = main \
 		server_action_quit \
 		server_action_names \
 		server_action_topic \
+		server_action_who \
 		server_action_part \
 		server_action_squit \
 		action_factory \

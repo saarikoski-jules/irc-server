@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/01 11:19:37 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 13:40:46 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
 	case ERR_USERSDONTMATCH:
 		res = std::string(init + ":Can't change mode for other users");
     	break;
+	case ERR_NOSUCHSERVER:
+		res = std::string(init + params[1] + " :No such server");
+		break;
 	case RPL_TOPIC:
         res = std::string(init + params[1] +  " :" + params[2]);
         break;
@@ -122,6 +125,12 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
 	case RPL_UMODEIS:
 		res = std::string(init + "<" + params[1] + ">");
+		break;
+	case RPL_WHOREPLY:
+		res = std::string(init + params[1] + " " + params[2] + " " + params[3] + " " + params[4] + " " + params[5] + " " + params[6] + " :" + params[7] + " " + params[8]);
+		break;
+	case RPL_ENDOFWHO:
+		res = std::string(init + params[1] + " :End of /WHO list");
 		break;
 	default:
         res = init;

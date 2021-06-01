@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/01 11:14:51 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 13:24:39 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ enum ReplyCode {
 	ERR_NOTONCHANNEL = 442,
 	ERR_UMODEUNKNOWNFLAG = 501,
 	ERR_USERSDONTMATCH = 502,
+	ERR_NOSUCHSERVER = 402,
 	RPL_NOTOPIC = 331,
     RPL_TOPIC = 332,
     RPL_CHANNELMODEIS = 324,
@@ -50,7 +51,9 @@ enum ReplyCode {
 	RPL_MYINFO = 004,
     RPL_NAMREPLY = 353,
     RPL_ENDOFNAMES = 366,
-	RPL_UMODEIS = 221
+	RPL_UMODEIS = 221,
+	RPL_WHOREPLY = 352,
+	RPL_ENDOFWHO = 315
 };
 
 class ReplyFactory {
