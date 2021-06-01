@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:40:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 09:48:02 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 16:10:36 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,16 @@ void ServerActionNames::execute() {
 		for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
 			try {
 				std::string names = (*i).second->getNames(connection);
-				namesReply((*i).second->name, names);
+				std::string rights;
+				std::string modestr = (*i).second->getModes();
+				if (modestr.find('p') != std::string::npos) {
+					rights = std::string("@");
+				} else if (modestr.find('s') != std::string::npos) {
+					rights = std::string("+");
+				} else {
+					rights = std::string("=");
+				}
+				namesReply((*i).second->name, names, rights);
 			} catch (const ChannelException& e) {
 				//do non
 			}
@@ -53,7 +62,16 @@ void ServerActionNames::execute() {
 			try {
 				Channel* chan = server->findChannel(*i);
 				std::string names = chan->getNames(connection);
-				namesReply(chan->name, names);
+				std::string rights;
+				std::string modestr = chan->getModes();
+				if (modestr.find('p') != std::string::npos) {
+					rights = std::string("@");
+				} else if (modestr.find('s') != std::string::npos) {
+					rights = std::string("+");
+				} else {
+					rights = std::string("=");
+				}
+				namesReply(chan->name, names, rights);
 			} catch (const std::exception& e) {
 				//channel not found. No numeric reply?
 			}
@@ -63,10 +81,11 @@ void ServerActionNames::execute() {
 	}
 }
 
-void ServerActionNames::namesReply(const std::string& channelName, const std::string& names) const {
+void ServerActionNames::namesReply(const std::string& channelName, const std::string& names, const std::string& rights) const {
 	std::vector<std::string> params;
 
 	params.push_back(connection->client.nickName);
+	params.push_back(rights);
 	params.push_back(channelName);
 	params.push_back(names);
 	server->sendReplyToClient(fd, ReplyFactory::newReply(RPL_NAMREPLY, params));
