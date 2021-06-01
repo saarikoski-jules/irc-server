@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/31 17:16:00 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 11:19:37 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,13 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
 	case ERR_NOTONCHANNEL:
 		res = std::string(init + params[1] + ":You're not on that channel");
 		break;
-    case RPL_TOPIC:
+	case ERR_UMODEUNKNOWNFLAG:
+		res = std::string(init + ":Unknown MODE flag");
+		break;
+	case ERR_USERSDONTMATCH:
+		res = std::string(init + ":Can't change mode for other users");
+    	break;
+	case RPL_TOPIC:
         res = std::string(init + params[1] +  " :" + params[2]);
         break;
     case RPL_NOTOPIC:
@@ -114,6 +120,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case RPL_ENDOFNAMES:
         res = std::string(init +  params[1] + " :End of /NAMES list");
         break;
+	case RPL_UMODEIS:
+		res = std::string(init + "<" + params[1] + ">");
+		break;
 	default:
         res = init;
         break;

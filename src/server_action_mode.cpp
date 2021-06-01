@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 17:24:49 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 11:26:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,88 @@ void ServerActionMode::execute() {
 			changeMode();
 		}
 	} catch (const std::out_of_range& e) {
-        sendReplyToLocalClient(constructNoSuchChannelReply(clientNick, params[0]));
+		if (!server->nicknameExists(params[0])) {
+			sendReplyToLocalClient(constructNoSuchChannelReply(clientNick, params[0]));
+		} else {
+			changeUserMode();
+		}
 	}
+}
+
+void ServerActionMode::changeUserMode() {
+	Connection* client = server->getClientByNick(params[0]);
+	Connection* tmp;
+	if (connection->connectionType == Connection::ServerType) {
+		tmp = connection->getLeafConnection(prefix);
+	} else {
+		tmp = connection;
+	}
+	if (client != tmp) {
+		sendUsersDontMatchReply(tmp->client.nickName);
+		return;
+	}
+	int start = 0;
+	char sign;
+	if (params[1][0] == '-') {
+		sign = '-';
+		start++;
+	} else {
+		sign = '+';
+	}
+	if (params[1][0] == '+') {
+		start++;
+	}
+	for (std::string::iterator i = params[1].begin() + start; i != params[1].end(); i++) {
+		if (*i != 'i') {
+			sendUnknownUModeReply(*i, tmp->client.nickName);
+		} else {
+			if (sign == '+') {
+				tmp->client.mode = "i"; 
+			} else {
+				tmp->client.mode = "";
+			}
+			sendUModeIsReply(tmp->client.mode, tmp->client.nickName);
+		}
+	} 
+}
+
+void ServerActionMode::sendUsersDontMatchReply(std::string cliNick) {
+	std::vector<std::string> params;
+
+	if (connection->connectionType == Connection::ServerType) {
+		return;
+	}
+
+	params.push_back(cliNick);
+	std::string reply = ReplyFactory::newReply(ERR_USERSDONTMATCH, params);
+	server->sendReplyToClient(fd, reply);
+}
+
+void ServerActionMode::sendUnknownUModeReply(char c, std::string cliNick) {
+	std::vector<std::string> params;
+	
+	if (connection->connectionType == Connection::ServerType) {
+		return;
+	}
+
+	std::string mode(1, c);
+	params.push_back(cliNick);
+	params.push_back(mode);
+	std::string reply = ReplyFactory::newReply(ERR_UMODEUNKNOWNFLAG, params);
+	server->sendReplyToClient(fd, reply);
+}
+
+void ServerActionMode::sendUModeIsReply(std::string clientMode, std::string cliNick) {
+	std::vector<std::string> params;
+
+	if (connection->connectionType == Connection::ServerType) {
+		return;
+	}
+
+	params.push_back(cliNick);
+	params.push_back(clientMode);
+	std::string reply = ReplyFactory::newReply(RPL_UMODEIS, params);
+	server->sendReplyToClient(fd, reply);
 }
 
 void ServerActionMode::execByMode(char sign) {
