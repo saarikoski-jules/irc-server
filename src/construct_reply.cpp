@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:53:00 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 13:01:18 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/31 17:13:37 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,3 +194,20 @@ std::string constructNoOperModeBroadcast(const std::string& nickName, const std:
         ":" + nickName + "\r\n");
     return (reply);
 }
+
+std::string constructChannelModeIs(const std::string& channelName, const std::string& modes, std::vector<std::string> params) {
+	std::string reply;
+    std::vector<std::string> replyParams;
+
+    replyParams.push_back(channelName);
+    replyParams.push_back(modes);
+    std::string replyString;
+    for (std::vector<std::string>::const_iterator i = params.begin(); i != params.end(); i++) {
+        replyString = std::string(replyString + *i + " ");
+    }
+    replyParams.push_back(replyString);
+	reply = std::string(replyParams[0] + " " + replyParams[1] + " " + replyParams[2]);
+    /* reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams); */
+	return (reply);
+}
+

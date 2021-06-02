@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                           :+:    :+:            */
+/*   server.h                                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 12:02:45 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/31 09:44:13 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ class Server {
     Channel* createNewChannel(const std::string& name, Connection* chanop);
     Channel* findChannel(const std::string& name);
     void removeClientFromChannels(const Connection* con);
-    void sendMessageToAllLocalUsersInClientChannels(const Connection* connection, const std::string& message);
+    void sendMessageToAllLocalUsersInClientChannels(const Connection* connection, const std::string& message, const std::string& prefix);
 	void deleteChannel(Channel* chan);
     void delayFirstAction();
 	time_t serverStart;
 	std::map<std::string, Channel*> getListOfChannels();
-protected:
+ protected:
     std::map<const int, Connection*> connections;
  private:
     Server();

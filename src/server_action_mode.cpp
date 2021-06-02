@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                             :+:    :+:            */
+/*   server_action_mode.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/28 14:24:04 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/01 14:55:57 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void ServerActionMode::changeMode() {
         } else {
             tmp = connection;
         }
-        if (!chan->isOperator(tmp)) {
+        if (!chan->isOper(tmp) && params[1] != "+b") {
             std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
             sendReplyToLocalClient(reply);
             return;
@@ -53,19 +53,12 @@ void ServerActionMode::changeMode() {
 }
 
 void ServerActionMode::displayModes() const {
-	std::string modeStr = std::string("+" + chan->getModes());
-	std::vector<std::string> modeParams;
+	std::vector<std::string> replyParams;
 
-
-	for (std::string::iterator it = modeStr.begin(); it != modeStr.end(); it++) {
-		if (*it == 'l') {
-			modeParams.push_back(IntConversion::intToString(chan->getLimit()));
-		}
-		if (*it == 'k') {
-			modeParams.push_back(chan->getKey());
-		}
-	}
-	sendChannelModeIsReply(modeStr, chan->name, modeParams);
+	replyParams.push_back(clientNick);
+	replyParams.push_back(chan->getChannelModes());
+	std::string reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
+	sendReplyToLocalClient(reply);
 }
 
 void ServerActionMode::execute() {
@@ -116,7 +109,13 @@ void ServerActionMode::execByMode(char sign) {
         mode++;
     }
     for (; mode != params[1].end(); mode++) {
-        switch (*mode) {
+		std::string paramString;
+		if (std::distance(params.begin(), param) >= 0 && std::distance(param, params.end()) > 0) {
+			paramString = *param;
+		} else {
+			paramString = "";
+		}
+		switch (*mode) {
         case 'p':
         case 's':
         case 'i':
@@ -128,7 +127,7 @@ void ServerActionMode::execByMode(char sign) {
             }
             break;
         case 'o':
-            if (modeO(sign, *param)) {
+            if (modeO(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -137,7 +136,7 @@ void ServerActionMode::execByMode(char sign) {
             param++;
             break;
         case 'l':
-            if (setLimit(sign, *param)) {
+            if (setLimit(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -148,7 +147,7 @@ void ServerActionMode::execByMode(char sign) {
             }
             break;
         case 'b':
-            if (setBanMask(sign, *param)) {
+			if (setBanMask(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -157,7 +156,7 @@ void ServerActionMode::execByMode(char sign) {
             param++;
             break;
         case 'k':
-            if (setKey(sign, *param)) {
+            if (setKey(sign, paramString)) {
                 returnOptions.push_back(*mode);
                 if (param != params.end()) {
                     returnParams.push_back(*param);
@@ -175,8 +174,9 @@ void ServerActionMode::execByMode(char sign) {
     }
     if (returnOptions.length() > 0) {
         returnOptions.insert(returnOptions.begin(), sign);
-        sendChannelModeIsReply(returnOptions, chan->name, returnParams);
-    	broadcastChannelModeIs(returnOptions, chan->name, returnParams);
+		std::string reply = constructChannelModeIs(chan->name, returnOptions, returnParams);
+		server->sendReplyToClient(fd, reply);
+		broadcastChannelModeIs(returnOptions, chan->name, returnParams);
 	}
 }
 
@@ -203,17 +203,19 @@ bool ServerActionMode::modeO(char sign, const std::string& user) {
     Connection* target;
     try {
         target = server->getClientByNick(user);
-    } catch (const std::exception& e) {
+		if (sign == '-') {
+			chan->removeOperator(target);
+		} else {
+			chan->addOperator(target);
+		}
+	} catch (const ChannelException& e) {
+		sendReplyToLocalClient(constructNotOnChannelReply(clientNick, chan->name));
+	} catch (const std::exception& e) {
         std::string reply = constructNoSuchNickReply(clientNick, user);
         sendReplyToLocalClient(reply);
         return (false);
     }
-    if (sign == '-') {
-        chan->removeOperator(target);
-    } else {
-        chan->addOperator(target);
-    }
-    return (true);
+	return (true);
 }
 
 bool ServerActionMode::editMode(char sign, char mode) {
@@ -321,22 +323,6 @@ void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const st
 			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply));
 		}
 	}
-}
-
-void ServerActionMode::sendChannelModeIsReply(const std::string& modes, const std::string& channelName, const std::vector<std::string>& params) const {
-    std::string reply;
-    std::vector<std::string> replyParams;
-
-    replyParams.push_back(clientNick);
-    replyParams.push_back(channelName);
-    replyParams.push_back(modes);
-    std::string replyString;
-    for (std::vector<std::string>::const_iterator i = params.begin(); i != params.end(); i++) {
-        replyString = std::string(replyString + *i + " ");
-    }
-    replyParams.push_back(replyString);
-    reply = ReplyFactory::newReply(RPL_CHANNELMODEIS, replyParams);
-    sendReplyToLocalClient(reply);
 }
 
 void ServerActionMode::sendUnknownModeReply(char c) const {

@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/20 15:50:08 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/27 17:10:57 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ ServerActionTopic::ServerActionTopic(
 	std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 1, prefix),
 params(params) {
+	Connection* connection = server->getConnectionByFd(fd);
 	if (params.size() < requiredParams) {
-		Connection* connection = server->getConnectionByFd(fd);
 		std::vector<std::string> params;
 		switch(connection->connectionType) {
 			case Connection::ServerType:
@@ -40,6 +40,10 @@ params(params) {
 		params.push_back("TOPIC");
 		server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
 		throw std::invalid_argument("Not enough params");
+	}
+	if (connection->connectionType == Connection::NoType) {
+		server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
+		throw std::invalid_argument("Client not registered");
 	}
 }
 
@@ -72,7 +76,9 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 	replyParams.push_back(clientNick);
 	replyParams.push_back(chan->name);
 	const std::string modes = chan->getModes();
-	if (modes.find('t') != std::string::npos && !chan->isOper(connection)) {
+	if (modes.find('t') != std::string::npos
+		&& connection->connectionType == Connection::ClientType
+		&& !chan->isOper(connection)) {
 		sendReplyToLocalClient(ReplyFactory::newReply(ERR_CHANOPRIVSNEEDED, replyParams));
 	} else {
 		chan->topic = params[1];
@@ -94,9 +100,9 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 		sendReplyToLocalClient(ReplyFactory::newReply(RPL_TOPIC, replyParams));
 		if (chan->name[0] == '#') {
 			if (connection->connectionType == Connection::ClientType) {
-				server->sendMessageToAllServers(std::string(sentFrom + "TOPIC " + chan->name + " :" + chan->topic));
+				server->sendMessageToAllServers(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic));
 			} else if (connection->connectionType == Connection::ServerType) {
-				server->sendMessageToAllServersButOne(std::string(sentFrom + "TOPIC " + chan->name + " :" + chan->topic), fd);
+				server->sendMessageToAllServersButOne(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic), fd);
 			}
 		}
 	}

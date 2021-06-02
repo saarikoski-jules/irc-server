@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                         :+:    :+:            */
+/*   server.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 13:07:57 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/31 17:20:58 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,23 +262,30 @@ void Server::burstChannels(const int& fd) {
     std::map<std::string, Channel*>::iterator it = channels.begin();
     for (; it != channels.end(); it++) {
         const Channel& channel = *it->second;
-        std::vector<Connection*> connections = channel.getConnections();
-        for (std::vector<Connection*>::iterator connectionIt = connections.begin(); connectionIt != connections.end(); connectionIt++) {
-            const Connection* connection = *connectionIt;
-            reply = constructJoinBroadcast(connection->client.nickName, channel.name);
-            std::vector<std::string> replyVector;
-            replyVector.push_back(reply);
-            addNewAction(factory.newAction("SEND", replyVector, fd));
-            replyVector.pop_back();
-            if (channel.isOper(connection)) {
-                reply = constructOperModeBroadcast(connection->client.nickName, channel.name);
-            } else {
-                reply = constructNoOperModeBroadcast(connection->client.nickName, channel.name);
-            }
-            replyVector.push_back(reply);
-            addNewAction(factory.newAction("SEND", replyVector, fd));
-            replyVector.pop_back();
-        }
+		if (channel.name[0] == '#') {
+			std::vector<Connection*> connections = channel.getConnections();
+			for (std::vector<Connection*>::iterator connectionIt = connections.begin(); connectionIt != connections.end(); connectionIt++) {
+				const Connection* connection = *connectionIt;
+				reply = constructJoinBroadcast(connection->client.nickName, channel.name);
+				std::vector<std::string> replyVector;
+				replyVector.push_back(reply);
+				addNewAction(factory.newAction("SEND", replyVector, fd));
+				replyVector.pop_back();
+				if (channel.isOper(connection)) {
+					reply = constructOperModeBroadcast(connection->client.nickName, channel.name);
+				} else {
+					reply = constructNoOperModeBroadcast(connection->client.nickName, channel.name);
+				}
+				replyVector.push_back(reply);
+				addNewAction(factory.newAction("SEND", replyVector, fd));
+				replyVector.pop_back();
+			}
+			std::vector<std::string> modeReplyVector;
+			std::string channelMode = std::string(":" + Server::serverName + " MODE " + channel.getChannelModes());
+			/* std::string channelMode = constructChannelModeIs(channel.name, channel->getModes(), modeParams); */
+			modeReplyVector.push_back(channelMode);
+			addNewAction(factory.newAction("SEND", modeReplyVector, fd));
+		}
     }
 }
 
@@ -410,13 +417,14 @@ Channel* Server::findChannel(const std::string& name) {
     throw std::out_of_range("Channel not found");
 }
 
-void Server::sendMessageToAllLocalUsersInClientChannels(const Connection* connection, const std::string& message) {
-    for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
-        if ((*i).second->connectionIsInChannel(connection)) {
+void Server::sendMessageToAllLocalUsersInClientChannels(
+	const Connection* connection, const std::string& message, const std::string& prefix) {
+	for (std::map<std::string, Channel*>::iterator i = channels.begin(); i != channels.end(); i++) {
+		if ((*i).second->connectionIsInChannel(connection)) {
             std::vector<Connection*> sendTo = (*i).second->getConnections();
             for (std::vector<Connection*>::iterator j = sendTo.begin(); j != sendTo.end(); j++) {
-                if (hasLocalConnection(**j) && connection != (*j)) {
-                    sendReplyToClient((*j)->fd, message);//TODO(Jules): prefix ?
+				if (hasLocalConnection(**j) && connection != (*j)) {
+                    sendReplyToClient((*j)->fd, message, prefix);
                 }
             }
         }

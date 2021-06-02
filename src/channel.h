@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.h                                          :+:    :+:            */
+/*   channel.h                                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 12:30:50 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/05/31 16:36:38 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ class Channel {
     std::string topic;
     void addOperator(Connection* newChanop);
     void removeOperator(Connection* newChanop);
-    bool isOperator(Connection* cli) const;
     void removeMode(char c);
     void addMode(char c);
     std::string getModes() const;
@@ -47,6 +46,7 @@ class Channel {
    void removeConnection(const Connection* toRemove);
    bool connectionIsInChannel(const Connection* connection) const;
 	size_t getAmtUsers() const;
+	std::string getChannelModes() const;
 
  private:
     //std::vector<Client*> chanops;

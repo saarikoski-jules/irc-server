@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   channel.cpp                                        :+:    :+:            */
+/*   channel.cpp                                       :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 12:30:55 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/01 10:07:38 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include "client.h"
 #include "reply.h"
 #include "logger.h"
+#include "int_conversions.h"
+#include "construct_reply.h"
 
 Channel::Channel(const std::string& name, Connection* chanop) :
 name(name),
@@ -41,15 +43,13 @@ modes("") {
 }
 
 void Channel::addOperator(Connection* newChanop) {
-    chanops.push_back(newChanop);
+	if (!connectionIsInChannel(newChanop)) {
+		throw ChannelException("user not in channel", false);
+	}
+	if (!isOper(newChanop)) {
+		chanops.push_back(newChanop);
+	}
     //TODO: Do i need to make sure chanop is also already a connection in channel?
-}
-
-bool Channel::isOperator(Connection* cli) const {
-    if (std::find(chanops.begin(), chanops.end(), cli) == chanops.end()) {
-        return (false);
-    }
-    return (true);
 }
 
 void Channel::removeOperator(Connection* target) {
@@ -152,15 +152,15 @@ void Channel::addClient(Connection* connection, const std::string& key) {
 }
 
 void Channel::removeConnection(const Connection* toRemove) {
-	std::vector<Connection*>::iterator pos = std::find(connections.begin(), connections.end(), toRemove);
+	std::vector<Connection*>::iterator pos = std::find(chanops.begin(), chanops.end(), toRemove);
+	if (pos != chanops.end()) {
+		chanops.erase(pos);
+	}
+	pos = std::find(connections.begin(), connections.end(), toRemove);
 	if (pos == connections.end()) {
 		throw ChannelException("Client not in channel", false);
 	}
 	connections.erase(pos);
-	pos = std::find(chanops.begin(), chanops.end(), toRemove);
-	if (pos != chanops.end()) {
-		chanops.erase(pos);
-	}
 }
 
 void Channel::addBanMask(const std::string& mask) {
@@ -188,8 +188,6 @@ std::string Channel::getNames(Connection* connection) const {
     clientHasAccess(connection);
     for (std::vector<Connection*>::const_iterator user = chanops.begin(); user != chanops.end(); user++) {
         names = names + "@" + (*user)->client.nickName + " ";
-        Logger::log(LogLevelDebug, (*user)->client.nickName);
-        Logger::log(LogLevelDebug, names);
     }
     for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
         if (!isOper(*user)) {
@@ -199,16 +197,31 @@ std::string Channel::getNames(Connection* connection) const {
     return (names);
 }
 
+std::string Channel::getChannelModes() const {
+	std::string modeStr = std::string("+" + getModes());
+	std::vector<std::string> modeParams;
+
+	for (std::string::iterator it = modeStr.begin(); it != modeStr.end(); it++) {
+		if (*it == 'l') {
+			modeParams.push_back(IntConversion::intToString(limit));
+		}
+		if (*it == 'k') {
+			modeParams.push_back(key);
+		}
+	}
+
+	std::string reply = constructChannelModeIs(name, modeStr, modeParams);
+	return (reply);
+}
+
 void Channel::clientHasAccess(Connection* connection) const {
     if (modes.find('s') != std::string::npos || modes.find('p') != std::string::npos) {
-        for (std::vector<Connection*>::const_iterator i = connections.begin(); i != connections.end(); i++) {
-            if (i + 1 == connections.end()) {
-                throw ChannelException("Channel not visible to user", false);
-            }
-            if ((*i)->client.nickName == connection->client.nickName) {
-                return;
-            }
-        }
+		std::vector<Connection *>::const_iterator pos = std::find(connections.begin(), connections.end(), connection);
+		if (pos == connections.end()) {
+			throw ChannelException("Channel not visible to user", false);
+		} else {
+			return;
+		}
     }
 }
 
@@ -222,12 +235,11 @@ bool Channel::isOper(const Connection* connection) const {
 }
 
 bool Channel::connectionIsInChannel(const Connection* connection) const {
-    for (std::vector<Connection*>::const_iterator oper = connections.begin(); oper != connections.end(); oper++) {
-        if (connection->client.nickName == (*oper)->client.nickName) {
-            return (true);
-        }
-    }
-    return (false);
+	std::vector<Connection*>::const_iterator it = std::find(connections.begin(), connections.end(), connection);
+	if (it == connections.end()) {
+		return (false);
+	}
+	return (true);
 }
 
 std::vector<Connection*> Channel::getConnections() const {
@@ -240,7 +252,7 @@ message(what) {
     if (isFatal()) {
         fullMessage = std::string("Fatal channel exception: " + message);
     } else {
-        fullMessage = std::string("Channel exception: " + message);
+        fullMessage = std::string(message);
     }
 }
 

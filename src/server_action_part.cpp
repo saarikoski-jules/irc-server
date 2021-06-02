@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/26 11:13:42 by jules        ########   odam.nl          */
+/*   Updated: 2021/05/28 13:27:02 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,18 @@ params(params) {
 void ServerActionPart::broadcastPart() const {
 	std::vector<Connection*> sendTo = chan->getConnections();
 	std::string senderPrefix;
-
 	if (connection->connectionType == Connection::ClientType) {
 		senderPrefix = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
 	} else {
 		senderPrefix = prefix;
 	}
 
-	std::string msg(":" + senderPrefix + " PART " + chan->name);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it)) {
-			server->sendReplyToClient((*it)->fd, msg);
+			server->sendReplyToClient((*it)->fd, std::string("PART " + chan->name), senderPrefix);
 		}
 	}
+	std::string msg(":" + senderPrefix + " PART " + chan->name);
 	if (chan->name[0] == '#') {
 		if (connection->connectionType == Connection::ClientType) {
 			server->sendMessageToAllServers(msg);
@@ -65,12 +64,17 @@ void ServerActionPart::broadcastPart() const {
 void ServerActionPart::execute() {
 	Logger::log(LogLevelDebug, "PART action");
 	std::vector<std::string> channels = Utils::String::tokenize(params[0], params[0].length(), ",");
-	Logger::log(LogLevelDebug, "tokenized");
 	for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); it++) {
 		Logger::log(LogLevelDebug, std::string("parting " + *it));
 		try {
 			chan = server->findChannel(*it);
-			chan->removeConnection(connection);
+			Connection* tmp;
+			if (connection->connectionType == Connection::ServerType) {
+				tmp = connection->getLeafConnection(prefix);
+			} else {
+				tmp = connection;
+			}
+			chan->removeConnection(tmp);//TODO: if server, should pass leaf connection here
 			broadcastPart();
 			if (chan->getAmtUsers() == 0) {
 				server->deleteChannel(chan);
@@ -83,6 +87,7 @@ void ServerActionPart::execute() {
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendReplyToClient(fd, constructNoSuchChannelReply(connection->client.nickName, *it));
 			}
+			// TODO: should i still broadcast to other servers?
 		}
 	}
 }
