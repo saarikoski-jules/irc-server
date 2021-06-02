@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 17:03:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/26 13:00:26 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:15:16 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ void ServerActionPing::handlePingClient() const {
             server->sendReplyToClient(fd, reply);
         } else {
             // FORMAT :sender to-send-to
-            // TODO(Jelle) Find server and send through or error handle.
             // FORMAT :sendernick PING sendernick :to-send-to
         }
     } else {
@@ -70,12 +69,11 @@ void ServerActionPing::handlePingServer() const {
             server->sendReplyToClient(fd, reply);
         } else {
             // FORMAT :sender to-send-to
-            // TODO(Jelle) Find server and send through or error handle.
             // FORMAT :sender PING sender to-send-to
         }
     } else {
-        // TODO(Jelle) Handle Error and kill server.
-    }
+
+	}
 }
 
 void ServerActionPing::handleNotRegistered() const {

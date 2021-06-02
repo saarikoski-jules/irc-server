@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_pass.cpp                             :+:    :+:            */
+/*   server_action_pass.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 11:54:07 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/19 10:13:14 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 11:12:19 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ void ServerActionPass::handlePass() const {
     // No fall through as we use the size as a starting point for the code executed.
     switch (clampedSize) {
     case 4:
-        // TODO(Jelle) handle server options better if we choose to do this.
         connection->server.options = params[3];
     case 3: {
-        // TODO(Jelle) handle server flag better if we choose to do this.
         std::string fullFlag = params[2];
         size_t splitPoint = fullFlag.find_first_of('|');
         if (splitPoint != std::string::npos
@@ -69,7 +67,6 @@ void ServerActionPass::handlePass() const {
         }
     }
     case 2:
-        // TODO(Jelle) handle server irc version better if we choose to do this.
         connection->server.version = params[1];
     case 1:
         connection->password = params[0];

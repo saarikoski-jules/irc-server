@@ -222,7 +222,7 @@ void Server::burstConnections(const int& fd) {
     for (; it != connections.end(); it++) {
         Connection& connection = *it->second;
         if (connection.connectionType == Connection::ServerType && connection.fd != fd) {
-            reply = constructNewServerBroadcast(connection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            reply = constructNewServerBroadcast(connection);  // Sending unnecessary PASS message, is ignored.
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
             addNewAction(factory.newAction("SEND", replyVector, fd));
@@ -243,7 +243,7 @@ void Server::burstLeafConnections(Connection& connection, const int& fd) {
     for (; it != connection.leafConnections.end(); it++) {
         const Connection* leafConnection = *it;
         if (leafConnection->connectionType == Connection::ServerType) {
-            reply = constructNewServerBroadcast(*leafConnection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            reply = constructNewServerBroadcast(*leafConnection);  // Sending unnecessary PASS message, is ignored.
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
             addNewAction(factory.newAction("SEND", replyVector, fd));
@@ -366,6 +366,9 @@ bool Server::usernameExists(const std::string& userName) {
 }
 
 bool Server::servernameExists(const std::string& serverName) {
+    if (serverName == Server::serverName) {
+        return (true);
+    }
     std::map<const int, Connection*>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
 	    Connection* connection = it->second;

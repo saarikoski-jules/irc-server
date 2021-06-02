@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 09:40:40 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 10:56:14 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ void Socket::bindAndListenToPort(const int& port) {
     if (bind(fd, (const sockaddr*)&addr, sizeof(addr)) != 0) {
         throw SocketException("Failed to bind socket", true);
     }
-    // TODO(Jules): change backlog to appropriate value
     if (listen(fd, 1) != 0) {
         throw SocketException("Failed to listen to socket", true);
     }
@@ -95,7 +94,6 @@ int Socket::createFdSet(std::map<const int, Connection*>* connections) {
     FD_ZERO(&fdSet);
     int maxFd = 0;
 
-    // TODO(Jelle) Maybe initialize once and add to it?
     std::map<const int, Connection*>::iterator it;
     for (it = connections->begin(); it != connections->end(); it++) {
         const Connection* connection = it->second;
@@ -135,7 +133,6 @@ void Socket::readFromFds(const int& maxFd) {
             }
         }
     }
-    // TODO(Jelle) See what happens when a message is longer than 512 bytes.
 }
 
 void Socket::sendData(const int& fd, const std::string& msg) {

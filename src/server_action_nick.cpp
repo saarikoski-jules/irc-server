@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/20 10:24:19 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:01:20 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void ServerActionNick::handleServerNick() {
                 client->userName = params[2];
                 client->hostName = params[3];
                 client->serverName = params[4];  // Currently servertoken here, change?
-                client->mode = params[5];  // TODO(Jelle) Validate mode?
+                client->mode = params[5];
                 client->realName = params[6];
                 connection->leafConnections.push_back(newConnection);
                 std::string reply = constructServerNickBroadcast(params);
@@ -167,5 +167,3 @@ IServerAction* ServerActionNick::clone() const {
     return (new ServerActionNick(*this));
 }
 
-// TODO(Jules): construct general channel replies from functions, maybe under reply?
-// TODO(Jules): send ERR_NOLOGIN from action creator, as well as need more params?
