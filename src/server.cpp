@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.cpp                                        :+:    :+:             */
+/*   server.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/31 17:20:58 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:26:59 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,6 +366,9 @@ bool Server::usernameExists(const std::string& userName) {
 }
 
 bool Server::servernameExists(const std::string& serverName) {
+    if (serverName == Server::serverName) {
+        return (true);
+    }
     std::map<const int, Connection*>::iterator it = connections.begin();
     for (; it != connections.end(); it++) {
 	    Connection* connection = it->second;
