@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 13:38:50 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 10:45:44 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,9 @@ void ServerActionUser::execute() {
             params.push_back("USER");
             server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_NEEDMOREPARAMS, params));
         }
-        // TODO(Jelle) Handle server error's
     } catch (const std::out_of_range& e) {
-        // TODO(Jelle) Handle non valid client fd
-    }
+		// This will never happen
+	}
 }
 
 IServerAction* ServerActionUser::clone() const {

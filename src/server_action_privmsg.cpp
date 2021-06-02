@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/20 14:12:59 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:05:06 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ void ServerActionPrivmsg::findMatchingConnections() {
 					broadcast = true;
 				}
                 Channel* chan = server->findChannel(*i);
-                //TODO(Jules): also look through host/server masks
                 std::string channelModes = chan->getModes();
                 if (channelModes.find('n') == std::string::npos || chan->connectionIsInChannel(sender)) {
                     std::vector<Connection*> channelClients = chan->getConnections();

@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/31 17:20:58 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:16:06 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,7 +222,7 @@ void Server::burstConnections(const int& fd) {
     for (; it != connections.end(); it++) {
         Connection& connection = *it->second;
         if (connection.connectionType == Connection::ServerType && connection.fd != fd) {
-            reply = constructNewServerBroadcast(connection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            reply = constructNewServerBroadcast(connection);  // Sending unnecessary PASS message, is ignored.
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
             addNewAction(factory.newAction("SEND", replyVector, fd));
@@ -243,7 +243,7 @@ void Server::burstLeafConnections(Connection& connection, const int& fd) {
     for (; it != connection.leafConnections.end(); it++) {
         const Connection* leafConnection = *it;
         if (leafConnection->connectionType == Connection::ServerType) {
-            reply = constructNewServerBroadcast(*leafConnection);  // TODO(Jelle) Sending unnecessary PASS message, is ignored.
+            reply = constructNewServerBroadcast(*leafConnection);  // Sending unnecessary PASS message, is ignored.
             std::vector<std::string> replyVector;
             replyVector.push_back(reply);
             addNewAction(factory.newAction("SEND", replyVector, fd));

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 15:21:04 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:08:20 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,6 @@ void ServerActionMode::execByMode(char sign) {
     std::vector<std::string> returnParams;
     std::vector<std::string>::iterator param = params.begin() + 2;
     std::string::iterator mode = params[1].begin();
-// TODO(Jules): MODE &channel, or in general handle bad n. params
     if (*mode == '+' || *mode == '-') {
         mode++;
     }
@@ -246,7 +245,6 @@ void ServerActionMode::execByMode(char sign) {
                 param++;
             }
             break;
-            // TODO(Jules): v == allow to speak on moderated channel
         default:
             sendUnknownModeReply(*mode);
             break;
@@ -259,8 +257,6 @@ void ServerActionMode::execByMode(char sign) {
 		broadcastChannelModeIs(returnOptions, chan->name, returnParams);
 	}
 }
-
-//TODO(Jules): MODE without params will list modes, except b and o, with params for k and l. If no modes present, print only +
 
 bool ServerActionMode::setBanMask(char sign, const std::string& mask) {
     if (mask == "" && sign == '+') {
@@ -319,7 +315,6 @@ bool ServerActionMode::setLimit(char sign, const std::string& limit) {
         try {
             uintLimit = StringConversion::toUint(limit);
         } catch (const std::exception& e) {
-            // TODO(Jules): handle bad limit
             return (false);
         }
         chan->setLimit(uintLimit);
@@ -362,7 +357,7 @@ bool ServerActionMode::listBanMasks() const {
             }
             std::string reply = ReplyFactory::newReply(RPL_ENDOFBANLIST, replyParams);
             sendReplyToLocalClient(reply);
-            return (false);//??
+            return (false);
         }
     }
 }
@@ -389,7 +384,6 @@ void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const st
         Logger::log(LogLevelDebug, "MODE, connectionType NoType");
         return;
     }
-    //TODO: fix prefix
     reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
 		if (server->hasLocalConnection(**it) && *it != connection) {

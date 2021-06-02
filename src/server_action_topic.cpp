@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/05/27 17:10:57 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:01:44 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ params(params) {
 				break;
 			case Connection::NoType:
 				sendReplyToLocalClient(constructNotRegisteredReply(connection->client.nickName));
-				throw std::invalid_argument("Bad user");//TODO(Jules): yeah how about you don't
+				throw std::invalid_argument("Bad user");
 				break;
 		}
 		params.push_back(connection->client.nickName);

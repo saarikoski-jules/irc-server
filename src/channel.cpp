@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 16:19:36 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 10:57:24 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void Channel::addOperator(Connection* newChanop) {
 	if (!isOper(newChanop)) {
 		chanops.push_back(newChanop);
 	}
-    //TODO: Do i need to make sure chanop is also already a connection in channel?
 }
 
 void Channel::removeOperator(Connection* target) {
@@ -78,8 +77,6 @@ std::string Channel::getKey() const {
 	return (key);
 }
 
-// TODO(Jules): secret can't display anything, and you can't tell someone is in the channel
-// TODO(Jules): private shows up in channel listings, but you can't tell a user is in it
 void Channel::removeMode(char c) {
     size_t pos = modes.find(c);
     if (pos != std::string::npos) {
@@ -101,7 +98,6 @@ size_t Channel::getAmtUsers() const {
 	return (connections.size());
 }
 
-// TODO(Jules): write a matching function for partial masks
 bool Channel::isBanned(Client* client) const {
     for (std::vector<std::string>::const_iterator i = bans.begin(); i != bans.end(); i++) {
         size_t posUser = (*i).find('!') + 1;
@@ -129,7 +125,6 @@ bool Channel::canJoin(Client* client, const std::string& key) const {
     if (modes.find('k') != std::string::npos && this->key != key) {
         return (false);
     }
-    // if (modes.find('i') && client has no invite)
     if (modes.find('l') != std::string::npos && limit <= connections.size()) {
         return (false);
     }
