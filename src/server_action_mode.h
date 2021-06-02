@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:50 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/31 17:25:00 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 11:26:03 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,10 @@ class ServerActionMode: public IServerAction {
     void connectionNotRegistered() const;
 	void changeMode();
 	void displayModes() const;
+	void changeUserMode();
+	void sendUsersDontMatchReply(std::string cliNick);
+	void sendUnknownUModeReply(char c, std::string cliNick);
+	void sendUModeIsReply(std::string clientMode, std::string cliNick);
 	Channel* chan;
     Connection* connection;
 	std::string clientNick;

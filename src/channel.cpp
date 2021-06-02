@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 10:07:38 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/01 16:19:36 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ std::string Channel::getNames(Connection* connection) const {
     }
     for (std::vector<Connection*>::const_iterator user = connections.begin(); user != connections.end(); user++) {
         if (!isOper(*user)) {
-            names = names + "+" + (*user)->client.nickName + " ";
+            names = names + (*user)->client.nickName + " ";
         }
     }
     return (names);

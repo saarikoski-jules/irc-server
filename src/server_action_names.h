@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_names.h                              :+:    :+:            */
+/*   server_action_names.h                             :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 11:34:37 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/05 16:40:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/06/01 15:55:31 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class ServerActionNames: public IServerAction {
 	IServerAction* clone() const;
 	~ServerActionNames() {}
  private:
-	void namesReply(const std::string& channelName, const std::string& names) const;
+	void namesReply(const std::string& channelName, const std::string& names, const std::string& rights) const;
 	void endOfNamesReply(const std::string& channelName) const;
 	std::vector<std::string> params;
 	Connection* connection;
