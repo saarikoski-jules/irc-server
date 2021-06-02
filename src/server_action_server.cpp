@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_server.cpp                           :+:    :+:            */
+/*   server_action_server.cpp                          :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
@@ -53,7 +53,7 @@ void ServerActionServer::handleServerFromServer() const {
             newConnection->fd = fd;
             newConnection->connectionType = Connection::ServerType;
             serverConnection->name = params[0];
-            serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
+            serverConnection->hopcount = params[1];
             serverConnection->token = params[2];
             serverConnection->info = params[3];
             std::string reply = constructNewServerBroadcast(*newConnection);
@@ -75,7 +75,7 @@ void ServerActionServer::handleServerRegistration() const {
             if (server->servernameExists(params[0]) == false) {
                 ServerConnection* serverConnection = &connection->server;
                 serverConnection->name = params[0];
-                serverConnection->hopcount = params[1];  // TODO(Jelle) If needed, convert to uint16.
+                serverConnection->hopcount = params[1];
                 serverConnection->token = params[2];
                 serverConnection->info = params[3];
                 connection->connectionType = Connection::ServerType;

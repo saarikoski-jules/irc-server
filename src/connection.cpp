@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.cpp                                     :+:    :+:            */
+/*   connection.cpp                                    :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 11:57:30 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 11:14:14 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ Connection* Connection::getLeafConnection(const std::string& str) {
 
 void Connection::removeLeafConnectionByNick(const std::string& nickname) {
 	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
-		//TODO(Jules): Make a better matching function
 		if ((*i)->connectionType == ClientType && (*i)->client.nickName == nickname) {
 			delete *i;
 			leafConnections.erase(i);
@@ -77,7 +76,6 @@ void Connection::removeLeafConnectionByNick(const std::string& nickname) {
 
 void Connection::removeLeafServerByName(const std::string& serverName) {
 	for (std::vector<Connection*>::iterator i = leafConnections.begin(); i != leafConnections.end(); i++) {
-		//TODO(Jules): Make a better matching function
 		if ((*i)->connectionType == Connection::ServerType && (*i)->server.name == serverName) {
 			delete *i;
 			leafConnections.erase(i);

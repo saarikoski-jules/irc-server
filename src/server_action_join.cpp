@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/01 09:31:30 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 10:58:47 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,9 @@ void ServerActionJoin::addClientToChannel(const std::string& name, const std::st
         if (client == NULL) {
 			return;
 		}
-		// TODO: check if client is allowed to join channel
-		Logger::log(LogLevelDebug, client->client.nickName);
 		try {
             chan = server->findChannel(name);
-            chan->addClient(client, key); //if from server, make sure to always add client
+            chan->addClient(client, key);
         } catch (const ChannelException& e) {
             if (connection->connectionType == Connection::ClientType) {
                 server->sendReplyToClient(fd, e.what());
@@ -133,11 +131,7 @@ void ServerActionJoin::execute() {
     connection = server->getConnectionByFd(fd);
     switch (connection->connectionType) {
         case Connection::ServerType:
-            //idk what to do
-            // addExternalClientToChannel();
-            //find correct leaf connection, pass that to ServerActionJoin::connection
             try {
-                //TODO(Jules): This is prefix stuff. Make sure prefixstuff works
                 Connection* tmp = connection->getLeafConnection(prefix);
 				clientNick = tmp->client.nickName;
             } catch (const std::exception& e) {
@@ -152,13 +146,12 @@ void ServerActionJoin::execute() {
         
         case Connection::NoType:
             server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
-            //error
             break;
     }
 }
 
 void ServerActionJoin::joinChannels() {
-    if (params.size() < 1) {    // TODO(Jules): handle need more params somewhere else
+    if (params.size() < 1) { 
         handleNeedMoreParams();
         return;
     }

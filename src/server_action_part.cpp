@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/28 13:27:02 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:13:45 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void ServerActionPart::execute() {
 			} else {
 				tmp = connection;
 			}
-			chan->removeConnection(tmp);//TODO: if server, should pass leaf connection here
+			chan->removeConnection(tmp);
 			broadcastPart();
 			if (chan->getAmtUsers() == 0) {
 				server->deleteChannel(chan);
@@ -87,7 +87,6 @@ void ServerActionPart::execute() {
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendReplyToClient(fd, constructNoSuchChannelReply(connection->client.nickName, *it));
 			}
-			// TODO: should i still broadcast to other servers?
 		}
 	}
 }
