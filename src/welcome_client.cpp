@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       ::::::::             */
-/*   welcome_client.cpp                                :+:    :+:             */
-/*                                                    +:+                     */
-/*   By: jules <jsaariko@student.codam.nl>           +#+                      */
-/*                                                  +#+                       */
-/*   Created: 2021/05/07 14:24:01 by jules        #+#    #+#                  */
-/*   Updated: 2021/05/07 15:14:48 by jules        ########   odam.nl          */
+/*                                                        ::::::::            */
+/*   welcome_client.cpp                                 :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jules <jsaariko@student.codam.nl>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/05/07 14:24:01 by jules         #+#    #+#                 */
+/*   Updated: 2021/06/02 12:18:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,9 @@ void welcomeClient(Server* server, const int& fd, const std::string& prefix) {
 
     params.pop_back();
     reply = ReplyFactory::newReply(RPL_MYINFO, params);
+    server->sendReplyToClient(fd, reply);
+
+    reply = ReplyFactory::newReply(RPL_SERVERINFO, params);
     server->sendReplyToClient(fd, reply);
 
     IServerAction* action = factory.newAction("MOTD", params, fd, prefix);
