@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.cpp                                         :+:    :+:             */
+/*   reply.cpp                                          :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/01 15:48:58 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 12:17:08 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
 		break;
 	case RPL_MYINFO:
 		res = std::string(init +  Server::serverName + " 2.11  pstnolbk");
+   		break;
+    case RPL_SERVERINFO:
+		res = std::string(init +  "CHANTYPES=#& CHANMODE=pstnolbk MSGLEN=512 CASEMAPPING=ascii");
    		break;
 	case RPL_NAMREPLY:
         res = std::string(init +  params[1] + " " + params[2] + " :" + params[3]);

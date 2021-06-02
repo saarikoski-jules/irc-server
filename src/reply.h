@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.h                                           :+:    :+:             */
+/*   reply.h                                            :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/01 13:24:39 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 12:12:21 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ enum ReplyCode {
     ERR_NOTEXTTOSEND = 412,
     ERR_NORECIPIENT = 411,
     ERR_CANNOTSENDTOCHAN = 404,
-	ERR_NOMOTD = 422, 
+	ERR_NOMOTD = 422,
 	ERR_NOTONCHANNEL = 442,
 	ERR_UMODEUNKNOWNFLAG = 501,
 	ERR_USERSDONTMATCH = 502,
@@ -49,6 +49,7 @@ enum ReplyCode {
 	RPL_YOURHOST = 002,
 	RPL_CREATED = 003,
 	RPL_MYINFO = 004,
+    RPL_SERVERINFO = 005,
     RPL_NAMREPLY = 353,
     RPL_ENDOFNAMES = 366,
 	RPL_UMODEIS = 221,
