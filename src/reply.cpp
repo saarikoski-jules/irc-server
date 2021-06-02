@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 12:17:08 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 15:09:43 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         break;
     case ERR_NEEDMOREPARAMS:
         res = std::string(init + params[1] + " :Not enough parameters");
+        break;
+    case ERR_PASSWDMISMATCH:
+        res = std::string(init + " :Password incorrect");
         break;
     case ERR_NOSUCHNICK:
         res = std::string(init + params[1] + " :No such nick/channel");
