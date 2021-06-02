@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_nick.cpp                            :+:    :+:             */
+/*   server_action_nick.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 11:01:20 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 15:10:37 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,16 +130,24 @@ void ServerActionNick::handleNickNameChange() const {
             if (connection->connectionType == Connection::ClientType) {
                 std::string reply = constructNickChangeBroadcast(oldNickName, *newNickName);
                 server->sendMessageToAllServers(reply);
-            } else {
+            } else if (connection->password == SERVER_CONNECTION_PASSWORD) {
                 connection->connectionType = Connection::ClientType;
                 std::string reply = constructNewNickBroadcast(*connection);
                 server->sendMessageToAllServers(reply);
     			welcomeClient(server, fd, prefix);
+            } else {
+                handleInvalidPassword();
             }
         }
     } else {
         handleNickNameInUse();
     }
+}
+
+void ServerActionNick::handleInvalidPassword() const {
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_PASSWDMISMATCH, params));
 }
 
 void ServerActionNick::handleNickNameInUse() const {

@@ -42,15 +42,19 @@ void ServerActionUser::execute() {
                 client->hostName = *newHostName;
                 client->serverName = *newServerName;
                 client->realName = *newRealName;
-                if (server->nicknameExists(client->nickName) == false) {
-                    if (client->nickName != "*") {
-                        connection->connectionType = Connection::ClientType;
-                        std::string reply = constructNewNickBroadcast(*connection);
-                        server->sendMessageToAllServers(reply);
-                        welcomeClient(server, fd, prefix);
+                if (connection->password == SERVER_CONNECTION_PASSWORD) {
+                    if (server->nicknameExists(client->nickName) == false) {
+                        if (client->nickName != "*") {
+                            connection->connectionType = Connection::ClientType;
+                            std::string reply = constructNewNickBroadcast(*connection);
+                            server->sendMessageToAllServers(reply);
+                            welcomeClient(server, fd, prefix);
+                        }
+                    } else {
+                        handleNickNameInUse();
                     }
                 } else {
-                    handleNickNameInUse();
+                    handleInvalidPassword();
                 }
             } else {
                 std::vector<std::string> params;
@@ -67,6 +71,12 @@ void ServerActionUser::execute() {
     } catch (const std::out_of_range& e) {
 		// This will never happen
 	}
+}
+
+void ServerActionUser::handleInvalidPassword() const {
+    std::vector<std::string> params;
+    params.push_back(connection->client.nickName);
+    server->sendReplyToClient(fd, ReplyFactory::newReply(ERR_PASSWDMISMATCH, params));
 }
 
 void ServerActionUser::handleNickNameInUse() const {

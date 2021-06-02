@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 14:49:32 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 12:12:21 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 15:07:00 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ enum ReplyCode {
     ERR_NOSUCHCHANNEL = 403,
     ERR_NOTREGISTERED = 451,
     ERR_NEEDMOREPARAMS = 461,
+    ERR_PASSWDMISMATCH = 464,
     ERR_NOSUCHNICK = 401,
     ERR_NOPRIVILEGES = 481,
     ERR_CHANOPRIVSNEEDED = 482,

@@ -45,6 +45,9 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
     case ERR_NEEDMOREPARAMS:
         res = std::string(init + params[1] + " :Not enough parameters");
         break;
+    case ERR_PASSWDMISMATCH:
+        res = std::string(init + " :Password incorrect");
+        break;
     case ERR_NOSUCHNICK:
         res = std::string(init + params[1] + " :No such nick/channel");
         break;
