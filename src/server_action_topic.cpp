@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/02 11:01:44 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 11:39:26 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,9 @@ void ServerActionTopic::execute() {
 		}
 		chan = server->findChannel(params[0]);
 	} catch (const ChannelException& e) {
-		//TODO(Jules): send error no such channel
+		if (connection->connectionType == Connection::ClientType) {
+			server->sendReplyToClient(fd, constructNoSuchChannelReply(clientNick, params[0]));
+		}	
 	} catch (const std::exception& e) {
 		Logger::log(LogLevelDebug, "Invalid prefix");
 		return;
