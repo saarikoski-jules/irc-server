@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/02 10:45:48 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 15:10:37 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 16:34:30 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,10 @@ void ServerActionNick::handleNickNameChange() const {
             if (connection->connectionType == Connection::ClientType) {
                 std::string reply = constructNickChangeBroadcast(oldNickName, *newNickName);
                 server->sendMessageToAllServers(reply);
+                server->sendMessageToAllLocalUsersInClientChannels(connection,
+                    std::string("NICK :" + *newNickName),
+                    oldNickName);
+                server->sendMessage(connection->fd, reply);
             } else if (connection->password == SERVER_CONNECTION_PASSWORD) {
                 connection->connectionType = Connection::ClientType;
                 std::string reply = constructNewNickBroadcast(*connection);
