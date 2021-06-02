@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_user.h                              :+:    :+:             */
+/*   server_action_user.h                               :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:31:21 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 13:08:44 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 13:44:25 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 
+#include "connection.h"
 #include "iserver_action.h"
 
 class ServerActionUser: public IServerAction {
@@ -26,11 +27,13 @@ class ServerActionUser: public IServerAction {
     IServerAction* clone() const;
     ~ServerActionUser() {}
  private:
+    Connection* connection;
     std::vector<std::string> params;
     const std::string* newUserName;
     const std::string* newHostName;
     const std::string* newServerName;
     const std::string* newRealName;
+    void handleNickNameInUse() const;
 };
 
 #endif  // SERVER_ACTION_USER_H_
