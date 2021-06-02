@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   reply.cpp                                          :+:    :+:            */
+/*   reply.cpp                                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 15:41:18 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 15:09:43 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 15:52:46 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ std::string ReplyFactory::newReply(const ReplyCode& code, std::vector<std::strin
         res = std::string(init + params[1] + " :Erroneus nickname");
         break;
     case ERR_BADCHANNELKEY:
-        res = std::string(init + params[1] + " :Cannot join channel (+k)");
+        res = std::string(init + params[1] + " :Cannot join channel (+" + params[2] + ")");
         break;
     case ERR_NOSUCHCHANNEL:
         res = std::string(init + params[1] + " :No such channel");

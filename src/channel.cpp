@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 14:18:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/02 10:57:24 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/02 15:54:42 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ bool Channel::isBanned(Client* client) const {
         size_t posUser = (*i).find('!') + 1;
         size_t posHost = (*i).find('@') + 1;
         std::string maskNick(*i, 0, posUser - 1);
-        std::string maskUser(*i, posUser, posHost - posUser);
+        std::string maskUser(*i, posUser, posHost - posUser - 1);
         std::string maskHost(*i, posHost, i->length() - posHost);
 
         Logger::log(LogLevelDebug,
@@ -123,25 +123,30 @@ bool Channel::isBanned(Client* client) const {
 
 bool Channel::canJoin(Client* client, const std::string& key) const {
     if (modes.find('k') != std::string::npos && this->key != key) {
-        return (false);
+        throw 'k';
+		return (false);
     }
     if (modes.find('l') != std::string::npos && limit <= connections.size()) {
-        return (false);
+		throw 'l';
+		return (false);
     }
     if (isBanned(client)) {
-        return (false);
+        throw 'b';
+		return (false);
     }
     return (true);
 }
 
 void Channel::addClient(Connection* connection, const std::string& key) {
     Client* client = &connection->client;
-    if (canJoin(client, key)) {
-        connections.push_back(connection);
-    } else {
+    try {
+        canJoin(client, key);
+		connections.push_back(connection);
+    } catch (const char& e) {
         std::vector<std::string> errorParams;
         errorParams.push_back(connection->client.nickName);
         errorParams.push_back(name);
+		errorParams.push_back(std::string(1, e));
         throw ChannelException(ReplyFactory::newReply(ERR_BADCHANNELKEY, errorParams), false);
     }
 }

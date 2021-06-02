@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_user.cpp                             :+:    :+:            */
+/*   server_action_user.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:34:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/02 15:12:34 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/02 15:56:47 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void ServerActionUser::execute() {
                 newHostName = &params[1];
                 newServerName = &params[2];
                 newRealName = &params[3];
-                client->userName = std::string("~" + *newUserName);
+                client->userName = *newUserName;
                 client->hostName = *newHostName;
                 client->serverName = *newServerName;
                 client->realName = *newRealName;
