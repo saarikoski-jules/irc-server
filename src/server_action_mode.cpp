@@ -386,7 +386,7 @@ void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const st
     }
     reply = std::string("MODE " + channelName + " " + modes + " " + replyString);
 	for (std::vector<Connection*>::iterator it = sendTo.begin(); it != sendTo.end(); it++) {
-		if (server->hasLocalConnection(**it) && *it != connection) {
+		if (server->hasLocalConnection(**it)) {
 			server->sendReplyToClient((*it)->fd, reply, senderPrefix);
 		}
 	}
