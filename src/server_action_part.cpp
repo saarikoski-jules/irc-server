@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_part.cpp                             :+:    :+:            */
+/*   server_action_part.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/20 16:04:13 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/09 16:43:32 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 17:28:50 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ void ServerActionPart::execute() {
 			} else {
 				tmp = connection;
 			}
-			chan->removeConnection(tmp);
 			broadcastPart();
+			chan->removeConnection(tmp);
 			if (chan->getAmtUsers() == 0) {
 				server->deleteChannel(chan);
 			}
