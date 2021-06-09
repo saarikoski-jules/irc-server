@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_notice.cpp                          :+:    :+:             */
+/*   server_action_notice.cpp                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/09 14:03:48 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:41:13 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ void ServerActionNotice::sendMessages(const std::vector<std::pair<Connection*, s
 	}
 	if (broadcast) {
 		if (sender->connectionType == Connection::ClientType) {
-			server->sendMessageToAllServers(std::string(":" + senderPrefix + " NOTICE " + targets + " :" + params[1]));
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " NOTICE " + targets + " :" + params[1] + "\r\n"));
 		} else if (sender->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " NOTICE " + targets + " :" + params[1]), fd);
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " NOTICE " + targets + " :" + params[1] + "\r\n"), fd);
 		}
 	}
 }

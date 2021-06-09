@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_topic.cpp                           :+:    :+:             */
+/*   server_action_topic.cpp                            :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 15:24:48 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/02 11:39:26 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:45:10 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void ServerActionTopic::execute() {
 	} catch (const ChannelException& e) {
 		if (connection->connectionType == Connection::ClientType) {
 			server->sendReplyToClient(fd, constructNoSuchChannelReply(clientNick, params[0]));
-		}	
+		}
 	} catch (const std::exception& e) {
 		Logger::log(LogLevelDebug, "Invalid prefix");
 		return;
@@ -86,7 +86,7 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 		chan->topic = params[1];
 		chan->topicIsSet = true;
 		std::vector<Connection*> broadcastTo = chan->getConnections();
-		
+
 		std::string sentFrom;
 		if (connection->connectionType == Connection::ClientType) {
 			sentFrom = std::string(connection->client.nickName + "!" + connection->client.userName + "@" + connection->client.hostName);
@@ -102,9 +102,9 @@ void ServerActionTopic::changeTopic(const std::string& clientNick) {
 		sendReplyToLocalClient(ReplyFactory::newReply(RPL_TOPIC, replyParams));
 		if (chan->name[0] == '#') {
 			if (connection->connectionType == Connection::ClientType) {
-				server->sendMessageToAllServers(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic));
+				server->sendMessageToAllServers(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic + "\r\n"));
 			} else if (connection->connectionType == Connection::ServerType) {
-				server->sendMessageToAllServersButOne(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic), fd);
+				server->sendMessageToAllServersButOne(std::string(":" + sentFrom + " TOPIC " + chan->name + " :" + chan->topic + "\r\n"), fd);
 			}
 		}
 	}

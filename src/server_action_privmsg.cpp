@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_privmsg.cpp                         :+:    :+:             */
+/*   server_action_privmsg.cpp                          :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/02 11:05:06 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:40:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,9 @@ void ServerActionPrivmsg::sendMessages(const std::vector<std::pair<Connection*, 
 	}
 	if (broadcast) {
 		if (sender->connectionType == Connection::ClientType) {
-			server->sendMessageToAllServers(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1]));
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1] + "\r\n"));
 		} else if (sender->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1]), fd);
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " PRIVMSG " + targets + " :" + params[1] + "\r\n"), fd);
 		}
 	}
 }
