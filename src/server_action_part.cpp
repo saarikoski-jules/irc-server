@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       ::::::::             */
-/*   server_action_part.cpp                            :+:    :+:             */
-/*                                                    +:+                     */
-/*   By: jules <jsaariko@student.codam.nl>           +#+                      */
-/*                                                  +#+                       */
-/*   Created: 2021/05/20 16:04:13 by jules        #+#    #+#                  */
-/*   Updated: 2021/06/02 11:13:45 by jules        ########   odam.nl          */
+/*                                                        ::::::::            */
+/*   server_action_part.cpp                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jules <jsaariko@student.codam.nl>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/05/20 16:04:13 by jules         #+#    #+#                 */
+/*   Updated: 2021/06/09 16:43:32 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void ServerActionPart::broadcastPart() const {
 			server->sendReplyToClient((*it)->fd, std::string("PART " + chan->name), senderPrefix);
 		}
 	}
-	std::string msg(":" + senderPrefix + " PART " + chan->name);
+	std::string msg(":" + senderPrefix + " PART " + chan->name + "\r\n");
 	if (chan->name[0] == '#') {
 		if (connection->connectionType == Connection::ClientType) {
 			server->sendMessageToAllServers(msg);
@@ -78,7 +78,7 @@ void ServerActionPart::execute() {
 			broadcastPart();
 			if (chan->getAmtUsers() == 0) {
 				server->deleteChannel(chan);
-			} 
+			}
 		} catch (const ChannelException& e) {
 			if (connection->connectionType == Connection::ClientType) {
 				server->sendReplyToClient(fd, constructNotOnChannelReply(connection->client.nickName, *it));

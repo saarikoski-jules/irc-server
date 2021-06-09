@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_join.cpp                            :+:    :+:             */
+/*   server_action_join.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/02 10:58:47 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:52:04 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ void ServerActionJoin::broadcastJoin(Channel* chan) {
     }
     if (chan->name[0] == '#') {
         if (connection->connectionType == Connection::ServerType) {
-            server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey()), fd);
+            server->sendMessageToAllServersButOne(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey() + "\r\n"), fd);
         } else if (connection->connectionType == Connection::ClientType) {
-            server->sendMessageToAllServers(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey()));
+            server->sendMessageToAllServers(std::string(":" + clientPrefix + " JOIN " + chan->name + " :" + chan->getKey() + "\r\n"));
         }
     }
 }
@@ -137,13 +137,13 @@ void ServerActionJoin::execute() {
             } catch (const std::exception& e) {
                 // Connection not found. This should never happen?
             }
-			joinChannels();	
+			joinChannels();
 			break;
 		case Connection::ClientType:
 			clientNick = connection->client.nickName;
             joinChannels();
             break;
-        
+
         case Connection::NoType:
             server->sendReplyToClient(fd, constructNotRegisteredReply(connection->client.nickName));
             break;
@@ -151,7 +151,7 @@ void ServerActionJoin::execute() {
 }
 
 void ServerActionJoin::joinChannels() {
-    if (params.size() < 1) { 
+    if (params.size() < 1) {
         handleNeedMoreParams();
         return;
     }

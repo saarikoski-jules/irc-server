@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_quit.cpp                            :+:    :+:             */
+/*   server_action_quit.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/31 13:34:32 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:44:21 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void ServerActionQuit::handleServerQuit() {
 		server->sendMessageToAllLocalUsersInClientChannels(leaf, reply, prefix);
 		server->removeClientFromChannels(leaf);
 		connection->removeLeafConnectionByNick(prefix);
-        server->sendMessageToAllServersButOne(reply, fd);
+        server->sendMessageToAllServersButOne(reply + "\r\n", fd);
     } catch (const std::exception& e) {
 		Logger::log(LogLevelDebug, "handleServerQuit");
 		Logger::log(LogLevelError, e.what());

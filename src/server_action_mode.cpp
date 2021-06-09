@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_mode.cpp                            :+:    :+:             */
+/*   server_action_mode.cpp                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/02 11:08:20 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 16:42:25 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,13 +131,13 @@ void ServerActionMode::changeUserMode() {
 			sendUnknownUModeReply(*i, tmp->client.nickName);
 		} else {
 			if (sign == '+') {
-				tmp->client.mode = "i"; 
+				tmp->client.mode = "i";
 			} else {
 				tmp->client.mode = "";
 			}
 			sendUModeIsReply(tmp->client.mode, tmp->client.nickName);
 		}
-	} 
+	}
 }
 
 void ServerActionMode::sendUsersDontMatchReply(std::string cliNick) {
@@ -154,7 +154,7 @@ void ServerActionMode::sendUsersDontMatchReply(std::string cliNick) {
 
 void ServerActionMode::sendUnknownUModeReply(char c, std::string cliNick) {
 	std::vector<std::string> params;
-	
+
 	if (connection->connectionType == Connection::ServerType) {
 		return;
 	}
@@ -392,9 +392,9 @@ void ServerActionMode::broadcastChannelModeIs(const std::string& modes, const st
 	}
 	if (channelName[0] == '#') {
 		if (connection->connectionType == Connection::ServerType) {
-			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " " + reply), fd);
+			server->sendMessageToAllServersButOne(std::string(":" + senderPrefix + " " + reply + "\r\n"), fd);
 		} else {
-			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply));
+			server->sendMessageToAllServers(std::string(":" + senderPrefix + " " + reply + "\r\n"));
 		}
 	}
 }
