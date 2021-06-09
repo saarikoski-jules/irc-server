@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 14:11:50 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 14:15:04 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,7 @@ IServerAction* actionFactory::who(
 IServerAction* actionFactory::notice(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionNotice(params, fd, prefix));
+}
 
 IServerAction* actionFactory::store(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
