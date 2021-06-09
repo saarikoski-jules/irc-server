@@ -6,7 +6,7 @@
 /*   By: jules <jsaariko@student.codam.nl>           +#+                      */
 /*                                                  +#+                       */
 /*   Created: 2021/06/09 12:09:02 by jules        #+#    #+#                  */
-/*   Updated: 2021/06/09 13:16:41 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:42:02 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,13 @@
 #include <string>
 
 #include "server.h"
-#include <iostream>
+
 ServerActionStore::ServerActionStore(
 	std::vector<std::string> params, const int& fd, const std::string& prefix) :
 IServerAction(fd, 1, prefix),
-params(params) {
-	std::cout << "creating store action" << std::endl;
-}
+params(params) {}
 
 void ServerActionStore::execute() {
-	std::cout << "storinggg" << std::endl;
 	try {
 		Connection* user = server->getConnectionByFd(fd);
 		user->partialMsg = params[0];
