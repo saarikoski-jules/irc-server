@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 12:49:20 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 14:08:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void Socket::readFromFds() {
     actionFactory factory;
 
     for (int fd = 0; fd <= maxFd; fd++) {
-        if (FD_ISSET(fd, &readSet)) {
+        if (fd != socketFd && FD_ISSET(fd, &readSet)) {
             Utils::Mem::set(data_buffer, 0, MAX_MESSAGE_SIZE + 1);
             chars_read = read(fd, data_buffer, MAX_MESSAGE_SIZE);
             if (chars_read > 0) {
