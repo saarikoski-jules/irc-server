@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   connection.h                                       :+:    :+:            */
+/*   connection.h                                      :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:03:42 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/28 11:44:09 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 12:31:31 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ struct Connection {
     ServerConnection server;
     std::vector<Connection*> leafConnections;
     bool isStartingServer;
+	std::string partialMsg;
 };
 
 #endif  // CONNECTION_H_
