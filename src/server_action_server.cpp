@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 15:02:33 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 11:49:25 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 15:29:59 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "logger.h"
 #include "server.h"
 #include "construct_reply.h"
-#include "action_factory.h"
+#include "server_action_disconnect.h"
 
 ServerActionServer::ServerActionServer(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -60,10 +60,9 @@ void ServerActionServer::handleServerFromServer() const {
             server->sendMessageToAllServersButOne(reply, fd);
             connection->leafConnections.push_back(newConnection);
         } else {
-            actionFactory factory;
             std::vector<std::string> disconnectParams;
             disconnectParams.push_back("Server name already exists, disconnecting");
-            server->addNewAction(factory.newAction("DISCONNECT", disconnectParams, connection->fd, prefix));
+			server->addNewAction(new ServerActionDisconnect(disconnectParams, connection->fd, prefix));
         }
     }
 }
@@ -88,11 +87,10 @@ void ServerActionServer::handleServerRegistration() const {
                 server->sendMessageToAllServersButOne(reply, fd);
                 server->burstServerInformationTo(fd);
             } else {
-                actionFactory factory;
                 std::vector<std::string> disconnectParams;
                 disconnectParams.push_back("Server name already exists, disconnecting");
-                server->addNewAction(factory.newAction("DISCONNECT", disconnectParams, connection->fd, prefix));
-            }
+           		server->addNewAction(new ServerActionDisconnect(disconnectParams, connection->fd, prefix));
+			}
         } else {
             server->sendErrorToConnectionBypassingQueue(fd, "Unable to authorize");
         }

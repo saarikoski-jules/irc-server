@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 13:36:19 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 15:06:46 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "action_factory.h"
 #include "iserver_action.h"
 #include "logger.h"
+#include "server_action_store.h"
 
 #define LINEBREAK "\r\n"
 
@@ -141,9 +142,8 @@ std::vector<IServerAction*> MessageParser::parse(const std::string& data, const 
     for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
 			if (isPartial && i + 1 == commands.end()) {
-				actionFactory factory;
 				std::vector<std::string> params(1, *i);
-				IServerAction* action = factory.newAction("STORE", params, fd, "");
+				IServerAction* action = new ServerActionStore(params, fd, ""); 
 				actions.push_back(action);
 			} else {
 				IServerAction* action = createActionFromMessage(*i, fd);

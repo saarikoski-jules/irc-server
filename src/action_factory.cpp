@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 13:09:38 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 15:25:56 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 #include <vector>
 
-#include "server_action_disconnect.h"
-#include "server_action_accept.h"
-#include "server_action_receive.h"
 #include "server_action_nick.h"
 #include "server_action_user.h"
 #include "server_action_join.h"
@@ -35,14 +32,10 @@
 #include "server_action_part.h"
 #include "server_action_squit.h"
 #include "server_action_who.h"
-#include "server_action_store.h"
 
-const size_t actionFactory::actionFormatLen = 21;
+const size_t actionFactory::actionFormatLen = 17;
 
 const actionFormat_t actionFactory::actionFormats[] = {
-    {&actionFactory::accept, "ACCEPT"},
-    {&actionFactory::receive, "RECEIVE"},
-    {&actionFactory::disconnect, "DISCONNECT"},
     {&actionFactory::nick, "NICK"},
     {&actionFactory::user, "USER"},
     {&actionFactory::join, "JOIN"},
@@ -59,24 +52,8 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::topic, "TOPIC"},
     {&actionFactory::part, "PART"},
     {&actionFactory::squit, "SQUIT"},
-    {&actionFactory::who, "WHO"},
-    {&actionFactory::store, "STORE"}
+    {&actionFactory::who, "WHO"}
 };
-
-IServerAction* actionFactory::accept(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionAccept(params, fd, prefix));
-}
-
-IServerAction* actionFactory::receive(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionReceive(params, fd, prefix));
-}
-
-IServerAction* actionFactory::disconnect(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionDisconnect(params, fd, prefix));
-}
 
 IServerAction* actionFactory::nick(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
@@ -161,11 +138,6 @@ IServerAction* actionFactory::squit(
 IServerAction* actionFactory::who(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionWho(params, fd, prefix));
-}
-
-IServerAction* actionFactory::store(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionStore(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

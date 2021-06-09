@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_kill.cpp                             :+:    :+:            */
+/*   server_action_kill.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/05 14:22:20 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/12 14:03:37 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 15:21:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 #include <vector>
 #include <string>
 
-#include "action_factory.h"
 #include "message_parser.h"
 #include "server.h"
 #include "reply.h"
 #include "logger.h"
 #include "connection.h"
+#include "server_action_disconnect.h"
 
 ServerActionKill::ServerActionKill(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -59,10 +59,9 @@ void ServerActionKill::handleServerKill() {
 }
 
 void ServerActionKill::handleClientDisconnect() {
-    actionFactory factory;
     std::vector<std::string> disconnectParams;
     disconnectParams.push_back(params[1]);
-    server->addNewAction(factory.newAction("DISCONNECT", disconnectParams, connection->fd, prefix));
+	server->addNewAction(new ServerActionDisconnect(disconnectParams, connection->fd, prefix));
 }
 
 void ServerActionKill::sendKillMessageToServer() {
