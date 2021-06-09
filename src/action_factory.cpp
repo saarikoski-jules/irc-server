@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 13:09:38 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 14:15:04 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@
 #include "server_action_part.h"
 #include "server_action_squit.h"
 #include "server_action_who.h"
+#include "server_action_notice.h"
 #include "server_action_store.h"
 
-const size_t actionFactory::actionFormatLen = 21;
+const size_t actionFactory::actionFormatLen = 22;
 
 const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::accept, "ACCEPT"},
@@ -60,6 +61,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::part, "PART"},
     {&actionFactory::squit, "SQUIT"},
     {&actionFactory::who, "WHO"},
+    {&actionFactory::notice, "NOTICE"},
     {&actionFactory::store, "STORE"}
 };
 
@@ -161,6 +163,11 @@ IServerAction* actionFactory::squit(
 IServerAction* actionFactory::who(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionWho(params, fd, prefix));
+}
+
+IServerAction* actionFactory::notice(
+    std::vector<std::string> params, const int& fd, const std::string& prefix) {
+    return (new ServerActionNotice(params, fd, prefix));
 }
 
 IServerAction* actionFactory::store(
