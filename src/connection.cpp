@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 16:07:44 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 11:14:14 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:20:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,21 @@
 
 Connection::Connection() :
 fd(-1),
-connectionType(Connection::NoType) {
+connectionType(Connection::NoType),
+partialMsg("") {
 }
 
 Connection::Connection(const int& fd) :
 fd(fd),
-connectionType(Connection::NoType) {
+connectionType(Connection::NoType),
+partialMsg("") {
 }
 
 Connection::Connection(const std::string& serverConfiguration) :
 fd(-1),
 connectionType(Connection::NoType),
-server(serverConfiguration) {
+server(serverConfiguration),
+partialMsg("") {
 }
 
 Connection::~Connection() {

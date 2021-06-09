@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:38:56 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/04/27 12:45:37 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:16:28 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ params(params) {}
 
 void ServerActionReceive::execute() {
     MessageParser parser;
-    std::vector<IServerAction*> newActions = parser.parse(params[0], fd);
+	Connection* user = server->getConnectionByFd(fd);
+	std::string fullMsg(user->partialMsg + params[0]);
+	user->partialMsg = "";
+	std::vector<IServerAction*> newActions = parser.parse(fullMsg, fd);
     while (!newActions.empty()) {
         server->addNewAction(newActions.front());
         newActions.erase(newActions.begin());

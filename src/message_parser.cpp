@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/26 11:15:32 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:36:19 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
     std::string::iterator it = message.begin();
 
     IServerAction* action;
-
     try {
         prefix = genPrefix(&message, &it);
         cmd = genCommand(&message, &it);
@@ -125,13 +124,32 @@ IServerAction* MessageParser::createActionFromMessage(std::string message, const
 
 std::vector<IServerAction*> MessageParser::parse(const std::string& data, const int& fd) {
     std::vector<IServerAction*> actions;
-    std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
+	std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
+
+	bool isPartial;
+	try {
+		if (data.substr(data.length() - 2) == LINEBREAK) {
+			isPartial = false;
+		} else {
+			isPartial = true;
+		}
+	} catch (const std::exception& e) {
+		isPartial = true;
+	}
+	
 
     for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
-            IServerAction* action = createActionFromMessage(*i, fd);
-            actions.push_back(action);
-        } catch (const MessageParserException& e) {
+			if (isPartial && i + 1 == commands.end()) {
+				actionFactory factory;
+				std::vector<std::string> params(1, *i);
+				IServerAction* action = factory.newAction("STORE", params, fd, "");
+				actions.push_back(action);
+			} else {
+				IServerAction* action = createActionFromMessage(*i, fd);
+				actions.push_back(action);
+			}
+		} catch (const MessageParserException& e) {
             Logger::log(LogLevelDebug, "Couldn't generate action from message");
         }
     }
