@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 12:37:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 12:51:13 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,22 +118,28 @@ void Server::run() {
     while (true) {
         listenOnSocket();
         handleAction();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
 void Server::listenOnSocket() {
-    try {
-        serverSocket.checkNewConnections();
-    } catch (const SocketException& e) {
-        // Fall through because we got a normal message.
-    }
-    if (connections.empty() == false) {
+    serverSocket.createFdSet(&connections);
+    int status = serverSocket.selectFdSet();
+    if (status > 0) {
         try {
-            serverSocket.checkConnectionAndNewData(&connections);
+            serverSocket.checkNewConnections();
         } catch (const SocketException& e) {
             // Fall through because we got a normal message.
         }
+        if (connections.empty() == false) {
+            try {
+                serverSocket.checkConnectionAndNewData();
+            } catch (const SocketException& e) {
+                // Fall through because we got a normal message.
+            }
+        }
+    } else if (status == -1) {
+        Logger::log(LogLevelError, "Select timed out in listenOnSocket");
     }
 }
 
