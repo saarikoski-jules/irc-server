@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/08 13:30:35 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 13:22:32 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:36:19 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,11 +127,16 @@ std::vector<IServerAction*> MessageParser::parse(const std::string& data, const 
 	std::vector<std::string> commands = Utils::String::tokenize(data, data.length(), LINEBREAK);
 
 	bool isPartial;
-	if (data.substr(data.length() - 2) == LINEBREAK) {
-		isPartial = false;
-	} else {
+	try {
+		if (data.substr(data.length() - 2) == LINEBREAK) {
+			isPartial = false;
+		} else {
+			isPartial = true;
+		}
+	} catch (const std::exception& e) {
 		isPartial = true;
 	}
+	
 
     for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); i++) {
         try {
