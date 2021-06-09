@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 12:37:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 13:22:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,22 +118,28 @@ void Server::run() {
     while (true) {
         listenOnSocket();
         handleAction();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
 void Server::listenOnSocket() {
-    try {
-        serverSocket.checkNewConnections();
-    } catch (const SocketException& e) {
-        // Fall through because we got a normal message.
-    }
-    if (connections.empty() == false) {
+    serverSocket.createFdSet(&connections);
+    int status = serverSocket.selectFdSet();
+    if (status > 0) {
         try {
-            serverSocket.checkConnectionAndNewData(&connections);
+            serverSocket.checkNewConnections();
         } catch (const SocketException& e) {
             // Fall through because we got a normal message.
         }
+        if (connections.empty() == false) {
+            try {
+                serverSocket.checkConnectionAndNewData();
+            } catch (const SocketException& e) {
+                // Fall through because we got a normal message.
+            }
+        }
+    } else if (status == -1) {
+        Logger::log(LogLevelError, "Select timed out in listenOnSocket");
     }
 }
 
@@ -339,6 +345,14 @@ bool Server::hasLocalConnection(const Connection& connection) {
         if (connection.server.name != otherConnection->server.name) {
             return (false);
         }
+    }
+    return (true);
+}
+
+bool Server::fdExists(const int& fd) {
+    std::map<const int, Connection*>::iterator it = connections.find(fd);
+    if (it == connections.end()) {
+        return (false);
     }
     return (true);
 }
