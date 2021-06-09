@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_privmsg.cpp                          :+:    :+:            */
+/*   server_action_privmsg.cpp                         :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jules <jsaariko@student.codam.nl>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/28 13:44:06 by jules         #+#    #+#                 */
-/*   Updated: 2021/06/09 16:40:26 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 18:07:10 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,16 @@ void ServerActionPrivmsg::findMatchingConnections() {
 				}
                 Channel* chan = server->findChannel(*i);
                 std::string channelModes = chan->getModes();
-                if (channelModes.find('n') == std::string::npos || chan->connectionIsInChannel(sender)) {
+				Connection* local;
+				if (sender->connectionType == Connection::ServerType) {
+					local = sender->getLeafConnection(prefix);
+				} else {
+					local = sender;
+				}
+				if (channelModes.find('n') == std::string::npos || chan->connectionIsInChannel(local)) {
                     std::vector<Connection*> channelClients = chan->getConnections();
                     for (std::vector<Connection*>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++) {
-                        if (*cli != sender) {
+                        if (*cli != local) {
 							if (server->hasLocalConnection(**cli)) {
                        			sendTo.push_back(make_pair(*cli, *i));
 							}
