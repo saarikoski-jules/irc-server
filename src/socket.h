@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   socket.h                                          :+:    :+:             */
+/*   socket.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 15:48:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/05/20 09:29:42 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 12:29:41 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,19 @@ class Socket {
  public:
     explicit Socket(std::queue<IServerAction*>* actions);
     void bindAndListenToPort(const int& port);
+    void createFdSet(std::map<const int, Connection*>* connections);
+    int selectFdSet();
     void checkNewConnections();
-    void checkConnectionAndNewData(std::map<const int, Connection*>* connections);
+    void checkConnectionAndNewData();
     void sendData(const int& clientFd, const std::string& msg);
  private:
     Socket();
     int socketFd;
     struct sockaddr_in addr;
+    int maxFd;
     fd_set readSet;
     fd_set writeSet;
-    int createFdSet(std::map<const int, Connection*>* connections);
-    void readFromFds(const int& maxFd);
+    void readFromFds();
     std::queue<IServerAction*>* actions;
 };
 
