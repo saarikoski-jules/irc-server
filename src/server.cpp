@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 09:59:57 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/02 12:37:07 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 13:22:26 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,6 +339,14 @@ bool Server::hasLocalConnection(const Connection& connection) {
         if (connection.server.name != otherConnection->server.name) {
             return (false);
         }
+    }
+    return (true);
+}
+
+bool Server::fdExists(const int& fd) {
+    std::map<const int, Connection*>::iterator it = connections.find(fd);
+    if (it == connections.end()) {
+        return (false);
     }
     return (true);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server.h                                          :+:    :+:             */
+/*   server.h                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 10:00:11 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/05/31 09:44:13 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 13:07:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Server {
     void deleteConnection(const int& fd);
     Connection* getConnectionByFd(const int& fd);
     bool hasLocalConnection(const Connection& connection);
+    bool fdExists(const int& fd);
     bool nicknameExists(const std::string& nickName);
     bool usernameExists(const std::string& userName);
     bool servernameExists(const std::string& serverName);
