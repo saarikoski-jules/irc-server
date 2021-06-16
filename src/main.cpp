@@ -11,6 +11,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <csignal>
+
 #include "start_irc_server.h"
 
 #include "server.h"
@@ -19,6 +21,7 @@
 int main(int argc, char** argv) {
     try {
 		Logger::log(LogLevelInfo, "Program started");
+        signal(SIGPIPE, SIG_IGN);
         startIrcServerFromArguments(argc, argv);
     } catch (const ArgumentException& e) {
         Logger::log(LogLevelFatal, e.what());
