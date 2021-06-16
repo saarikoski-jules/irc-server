@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/16 14:04:39 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/04/23 18:12:05 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/16 13:59:11 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cerrno>
 
 #include "utils.h"
 #include "logger.h"
@@ -58,11 +57,8 @@ void ServerConnection::connectToServer(int* fd) {
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = inet_addr(hostName.c_str());
     serverAddress.sin_port = htons(port);
-    if (connect(*fd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0
-    && errno != EINPROGRESS) {
-        throw ServerConnectionException("Could not connect to remote server", true);
-    }
-    Logger::log(LogLevelInfo, "Connected remote server succesfully");
+    connect(*fd, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    Logger::log(LogLevelInfo, "Attempted to connect to remote server succesfully");
 }
 
 ServerConnectionException::ServerConnectionException(const std::string& message, const bool& fatal) :
