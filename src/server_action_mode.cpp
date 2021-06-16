@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/20 11:09:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 16:42:25 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/16 13:54:29 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void ServerActionMode::changeMode() {
             tmp = connection;
         }
         if (!chan->isOper(tmp) && (params[1] != "+b" && params[1] != "b")) {
-            std::string reply = constructChanoPrivsNeededReply(connection->client.userName, chan->name);
+            std::string reply = constructChanoPrivsNeededReply(connection->client.nickName, chan->name);
             sendReplyToLocalClient(reply);
             return;
         }
