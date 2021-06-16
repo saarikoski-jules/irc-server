@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 13:02:31 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 14:15:04 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 15:34:03 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 #include <vector>
 
-#include "server_action_disconnect.h"
-#include "server_action_accept.h"
-#include "server_action_receive.h"
 #include "server_action_nick.h"
 #include "server_action_user.h"
 #include "server_action_join.h"
@@ -36,14 +33,10 @@
 #include "server_action_squit.h"
 #include "server_action_who.h"
 #include "server_action_notice.h"
-#include "server_action_store.h"
 
-const size_t actionFactory::actionFormatLen = 22;
+const size_t actionFactory::actionFormatLen = 18;
 
 const actionFormat_t actionFactory::actionFormats[] = {
-    {&actionFactory::accept, "ACCEPT"},
-    {&actionFactory::receive, "RECEIVE"},
-    {&actionFactory::disconnect, "DISCONNECT"},
     {&actionFactory::nick, "NICK"},
     {&actionFactory::user, "USER"},
     {&actionFactory::join, "JOIN"},
@@ -62,23 +55,7 @@ const actionFormat_t actionFactory::actionFormats[] = {
     {&actionFactory::squit, "SQUIT"},
     {&actionFactory::who, "WHO"},
     {&actionFactory::notice, "NOTICE"},
-    {&actionFactory::store, "STORE"}
 };
-
-IServerAction* actionFactory::accept(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionAccept(params, fd, prefix));
-}
-
-IServerAction* actionFactory::receive(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionReceive(params, fd, prefix));
-}
-
-IServerAction* actionFactory::disconnect(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionDisconnect(params, fd, prefix));
-}
 
 IServerAction* actionFactory::nick(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
@@ -168,11 +145,6 @@ IServerAction* actionFactory::who(
 IServerAction* actionFactory::notice(
     std::vector<std::string> params, const int& fd, const std::string& prefix) {
     return (new ServerActionNotice(params, fd, prefix));
-}
-
-IServerAction* actionFactory::store(
-    std::vector<std::string> params, const int& fd, const std::string& prefix) {
-    return (new ServerActionStore(params, fd, prefix));
 }
 
 IServerAction* actionFactory::newAction(

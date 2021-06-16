@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   socket.cpp                                         :+:    :+:            */
+/*   socket.cpp                                        :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/03/31 13:27:19 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 14:08:26 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 15:13:46 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@
 #include "utils.h"
 #include "connection.h"
 #include "server_connection.h"
-#include "action_factory.h"
+#include "server_action_accept.h"
+#include "server_action_disconnect.h"
+#include "server_action_receive.h"
 
 Socket::Socket(std::queue<IServerAction*>* actions) :
 socketFd(-1),
@@ -84,7 +86,6 @@ void Socket::checkNewConnections() {
     if (FD_ISSET(socketFd, &readSet)) {
         int addrlen;
         int fd;
-        IServerAction* action;
 
         addrlen = sizeof(addr);
         fd = accept(socketFd, reinterpret_cast<sockaddr*>(&addr),
@@ -92,9 +93,8 @@ void Socket::checkNewConnections() {
         if (fd >= 0) {
             Logger::log(LogLevelInfo, "Recieved a connection request");
             fcntl(fd, F_SETFL, O_NONBLOCK);
-            actionFactory factory;
             std::vector<std::string> vec;
-            action = factory.newAction("ACCEPT", vec, fd);
+			IServerAction* action = new ServerActionAccept(vec, fd, "");
             actions->push(action);
         } else {
             throw SocketException("No connection request detected", false);
@@ -110,7 +110,6 @@ void Socket::readFromFds() {
     int chars_read;
     char data_buffer[MAX_MESSAGE_SIZE + 1];
     IServerAction *action;
-    actionFactory factory;
 
     for (int fd = 0; fd <= maxFd; fd++) {
         if (fd != socketFd && FD_ISSET(fd, &readSet)) {
@@ -119,14 +118,14 @@ void Socket::readFromFds() {
             if (chars_read > 0) {
                 std::vector<std::string> vec;
                 vec.push_back(data_buffer);
-                action = factory.newAction("RECEIVE", vec, fd);
+				action = new ServerActionReceive(vec, fd, "");
                 actions->push(action);
 
                 Logger::log(LogLevelDebug, "Received message from client:");
                 Logger::log(LogLevelDebug, data_buffer);
             } else {
                 std::vector<std::string> vec;
-                action = factory.newAction("DISCONNECT", vec, fd);
+				action = new ServerActionDisconnect(vec, fd, "");
                 actions->push(action);
             }
         }

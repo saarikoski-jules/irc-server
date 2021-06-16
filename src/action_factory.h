@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/06 11:43:23 by jsaariko      #+#    #+#                 */
-/*   Updated: 2021/06/09 14:12:29 by jules        ########   odam.nl          */
+/*   Updated: 2021/06/09 15:34:21 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@ typedef struct actionFormat_s actionFormat_t;
 
 class actionFactory {
  private:
-    IServerAction* accept(
-        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* receive(
-        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* disconnect(
-        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* nick(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* user(
@@ -63,8 +57,6 @@ class actionFactory {
     IServerAction* who(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
     IServerAction* notice(
-        std::vector<std::string> params, const int& fd, const std::string& prefix = "");
-    IServerAction* store(
         std::vector<std::string> params, const int& fd, const std::string& prefix = "");
   static const actionFormat_t actionFormats[];
     static const size_t actionFormatLen;

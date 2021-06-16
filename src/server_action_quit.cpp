@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   server_action_quit.cpp                             :+:    :+:            */
+/*   server_action_quit.cpp                            :+:    :+:             */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/07 14:10:01 by jvisser       #+#    #+#                 */
-/*   Updated: 2021/06/09 16:44:21 by jvisser       ########   odam.nl         */
+/*   Updated: 2021/06/09 16:56:09 by jules        ########   odam.nl          */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 #include <unistd.h>
 
 #include "message_parser.h"
-#include "action_factory.h"
 #include "server.h"
 #include "logger.h"
+#include "server_action_disconnect.h"
 
 ServerActionQuit::ServerActionQuit(
     std::vector<std::string> params, const int& fd, const std::string& prefix) :
@@ -60,9 +60,8 @@ void ServerActionQuit::handleServerQuit() {
 
 void ServerActionQuit::handleClientQuit() {
     try {
-        actionFactory factory;
-        server->addNewAction(factory.newAction("DISCONNECT", params, fd, prefix));
-    } catch (const std::exception& e) {
+    	server->addNewAction(new ServerActionDisconnect(params, fd, prefix));
+	} catch (const std::exception& e) {
         Logger::log(LogLevelError, e.what());
     }
 }
